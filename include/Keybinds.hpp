@@ -2,6 +2,7 @@
 
 #include <Geode/DefaultInclude.hpp>
 #include <Geode/utils/MiniFunction.hpp>
+#include <Geode/utils/cocos.hpp>
 #include <Geode/loader/Event.hpp>
 #include <cocos2d.h>
 
@@ -28,24 +29,40 @@ namespace keybinds {
     /**
      * Base class for implementing bindings for different input devices
      */
-    struct CUSTOM_KEYBINDS_DLL Bind {
+    class CUSTOM_KEYBINDS_DLL Bind : public cocos2d::CCObject {
+    public:
+        virtual size_t getHash() const = 0;
+        virtual bool isEqual(Bind* other) const = 0;
         virtual std::string toString() const = 0;
         virtual ~Bind() = default;
     };
 
-    struct CUSTOM_KEYBINDS_DLL Keybind : public Bind {
-        cocos2d::enumKeyCodes key;
-        Modifier modifiers;
+    class CUSTOM_KEYBINDS_DLL Keybind : public Bind {
+    protected:
+        cocos2d::enumKeyCodes m_key;
+        Modifier m_modifiers;
 
-        bool operator==(Keybind const&) const;
+    public:
+        static Keybind* create(cocos2d::enumKeyCodes key, Modifier modifiers);
+
+        cocos2d::enumKeyCodes getKey() const;
+        Modifier getModifiers() const;
+
+        size_t getHash() const override;
+        bool isEqual(Bind* other) const override;
         std::string toString() const override;
+    };
+
+    struct CUSTOM_KEYBINDS_DLL BindHash {
+        geode::Ref<Bind> bind;
+        bool operator==(BindHash const& other) const;
     };
 }
 
 namespace std {
     template<>
-    struct hash<keybinds::Keybind> {
-        CUSTOM_KEYBINDS_DLL std::size_t operator()(keybinds::Keybind const&) const;
+    struct hash<keybinds::BindHash> {
+        CUSTOM_KEYBINDS_DLL std::size_t operator()(keybinds::BindHash const&) const;
     };
 }
 
@@ -53,42 +70,42 @@ namespace keybinds {
     // i hate working with shared_from_this and inheritance so i'm just gonna 
     // use CCObject
 
-    class CUSTOM_KEYBINDS_DLL KeybindAction : public cocos2d::CCObject {
+    class CUSTOM_KEYBINDS_DLL BindableAction : public cocos2d::CCObject {
     protected:
         std::string m_id;
-        std::vector<Keybind> m_defaults;
+        std::vector<geode::Ref<Bind>> m_defaults;
     
     public:
         std::string getID() const;
-        std::vector<Keybind> getDefaults() const;
+        std::vector<geode::Ref<Bind>> getDefaults() const;
 
-        KeybindAction(std::string const& id, std::vector<Keybind> const& defaults);
+        BindableAction(std::string const& id, std::vector<geode::Ref<Bind>> const& defaults);
     };
 
-    class CUSTOM_KEYBINDS_DLL KeybindEvent : public geode::Event {
+    class CUSTOM_KEYBINDS_DLL BindEvent : public geode::Event {
     protected:
-        KeybindAction* m_action;
+        BindableAction* m_action;
 
     public:
-        KeybindEvent(KeybindAction* action);
+        BindEvent(BindableAction* action);
 
         std::string getID() const;
     };
 
-    class CUSTOM_KEYBINDS_DLL KeybindFilter : public geode::EventFilter<KeybindEvent> {
+    class CUSTOM_KEYBINDS_DLL BindFilter : public geode::EventFilter<BindEvent> {
     protected:
         std::string m_id;
 
     public:
-        using Callback = ListenerResult(KeybindEvent*);
+        using Callback = ListenerResult(BindEvent*);
 
-        ListenerResult handle(geode::utils::MiniFunction<Callback> fn, KeybindEvent* event);
-        KeybindFilter(std::string const& id);
+        ListenerResult handle(geode::utils::MiniFunction<Callback> fn, BindEvent* event);
+        BindFilter(std::string const& id);
     };
 
     class CUSTOM_KEYBINDS_DLL KeybindManager {
     protected:
-        std::unordered_map<Keybind, std::vector<std::string>> m_keybinds;
+        std::unordered_map<BindHash, std::vector<std::string>> m_keybinds;
 
     public:
         static KeybindManager* get();
@@ -96,5 +113,6 @@ namespace keybinds {
         void addBindable(std::string const& id, std::vector<Keybind> const& defaults);
 
         void dispatch(std::string const& id);
+        void dispatch(Bind* bind);
     };
 }
