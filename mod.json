@@ -5,6 +5,11 @@
 	"name": "Custom Keybinds",
 	"developer": "HJfod",
 	"description": "Custom keybinds support for Geode",
+	"resources": {
+		"sprites": [
+			"resources/*.png"
+		]
+	},
 	"api": {
 		"include": [
 			"include/*.hpp"
