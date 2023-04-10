@@ -31,12 +31,12 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
-            if (down) {
+            if (down && PlayLayer::get()->m_isPracticeMode) {
                 this->onCheck(nullptr);
             }
         });
         this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
-            if (down) {
+            if (down && PlayLayer::get()->m_isPracticeMode) {
                 this->onDeleteCheck(nullptr);
             }
         });

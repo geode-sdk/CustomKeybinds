@@ -2,6 +2,7 @@
 
 #include <Geode/ui/Popup.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
+#include <Geode/ui/InputNode.hpp>
 #include "../include/Keybinds.hpp"
 
 using namespace geode::prelude;
@@ -27,11 +28,27 @@ public:
     static EnterBindLayer* create(BindableNode* node, Bind* modify = nullptr);
 };
 
+class EditRepeatPopup : public Popup<BindableNode*>, public TextInputDelegate {
+protected:
+    BindableNode* m_node;
+    RepeatOptions m_options;
+
+    bool setup(BindableNode* node);
+
+    void onEnabled(CCObject*);
+    void textChanged(CCTextInputNode*) override;
+    void onClose(CCObject*) override;
+
+public:
+    static EditRepeatPopup* create(BindableNode* node);
+};
+
 class BindableNode : public CCNode {
 protected:
     BindableAction m_action;
     KeybindsLayer* m_layer;
-    CCMenu* m_menu;
+    CCMenu* m_bindMenu;
+    CCMenu* m_nameMenu;
 
     bool init(
         KeybindsLayer* layer,
@@ -40,8 +57,9 @@ protected:
     );
     void onEditBind(CCObject* sender);
     void onAddBind(CCObject*);
-
-    friend class EnterBindLayer;
+    void onResetToDefault(CCObject*);
+    void onEditRepeat(CCObject*);
+    void onInfo(CCObject*);
 
 public:
     static BindableNode* create(
@@ -50,17 +68,29 @@ public:
         float width, bool bgColor
     );
 
+    BindableAction const& getAction() const;
+    std::string getMatchString() const;
     void updateMenu();
 };
 
-class KeybindsLayer : public Popup<> {
+class KeybindsLayer : public Popup<>, public TextInputDelegate {
 protected:
+    ScrollLayer* m_scroll;
+    std::vector<CCNode*> m_containers;
     std::vector<BindableNode*> m_nodes;
+    InputNode* m_searchInput;
+    CCLabelBMFont* m_resultsLabel;
+    std::string m_query;
 
     bool setup() override;
+    void textChanged(CCTextInputNode*) override;
+    void onResetAll(CCObject*);
 
 public:
     static KeybindsLayer* create();
 
-    void updateAll();
+    void search(std::string const& query);
+    void updateAllBinds();
+    void updateVisibility();
+    void deselectSearchInput();
 };

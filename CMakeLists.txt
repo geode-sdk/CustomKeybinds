@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(CustomKeybinds VERSION 1.0.0)
 
 file(GLOB SOURCES
+	src/*.hpp
 	src/*.cpp
 )
 

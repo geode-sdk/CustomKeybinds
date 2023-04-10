@@ -43,6 +43,29 @@ bool keybinds::keyIsModifier(cocos2d::enumKeyCodes key) {
         key == KEY_RightWindowsKey;
 }
 
+static std::unordered_map<std::string, Bind::DataLoader> INPUT_DEVICES {};
+
+void Bind::registerInputDevice(std::string const& id, Bind::DataLoader dataLoader) {
+    INPUT_DEVICES.insert({ id, dataLoader });
+}
+
+Bind* Bind::parse(std::string const& data) {
+    auto off = data.find_first_of(':');
+    if (off == std::string::npos) {
+        return nullptr;
+    }
+    auto id = data.substr(0, off);
+    if (!INPUT_DEVICES.contains(id)) {
+        return nullptr;
+    }
+    return INPUT_DEVICES.at(id)(data.substr(off + 1));
+}
+
+std::string Bind::save() const {
+    // todo
+    return "";
+}
+
 Keybind* Keybind::create(cocos2d::enumKeyCodes key, Modifier modifiers) {
     auto ret = new Keybind();
     ret->m_key = key;
@@ -86,6 +109,10 @@ std::string Keybind::toString() const {
     }
     res += keyToString(m_key);
     return res;
+}
+
+std::string Keybind::toSaveData() const {
+    return std::to_string(static_cast<int>(m_modifiers)) + "|" + std::to_string(m_key);
 }
 
 BindHash::BindHash(Bind* bind) : bind(bind) {}
@@ -219,16 +246,6 @@ BindManager* BindManager::get() {
     return inst;
 }
 
-std::vector<Ref<Bind>> BindManager::getBindsFor(ActionID const& action) const {
-    std::vector<Ref<Bind>> binds;
-    for (auto& [bind, actions] : m_binds) {
-        if (ranges::contains(actions, action)) {
-            binds.push_back(bind.bind);
-        }
-    }
-    return binds;
-}
-
 bool BindManager::registerBindable(BindableAction const& action, ActionID const& after) {
     this->stopAllRepeats();
     if (ranges::contains(m_actions, [&](auto const& act) { return act.first == action.getID(); })) {
@@ -343,6 +360,16 @@ void BindManager::removeAllBindsFrom(ActionID const& action) {
     }
 }
 
+std::vector<Ref<Bind>> BindManager::getBindsFor(ActionID const& action) const {
+    std::vector<Ref<Bind>> binds;
+    for (auto& [bind, actions] : m_binds) {
+        if (ranges::contains(actions, action)) {
+            binds.push_back(bind.bind);
+        }
+    }
+    return binds;
+}
+
 void BindManager::resetBindsToDefault(ActionID const& action) {
     this->stopAllRepeats();
     this->removeAllBindsFrom(action);
@@ -351,6 +378,22 @@ void BindManager::resetBindsToDefault(ActionID const& action) {
             this->addBindTo(action, def);
         }
     }
+}
+
+bool BindManager::hasDefaultBinds(ActionID const& action) const {
+    if (auto bindable = this->getBindable(action)) {
+        auto binds = this->getBindsFor(action);
+        auto defs = bindable->getDefaults();
+        if (binds.size() == defs.size()) {
+            for (size_t i = 0; i < binds.size(); i++) {
+                if (!binds.at(i)->isEqual(defs.at(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 std::optional<RepeatOptions> BindManager::getRepeatOptionsFor(ActionID const& action) {
@@ -404,7 +447,7 @@ void BindManager::unrepeat(ActionID const& action) {
 void BindManager::repeat(ActionID const& action) {
     if (auto options = this->getRepeatOptionsFor(action)) {
         if (options.value().enabled) {
-            m_repeating.emplace_back(action, options.value().start / 1000.f);
+            m_repeating.emplace_back(action, options.value().delay / 1000.f);
             CCScheduler::get()->scheduleSelector(
                 schedule_selector(BindManager::onRepeat), this,
                 0.f, false
@@ -419,8 +462,23 @@ void BindManager::onRepeat(float dt) {
             last -= dt;
             if (last < 0.f) {
                 InvokeBindEvent(id, true).post();
-                last += options.value().interval / 1000.f;
+                last += options.value().rate / 1000.f;
             }
+        }
+    }
+}
+
+$on_mod(DataSaved) {
+    auto m = BindManager::get();
+    for (auto& bindable : m->getAllBindables()) {
+        auto obj = json::Object();
+        for (auto& bind : m->getBindsFor(bindable.getID())) {
+            
+        }
+        if (auto options = m->getRepeatOptionsFor(bindable.getID())) {
+            obj["repeat-enabled"] = options.value().enabled;
+            obj["repeat-rate"] = options.value().rate;
+            obj["repeat-delay"] = options.value().delay;
         }
     }
 }

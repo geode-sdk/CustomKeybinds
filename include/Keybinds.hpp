@@ -25,7 +25,13 @@ namespace keybinds {
         virtual size_t getHash() const = 0;
         virtual bool isEqual(Bind* other) const = 0;
         virtual std::string toString() const = 0;
+        virtual std::string toSaveData() const = 0;
         virtual ~Bind() = default;
+
+        using DataLoader = std::function<Bind*(std::string const&)>;
+        static void registerInputDevice(std::string const& id, DataLoader dataLoader);
+        static Bind* parse(std::string const& data);
+        std::string save() const;
     };
 
     enum class Modifier : unsigned int {
@@ -56,6 +62,7 @@ namespace keybinds {
         size_t getHash() const override;
         bool isEqual(Bind* other) const override;
         std::string toString() const override;
+        std::string toSaveData() const override;
     };
 
     struct CUSTOM_KEYBINDS_DLL BindHash {
@@ -177,8 +184,8 @@ namespace keybinds {
 
     struct CUSTOM_KEYBINDS_DLL RepeatOptions {
         bool enabled = true;
-        size_t interval = 300;
-        size_t start = 500;
+        size_t rate = 300;
+        size_t delay = 500;
     };
     
     class CUSTOM_KEYBINDS_DLL BindManager : public cocos2d::CCObject {
@@ -233,6 +240,7 @@ namespace keybinds {
         void removeBindFrom(ActionID const& action, Bind* bind);
         void removeAllBindsFrom(ActionID const& action);
         void resetBindsToDefault(ActionID const& action);
+        bool hasDefaultBinds(ActionID const& action) const;
         std::vector<geode::Ref<Bind>> getBindsFor(ActionID const& action) const;
 
         std::optional<RepeatOptions> getRepeatOptionsFor(ActionID const& action);

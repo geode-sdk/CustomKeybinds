@@ -35,7 +35,3 @@ class $modify(MoreOptionsLayer) {
 		KeybindsLayer::create()->show();
 	}
 };
-
-$on_mod(Loaded) {
-	BindManager::get()->addBindTo("robtop.geometry-dash/jump-p1", Keybind::create(enumKeyCodes::KEY_A, Modifier::None));
-}
