@@ -30,7 +30,7 @@ std::string keybinds::keyToString(enumKeyCodes key) {
     }
 }
 
-bool keybinds::keyIsModifier(cocos2d::enumKeyCodes key) {
+bool keybinds::keyIsModifier(enumKeyCodes key) {
     return
         key == KEY_Control ||
         key == KEY_LeftControl ||
@@ -43,10 +43,17 @@ bool keybinds::keyIsModifier(cocos2d::enumKeyCodes key) {
         key == KEY_RightWindowsKey;
 }
 
-static std::unordered_map<std::string, Bind::DataLoader> INPUT_DEVICES {};
+bool keybinds::keyIsController(enumKeyCodes key) {
+    return key >= CONTROLLER_A && key <= CONTROLLER_Right;
+}
+
+static std::unordered_map<std::string, Bind::DataLoader>& getInputDevices() {
+    static std::unordered_map<std::string, Bind::DataLoader> DEVICES;
+    return DEVICES;
+}
 
 void Bind::registerInputDevice(std::string const& id, Bind::DataLoader dataLoader) {
-    INPUT_DEVICES.insert({ id, dataLoader });
+    getInputDevices().insert({ id, dataLoader });
 }
 
 Bind* Bind::parse(std::string const& data) {
@@ -55,26 +62,43 @@ Bind* Bind::parse(std::string const& data) {
         return nullptr;
     }
     auto id = data.substr(0, off);
-    if (!INPUT_DEVICES.contains(id)) {
+    if (!getInputDevices().contains(id)) {
         return nullptr;
     }
-    return INPUT_DEVICES.at(id)(data.substr(off + 1));
+    return getInputDevices().at(id)(data.substr(off + 1));
 }
 
 std::string Bind::save() const {
-    // todo
-    return "";
+    return this->getDeviceID() + ":" + this->getSaveString();
 }
 
-Keybind* Keybind::create(cocos2d::enumKeyCodes key, Modifier modifiers) {
-    auto ret = new Keybind();
+Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
+    if (key == KEY_None || key == KEY_Unknown || keyIsController(key)) {
+        return nullptr;
+    }
+    auto ret = new Keybind(); 
     ret->m_key = key;
     ret->m_modifiers = modifiers;
     ret->autorelease();
     return ret;
 }
 
-cocos2d::enumKeyCodes Keybind::getKey() const {
+Bind* Keybind::parseBind(std::string const& data) {
+    int mods;
+    int key;
+    std::stringstream ss(data);
+    ss >> mods;
+    if (ss.get() != '|') {
+        return nullptr;
+    }
+    ss >> key;
+    if (ss.fail()) {
+        return nullptr;
+    }
+    return Keybind::create(static_cast<enumKeyCodes>(key), static_cast<Modifier>(mods));
+}
+
+enumKeyCodes Keybind::getKey() const {
     return m_key;
 }
 
@@ -111,8 +135,51 @@ std::string Keybind::toString() const {
     return res;
 }
 
-std::string Keybind::toSaveData() const {
+std::string Keybind::getSaveString() const {
     return std::to_string(static_cast<int>(m_modifiers)) + "|" + std::to_string(m_key);
+}
+
+ControllerBind* ControllerBind::create(enumKeyCodes button) {
+    if (!keyIsController(button)) {
+        return nullptr;
+    }
+    auto ret = new ControllerBind(); 
+    ret->m_button = button;
+    ret->autorelease();
+    return ret;
+}
+
+Bind* ControllerBind::parseBind(std::string const& data) {
+    int key;
+    std::stringstream ss(data);
+    ss >> key;
+    if (ss.fail()) {
+        return nullptr;
+    }
+    return ControllerBind::create(static_cast<enumKeyCodes>(key));
+}
+
+enumKeyCodes ControllerBind::getButton() const {
+    return m_button;
+}
+
+size_t ControllerBind::getHash() const {
+    return m_button;
+}
+
+bool ControllerBind::isEqual(Bind* other) const {
+    if (auto o = typeinfo_cast<ControllerBind*>(other)) {
+        return m_button == o->m_button;
+    }
+    return false;
+}
+
+std::string ControllerBind::toString() const {
+    return keyToString(m_button);
+}
+
+std::string ControllerBind::getSaveString() const {
+    return std::to_string(m_button);
 }
 
 BindHash::BindHash(Bind* bind) : bind(bind) {}
@@ -122,7 +189,7 @@ bool BindHash::operator==(BindHash const& other) const {
 }
 
 std::size_t std::hash<keybinds::BindHash>::operator()(keybinds::BindHash const& hash) const {
-    return hash.bind ? (hash.bind->getHash() | typeid(*hash.bind).hash_code()) : 0;
+    return hash.bind ? (hash.bind->getHash() | std::hash<std::string>()(hash.bind->getDeviceID())) : 0;
 }
 
 Category::Category(const char* path) : m_value(path) {}
@@ -234,6 +301,57 @@ geode::ListenerResult PressBindFilter::handle(geode::utils::MiniFunction<Callbac
 
 PressBindFilter::PressBindFilter() {}
 
+struct BindSaveData {
+    std::vector<geode::Ref<Bind>> binds;
+    std::optional<RepeatOptions> repeat;
+
+    static BindSaveData from(ActionID const& action) {
+        return BindSaveData {
+            .binds = BindManager::get()->getBindsFor(action),
+            .repeat = BindManager::get()->getRepeatOptionsFor(action),
+        };
+    }
+};
+
+template <>
+struct json::Serialize<BindSaveData> {
+    static json::Value to_json(BindSaveData const& data) {
+        auto obj = json::Object();
+        auto binds = json::Array();
+        for (auto& bind : data.binds) {
+            binds.push_back(bind->save());
+        }
+        obj["binds"] = binds;
+        if (data.repeat) {
+            auto rep = json::Object();
+            rep["enabled"] = data.repeat.value().enabled;
+            rep["rate"] = data.repeat.value().rate;
+            rep["delay"] = data.repeat.value().delay;
+            obj["repeat"] = rep;
+        }
+        return obj;
+    }
+
+    static BindSaveData from_json(json::Value const& data) {
+        auto obj = data.as_object();
+        auto save = BindSaveData();
+        for (auto bind : obj["binds"].as_array()) {
+            if (auto b = Bind::parse(bind.as_string())) {
+                save.binds.push_back(b);
+            }
+        }
+        if (data.contains("repeat")) {
+            auto rep = obj["repeat"].as_object();
+            auto opts = RepeatOptions();
+            opts.enabled = rep["enabled"].as_bool();
+            opts.rate = rep["rate"].as_int();
+            opts.delay = rep["delay"].as_int();
+            save.repeat = opts;
+        }
+        return save;
+    }
+};
+
 BindManager::BindManager() {
     this->addCategory(Category::GLOBAL);
     this->addCategory(Category::PLAY);
@@ -263,10 +381,21 @@ bool BindManager::registerBindable(BindableAction const& action, ActionID const&
             { .definition = action, .repeat = RepeatOptions() }
         });
     }
-    for (auto& def : action.getDefaults()) {
-        this->addBindTo(action.getID(), def);
-    }
     this->addCategory(action.getCategory());
+    if (Mod::get()->hasSavedValue(action.getID())) {
+        auto saved = Mod::get()->template getSavedValue<BindSaveData>(action.getID());
+        for (auto& b : saved.binds) {
+            this->addBindTo(action.getID(), b);
+        }
+        if (saved.repeat) {
+            this->setRepeatOptionsFor(action.getID(), saved.repeat.value());
+        }
+    }
+    else {
+        for (auto& def : action.getDefaults()) {
+            this->addBindTo(action.getID(), def);
+        }
+    }
     return true;
 }
 
@@ -469,16 +598,7 @@ void BindManager::onRepeat(float dt) {
 }
 
 $on_mod(DataSaved) {
-    auto m = BindManager::get();
-    for (auto& bindable : m->getAllBindables()) {
-        auto obj = json::Object();
-        for (auto& bind : m->getBindsFor(bindable.getID())) {
-            
-        }
-        if (auto options = m->getRepeatOptionsFor(bindable.getID())) {
-            obj["repeat-enabled"] = options.value().enabled;
-            obj["repeat-rate"] = options.value().rate;
-            obj["repeat-delay"] = options.value().delay;
-        }
+    for (auto& bindable : BindManager::get()->getAllBindables()) {
+        Mod::get()->setSavedValue(bindable.getID(), BindSaveData::from(bindable.getID()));
     }
 }

@@ -359,48 +359,65 @@ bool BindableNode::init(
         RowLayout::create()
             ->setAxisReverse(true)
             ->setAxisAlignment(AxisAlignment::End)
-            ->setGrowCrossAxis(true)
     );
     this->addChild(m_bindMenu);
-    
-    this->updateMenu();
+
+    this->updateMenu(false);
 
     return true;
 }
 
-void BindableNode::updateMenu() {
+void BindableNode::updateMenu(bool updateLayer) {
+    static_cast<AxisLayout*>(m_bindMenu->getLayout())->setGrowCrossAxis(m_expand);
     m_bindMenu->removeAllChildren();
-    for (auto& bind : BindManager::get()->getBindsFor(m_action.getID())) {
+    auto binds = BindManager::get()->getBindsFor(m_action.getID());
+    size_t i = 0;
+    float length = 0.f;
+    for (auto& bind : binds) {
         auto spr = createBindBtn(bind->toString().c_str());
+        length += spr->getScaledContentSize().width;
+        if (length > m_obContentSize.width / 2) {
+            if (!m_expand) break;
+        }
+        i++;
         auto btn = CCMenuItemSpriteExtra::create(
             spr, this, menu_selector(BindableNode::onEditBind)
         );
         btn->setUserObject(bind);
         m_bindMenu->addChild(btn);
     }
-    m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
-        createBindBtn("+"),
-        this, menu_selector(BindableNode::onAddBind)
-    ));
-    if (auto options = BindManager::get()->getRepeatOptionsFor(m_action.getID())) {
-        auto clock = CCSprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
-        if (!options.value().enabled) {
-            clock->setOpacity(165);
-            clock->setColor({ 165, 165, 165 });
-        }
+    if (i != binds.size()) {
         m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
-            createBindBtn(clock),
-            this, menu_selector(BindableNode::onEditRepeat)
+            createBindBtn("..."),
+            this, menu_selector(BindableNode::onExpand)
         ));
     }
-    if (!BindManager::get()->hasDefaultBinds(m_action.getID())) {
+    else {
         m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
-            createBindBtn(CCSprite::createWithSpriteFrameName("edit_ccwBtn_001.png")),
-            this, menu_selector(BindableNode::onResetToDefault)
+            createBindBtn("+"),
+            this, menu_selector(BindableNode::onAddBind)
         ));
+        if (auto options = BindManager::get()->getRepeatOptionsFor(m_action.getID())) {
+            auto clock = CCSprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
+            if (!options.value().enabled) {
+                clock->setOpacity(165);
+                clock->setColor({ 165, 165, 165 });
+            }
+            m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
+                createBindBtn(clock),
+                this, menu_selector(BindableNode::onEditRepeat)
+            ));
+        }
+        if (!BindManager::get()->hasDefaultBinds(m_action.getID())) {
+            m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
+                createBindBtn(CCSprite::createWithSpriteFrameName("edit_ccwBtn_001.png")),
+                this, menu_selector(BindableNode::onResetToDefault)
+            ));
+        }
     }
     m_bindMenu->updateLayout();
 
+    auto oldHeight = m_obContentSize.height;
     this->setContentSize({
         m_obContentSize.width,
         m_bindMenu->getScaledContentSize().height + 10.f
@@ -408,10 +425,14 @@ void BindableNode::updateMenu() {
     m_bg->setContentSize(m_obContentSize);
     m_nameMenu->setPositionY(m_obContentSize.height / 2);
     m_bindMenu->setPositionY(m_obContentSize.height / 2);
+    if (updateLayer && oldHeight != m_obContentSize.height) {
+        m_layer->updateVisibility();
+    }
 }
 
 void BindableNode::onAddBind(CCObject*) {
     m_layer->deselectSearchInput();
+    m_expand = true;
     EnterBindLayer::create(this)->show();
 }
 
@@ -442,6 +463,11 @@ void BindableNode::onResetToDefault(CCObject*) {
 void BindableNode::onEditRepeat(CCObject*) {
     m_layer->deselectSearchInput();
     EditRepeatPopup::create(this)->show();
+}
+
+void BindableNode::onExpand(CCObject*) {
+    m_expand = true;
+    this->updateMenu();
 }
 
 void BindableNode::onInfo(CCObject*) {

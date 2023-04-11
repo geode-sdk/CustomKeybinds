@@ -50,6 +50,7 @@ protected:
     CCLayerColor* m_bg;
     CCMenu* m_bindMenu;
     CCMenu* m_nameMenu;
+    bool m_expand = false;
 
     bool init(
         KeybindsLayer* layer,
@@ -58,6 +59,7 @@ protected:
     );
     void onEditBind(CCObject* sender);
     void onAddBind(CCObject*);
+    void onExpand(CCObject*);
     void onResetToDefault(CCObject*);
     void onEditRepeat(CCObject*);
     void onInfo(CCObject*);
@@ -71,7 +73,7 @@ public:
 
     BindableAction const& getAction() const;
     std::string getMatchString() const;
-    void updateMenu();
+    void updateMenu(bool updateLayer = true);
 };
 
 class KeybindsLayer : public Popup<>, public TextInputDelegate {

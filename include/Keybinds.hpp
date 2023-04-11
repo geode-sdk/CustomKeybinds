@@ -3,6 +3,7 @@
 #include <Geode/DefaultInclude.hpp>
 #include <Geode/utils/MiniFunction.hpp>
 #include <Geode/utils/cocos.hpp>
+#include <Geode/loader/Mod.hpp>
 #include <Geode/loader/Event.hpp>
 #include <cocos2d.h>
 
@@ -25,13 +26,26 @@ namespace keybinds {
         virtual size_t getHash() const = 0;
         virtual bool isEqual(Bind* other) const = 0;
         virtual std::string toString() const = 0;
-        virtual std::string toSaveData() const = 0;
+        virtual std::string getSaveString() const = 0;
+        virtual std::string getDeviceID() const = 0;
         virtual ~Bind() = default;
 
         using DataLoader = std::function<Bind*(std::string const&)>;
         static void registerInputDevice(std::string const& id, DataLoader dataLoader);
         static Bind* parse(std::string const& data);
         std::string save() const;
+    };
+
+    template <class B>
+    class ImplBind : public Bind {
+    public:
+        ImplBind() {
+            registerInputDevice(B::DEVICE_ID, &B::parseBind);
+        }
+
+        std::string getDeviceID() const override {
+            return B::DEVICE_ID;
+        }
     };
 
     enum class Modifier : unsigned int {
@@ -47,14 +61,17 @@ namespace keybinds {
 
     CUSTOM_KEYBINDS_DLL std::string keyToString(cocos2d::enumKeyCodes key);
     CUSTOM_KEYBINDS_DLL bool keyIsModifier(cocos2d::enumKeyCodes key);
+    CUSTOM_KEYBINDS_DLL bool keyIsController(cocos2d::enumKeyCodes key);
 
-    class CUSTOM_KEYBINDS_DLL Keybind : public Bind {
+    class CUSTOM_KEYBINDS_DLL Keybind final : public ImplBind<Keybind> {
     protected:
         cocos2d::enumKeyCodes m_key;
         Modifier m_modifiers;
 
     public:
         static Keybind* create(cocos2d::enumKeyCodes key, Modifier modifiers = Modifier::None);
+        static Bind* parseBind(std::string const& data);
+        static constexpr auto DEVICE_ID = "hjfod.custom-keybinds/key";
 
         cocos2d::enumKeyCodes getKey() const;
         Modifier getModifiers() const;
@@ -62,7 +79,24 @@ namespace keybinds {
         size_t getHash() const override;
         bool isEqual(Bind* other) const override;
         std::string toString() const override;
-        std::string toSaveData() const override;
+        std::string getSaveString() const override;
+    };
+
+    class CUSTOM_KEYBINDS_DLL ControllerBind final : public ImplBind<ControllerBind> {
+    protected:
+        cocos2d::enumKeyCodes m_button;
+    
+    public:
+        static ControllerBind* create(cocos2d::enumKeyCodes button);
+        static Bind* parseBind(std::string const& data);
+        static constexpr auto DEVICE_ID = "hjfod.custom-keybinds/gamepad";
+
+        cocos2d::enumKeyCodes getButton() const;
+
+        size_t getHash() const override;
+        bool isEqual(Bind* other) const override;
+        std::string toString() const override;
+        std::string getSaveString() const override;
     };
 
     struct CUSTOM_KEYBINDS_DLL BindHash {
