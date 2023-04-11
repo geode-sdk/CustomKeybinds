@@ -204,15 +204,6 @@ $execute {
         Category::EDITOR_UI
     });
     BindManager::get()->registerBindable({
-        "hjfod.betteredit/view-mofr",
-        "View Mode",
-        "Toggle the View Tab",
-        { Keybind::create(KEY_Four, Modifier::None) },
-        Category::EDITOR_UI,
-        true,
-        Loader::get()->getLoadedMod("hjfod.betteredit")
-    });
-    BindManager::get()->registerBindable({
         "robtop.geometry-dash/rotate-ccw",
         "Rotate CCW",
         "Rotate Object(s) Counter-Clockwise",

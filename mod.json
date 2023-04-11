@@ -15,11 +15,5 @@
 			"include/*.hpp"
 		]
 	},
-	"dependencies": [
-		{
-			"id": "hjfod.betteredit",
-			"version": "5.0.0",
-			"required": true
-		}
-	]
+	"dependencies": []
 }

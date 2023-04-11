@@ -309,34 +309,34 @@ bool BindableNode::init(
     m_action = action;
     this->setContentSize({ width, height });
 
-    auto bg = CCLayerColor::create({ 0, 0, 0, GLubyte(bgColor ? 120 : 70) });
-    bg->ignoreAnchorPointForPosition(false);
-    bg->setAnchorPoint({ 0.f, 0.f });
-    bg->setContentSize({ width, height });
-    this->addChild(bg);
+    m_bg = CCLayerColor::create({ 0, 0, 0, GLubyte(bgColor ? 120 : 70) });
+    m_bg->ignoreAnchorPointForPosition(false);
+    m_bg->setAnchorPoint({ 0.f, 0.f });
+    m_bg->setContentSize({ width, height });
+    this->addChild(m_bg);
+
+    m_nameMenu = CCMenu::create();
+    m_nameMenu->setContentSize({ width / 2, height });
+    m_nameMenu->setAnchorPoint({ .0f, .5f });
+    m_nameMenu->setPosition(height / 2, height / 2);
+    m_nameMenu->ignoreAnchorPointForPosition(false);
 
     auto nameLabel = CCLabelBMFont::create(action.getName().c_str(), "bigFont.fnt");
-    nameLabel->setPosition(height / 2, height / 2);
+    nameLabel->setPosition(0.f, height / 2);
     nameLabel->setAnchorPoint({ .0f, .5f });
-    this->addChild(nameLabel);
+    m_nameMenu->addChild(nameLabel);
     limitNodeSize(nameLabel, { width / 2 - height, height / 1.33f }, .5f, .1f);
 
     if (action.getMod() != Mod::get()) {
         auto modLabel = CCLabelBMFont::create(action.getMod()->getName().c_str(), "bigFont.fnt");
-        modLabel->setPosition(height / 2, height / 2 - 7.f);
+        modLabel->setPosition(0.f, height / 2 - 7.f);
         modLabel->setAnchorPoint({ .0f, .5f });
         modLabel->setScale(.25f);
         modLabel->setColor({ 125, 183, 230 });
-        this->addChild(modLabel);
+        m_nameMenu->addChild(modLabel);
 
         nameLabel->setPositionY(height / 2 + 5.5f);
     }
-
-    m_nameMenu = CCMenu::create();
-    m_nameMenu->setContentSize({ height / 1.5f, height });
-    m_nameMenu->setAnchorPoint({ .0f, .5f });
-    m_nameMenu->ignoreAnchorPointForPosition(false);
-    m_nameMenu->setPosition(nameLabel->boundingBox().getMaxX(), height / 2);
 
     if (action.getDescription().size()) {
         auto infoSpr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
@@ -344,7 +344,7 @@ bool BindableNode::init(
         auto infoBtn = CCMenuItemSpriteExtra::create(
             infoSpr, this, menu_selector(BindableNode::onInfo)
         );
-        infoBtn->setPosition(height / 3, height / 2);
+        infoBtn->setPosition(nameLabel->boundingBox().getMaxX() + 15.f, height / 2);
         m_nameMenu->addChild(infoBtn);
     }
 
@@ -359,6 +359,7 @@ bool BindableNode::init(
         RowLayout::create()
             ->setAxisReverse(true)
             ->setAxisAlignment(AxisAlignment::End)
+            ->setGrowCrossAxis(true)
     );
     this->addChild(m_bindMenu);
     
@@ -399,6 +400,14 @@ void BindableNode::updateMenu() {
         ));
     }
     m_bindMenu->updateLayout();
+
+    this->setContentSize({
+        m_obContentSize.width,
+        m_bindMenu->getScaledContentSize().height + 10.f
+    });
+    m_bg->setContentSize(m_obContentSize);
+    m_nameMenu->setPositionY(m_obContentSize.height / 2);
+    m_bindMenu->setPositionY(m_obContentSize.height / 2);
 }
 
 void BindableNode::onAddBind(CCObject*) {

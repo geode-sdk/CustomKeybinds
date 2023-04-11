@@ -47,6 +47,7 @@ class BindableNode : public CCNode {
 protected:
     BindableAction m_action;
     KeybindsLayer* m_layer;
+    CCLayerColor* m_bg;
     CCMenu* m_bindMenu;
     CCMenu* m_nameMenu;
 
