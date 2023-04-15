@@ -5,6 +5,68 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
+Device::~Device() {
+    BindManager::get()->detachDevice(this);
+}
+
+class KeyboardDevice final : public Device {
+public:
+    std::string getID() const override {
+        return "keyboard"_spr;
+    }
+
+    Bind* loadBind(std::string const& data) override {
+        int mods, key;
+        std::stringstream ss(data);
+        ss >> mods;
+        if (ss.get() != '|') {
+            return nullptr;
+        }
+        ss >> key;
+        if (ss.fail()) {
+            return nullptr;
+        }
+        return Keybind::create(static_cast<enumKeyCodes>(key), static_cast<Modifier>(mods));
+    }
+
+    std::string saveBind(Bind* bind) override {
+        auto key = static_cast<Keybind*>(bind);
+        return std::to_string(static_cast<int>(key->getModifiers())) + "|" +
+            std::to_string(key->getKey());
+    }
+
+    static KeyboardDevice* get() {
+        static auto inst = new KeyboardDevice();
+        return inst;
+    }
+};
+
+class ControllerDevice final : public Device {
+public:
+    std::string getID() const override {
+        return "controller"_spr;
+    }
+
+    Bind* loadBind(std::string const& data) override {
+        int key;
+        std::stringstream ss(data);
+        ss >> key;
+        if (ss.fail()) {
+            return nullptr;
+        }
+        return ControllerBind::create(static_cast<enumKeyCodes>(key));
+    }
+
+    std::string saveBind(Bind* bind) override {
+        return std::to_string(static_cast<ControllerBind*>(bind)->getButton());
+    }
+
+    static ControllerDevice* get() {
+        static auto inst = new ControllerDevice();
+        return inst;
+    }
+};
+
 Modifier keybinds::operator|=(Modifier& a, Modifier const& b) {
     return static_cast<Modifier>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
 }
@@ -47,29 +109,30 @@ bool keybinds::keyIsController(enumKeyCodes key) {
     return key >= CONTROLLER_A && key <= CONTROLLER_Right;
 }
 
-static std::unordered_map<std::string, Bind::DataLoader>& getInputDevices() {
-    static std::unordered_map<std::string, Bind::DataLoader> DEVICES;
-    return DEVICES;
+bool Bind::isEqual(Bind* other) const {
+    return this->getHash() == other->getHash();
 }
 
-void Bind::registerInputDevice(std::string const& id, Bind::DataLoader dataLoader) {
-    getInputDevices().insert({ id, dataLoader });
+CCNode* Bind::createLabel() const {
+    return CCLabelBMFont::create(this->toString().c_str(), "goldFont.fnt");
 }
 
-Bind* Bind::parse(std::string const& data) {
-    auto off = data.find_first_of(':');
-    if (off == std::string::npos) {
-        return nullptr;
-    }
-    auto id = data.substr(0, off);
-    if (!getInputDevices().contains(id)) {
-        return nullptr;
-    }
-    return getInputDevices().at(id)(data.substr(off + 1));
-}
+CCNode* Bind::createBindSprite() const {
+    auto bg = CCScale9Sprite::create("square.png"_spr);
+    bg->setOpacity(85);
+    bg->setScale(.45f);
 
-std::string Bind::save() const {
-    return this->getDeviceID() + ":" + this->getSaveString();
+    auto top = this->createLabel();
+    limitNodeSize(top, { 125.f, 30.f }, 1.f, .1f);
+    bg->setContentSize({
+        clamp(top->getScaledContentSize().width + 18.f, 18.f / bg->getScale(), 145.f),
+        18.f / bg->getScale()
+    });
+    bg->addChild(top);
+
+    top->setPosition(bg->getContentSize() / 2);
+    
+    return bg;
 }
 
 Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
@@ -81,21 +144,6 @@ Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
     ret->m_modifiers = modifiers;
     ret->autorelease();
     return ret;
-}
-
-Bind* Keybind::parseBind(std::string const& data) {
-    int mods;
-    int key;
-    std::stringstream ss(data);
-    ss >> mods;
-    if (ss.get() != '|') {
-        return nullptr;
-    }
-    ss >> key;
-    if (ss.fail()) {
-        return nullptr;
-    }
-    return Keybind::create(static_cast<enumKeyCodes>(key), static_cast<Modifier>(mods));
 }
 
 enumKeyCodes Keybind::getKey() const {
@@ -135,8 +183,8 @@ std::string Keybind::toString() const {
     return res;
 }
 
-std::string Keybind::getSaveString() const {
-    return std::to_string(static_cast<int>(m_modifiers)) + "|" + std::to_string(m_key);
+std::string Keybind::getDeviceID() const {
+    return "keyboard"_spr;
 }
 
 ControllerBind* ControllerBind::create(enumKeyCodes button) {
@@ -147,16 +195,6 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
     ret->m_button = button;
     ret->autorelease();
     return ret;
-}
-
-Bind* ControllerBind::parseBind(std::string const& data) {
-    int key;
-    std::stringstream ss(data);
-    ss >> key;
-    if (ss.fail()) {
-        return nullptr;
-    }
-    return ControllerBind::create(static_cast<enumKeyCodes>(key));
 }
 
 enumKeyCodes ControllerBind::getButton() const {
@@ -178,8 +216,33 @@ std::string ControllerBind::toString() const {
     return keyToString(m_button);
 }
 
-std::string ControllerBind::getSaveString() const {
-    return std::to_string(m_button);
+CCNode* ControllerBind::createLabel() const {
+    const char* sprite = nullptr;
+    switch (m_button) {
+        case CONTROLLER_A: sprite = "controllerBtn_A_001.png"; break;
+        case CONTROLLER_B: sprite = "controllerBtn_B_001.png"; break;
+        case CONTROLLER_X: sprite = "controllerBtn_X_001.png"; break;
+        case CONTROLLER_Y: sprite = "controllerBtn_Y_001.png"; break;
+        case CONTROLLER_Back: sprite = "controllerBtn_Back_001.png"; break;
+        case CONTROLLER_Start: sprite = "controllerBtn_Start_001.png"; break;
+        case CONTROLLER_Down: sprite = "controllerBtn_DPad_Down_001.png"; break;
+        case CONTROLLER_Left: sprite = "controllerBtn_DPad_Left_001.png"; break;
+        case CONTROLLER_Up: sprite = "controllerBtn_DPad_Up_001.png"; break;
+        case CONTROLLER_Right: sprite = "controllerBtn_DPad_Right_001.png"; break;
+        case CONTROLLER_LT: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_RT: sprite = "controllerBtn_RThumb_001.png"; break;
+        // todo: are these the same
+        case CONTROLLER_LB: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_RB: sprite = "controllerBtn_RThumb_001.png"; break;
+    }
+    if (!sprite) {
+        return CCLabelBMFont::create("Unk", "goldFont.fnt");
+    }
+    return CCSprite::createWithSpriteFrameName(sprite);
+}
+
+std::string ControllerBind::getDeviceID() const {
+    return "controller"_spr;
 }
 
 BindHash::BindHash(Bind* bind) : bind(bind) {}
@@ -301,67 +364,132 @@ geode::ListenerResult PressBindFilter::handle(geode::utils::MiniFunction<Callbac
 
 PressBindFilter::PressBindFilter() {}
 
-struct BindSaveData {
-    std::vector<geode::Ref<Bind>> binds;
-    std::optional<RepeatOptions> repeat;
-
-    static BindSaveData from(ActionID const& action) {
-        return BindSaveData {
-            .binds = BindManager::get()->getBindsFor(action),
-            .repeat = BindManager::get()->getRepeatOptionsFor(action),
-        };
-    }
-};
-
-template <>
-struct json::Serialize<BindSaveData> {
-    static json::Value to_json(BindSaveData const& data) {
-        auto obj = json::Object();
-        auto binds = json::Array();
-        for (auto& bind : data.binds) {
-            binds.push_back(bind->save());
-        }
-        obj["binds"] = binds;
-        if (data.repeat) {
-            auto rep = json::Object();
-            rep["enabled"] = data.repeat.value().enabled;
-            rep["rate"] = data.repeat.value().rate;
-            rep["delay"] = data.repeat.value().delay;
-            obj["repeat"] = rep;
-        }
-        return obj;
-    }
-
-    static BindSaveData from_json(json::Value const& data) {
-        auto obj = data.as_object();
-        auto save = BindSaveData();
-        for (auto bind : obj["binds"].as_array()) {
-            if (auto b = Bind::parse(bind.as_string())) {
-                save.binds.push_back(b);
-            }
-        }
-        if (data.contains("repeat")) {
-            auto rep = obj["repeat"].as_object();
-            auto opts = RepeatOptions();
-            opts.enabled = rep["enabled"].as_bool();
-            opts.rate = rep["rate"].as_int();
-            opts.delay = rep["delay"].as_int();
-            save.repeat = opts;
-        }
-        return save;
-    }
-};
-
 BindManager::BindManager() {
     this->addCategory(Category::GLOBAL);
     this->addCategory(Category::PLAY);
     this->addCategory(Category::EDITOR);
+    this->attachDevice(KeyboardDevice::get());
     this->retain();
 }
 
 BindManager* BindManager::get() {
     static auto inst = new BindManager();
     return inst;
+}
+
+void BindManager::attachDevice(Device* device) {
+    this->detachDevice(device);
+    m_devices.insert({ device->getID(), device });
+    for (auto& [id, actions] : m_devicelessBinds) {
+        if (id != device->getID()) {
+            continue;
+        }
+        for (auto& [action, binds] : actions) {
+            for (auto& data : binds) {
+                if (auto nbind = device->loadBind(data)) {
+                    this->addBindTo(action, nbind);
+                }
+            }
+            binds.clear();
+        }
+    }
+}
+
+void BindManager::detachDevice(Device* device) {
+    for (auto& [bind, actions] : m_binds) {
+        if (bind.bind->getDeviceID() == device->getID()) {
+            for (auto& action : actions) {
+                m_devicelessBinds[device->getID()][action].push_back(device->saveBind(bind.bind));
+                this->removeBindFrom(action, bind.bind);
+            }
+        }
+    }
+    m_devices.erase(device->getID());
+}
+
+std::string BindManager::getBindSaveString(Bind* bind) const {
+    auto dev = bind->getDeviceID();
+    if (m_devices.contains(dev)) {
+        return dev + ":" + m_devices.at(dev)->saveBind(bind);
+    }
+    return "";
+}
+
+std::pair<DeviceID, std::string> BindManager::parseBindSave(std::string const& str) const {
+    auto off = str.find_first_of(':');
+    if (off == std::string::npos) {
+        return { "", "" };
+    }
+    return { str.substr(0, off), str.substr(off + 1) };
+}
+
+Bind* BindManager::loadBindFromSaveString(std::string const& data) const {
+    auto [id, sdata] = this->parseBindSave(data);
+    if (!m_devices.contains(id)) {
+        return nullptr;
+    }
+    return m_devices.at(id)->loadBind(sdata);
+}
+
+bool BindManager::loadActionBinds(ActionID const& action) {
+    try {
+        auto value = Mod::get()->template getSavedValue<json::Object>(action);
+        for (auto bind : value["binds"].as_array()) {
+            // try directly parsing the bind from a string if the device it's for 
+            // is already connected
+            if (auto b = BindManager::get()->loadBindFromSaveString(bind.as_string())) {
+                this->addBindTo(action, b);
+            }
+            // otherwise save the bind's data for until the device is connected 
+            // or the game is closed
+            else {
+                // get the device ID and bind save data from the raw string
+                auto [id, data] = this->parseBindSave(bind.as_string());
+                // if device ID has a size, then add this to the list of unbound 
+                // binds
+                if (id.size()) {
+                    m_devicelessBinds[id][action].push_back(data);
+                }
+                // otherwise invalid bind save data
+            }
+        }
+        // load repeat options
+        if (value.count("repeat")) {
+            auto rep = value["repeat"].as_object();
+            auto opts = RepeatOptions();
+            opts.enabled = rep["enabled"].as_bool();
+            opts.rate = rep["rate"].as_int();
+            opts.delay = rep["delay"].as_int();
+            this->setRepeatOptionsFor(action, opts);
+        }
+        return true;
+    }
+    catch(...) {
+        return false;
+    }
+}
+
+void BindManager::saveActionBinds(ActionID const& action) {
+    auto obj = json::Object();
+    auto binds = json::Array();
+    for (auto& bind : this->getBindsFor(action)) {
+        binds.push_back(this->getBindSaveString(bind));
+    }
+    for (auto& [device, actions] : m_devicelessBinds) {
+        if (actions.contains(action)) {
+            for (auto& bind : actions.at(action)) {
+                binds.push_back(device + ":" + bind);
+            }
+        }
+    }
+    obj["binds"] = binds;
+    if (auto opts = this->getRepeatOptionsFor(action)) {
+        auto rep = json::Object();
+        rep["enabled"] = opts.value().enabled;
+        rep["rate"] = opts.value().rate;
+        rep["delay"] = opts.value().delay;
+        obj["repeat"] = rep;
+    }
 }
 
 bool BindManager::registerBindable(BindableAction const& action, ActionID const& after) {
@@ -382,16 +510,7 @@ bool BindManager::registerBindable(BindableAction const& action, ActionID const&
         });
     }
     this->addCategory(action.getCategory());
-    if (Mod::get()->hasSavedValue(action.getID())) {
-        auto saved = Mod::get()->template getSavedValue<BindSaveData>(action.getID());
-        for (auto& b : saved.binds) {
-            this->addBindTo(action.getID(), b);
-        }
-        if (saved.repeat) {
-            this->setRepeatOptionsFor(action.getID(), saved.repeat.value());
-        }
-    }
-    else {
+    if (!this->loadActionBinds(action.getID())) {
         for (auto& def : action.getDefaults()) {
             this->addBindTo(action.getID(), def);
         }
@@ -422,7 +541,7 @@ std::vector<BindableAction> BindManager::getAllBindables() const {
     return res;
 }
 
-std::vector<BindableAction> BindManager::getBindables(Category const& category, bool sub) const {
+std::vector<BindableAction> BindManager::getBindablesIn(Category const& category, bool sub) const {
     std::vector<BindableAction> res;
     for (auto& [_, action] : m_actions) {
         if (sub ?
@@ -430,6 +549,18 @@ std::vector<BindableAction> BindManager::getBindables(Category const& category, 
             (action.definition.getCategory() == category)
         ) {
             res.push_back(action.definition);
+        }
+    }
+    return res;
+}
+
+std::vector<BindableAction> BindManager::getBindablesFor(Bind* bind) const {
+    std::vector<BindableAction> res {};
+    if (m_binds.count(bind)) {
+        for (auto& bindable : m_binds.at(bind)) {
+            if (auto action = this->getBindable(bindable)) {
+                res.push_back(action.value());
+            }
         }
     }
     return res;
@@ -463,7 +594,7 @@ void BindManager::addCategory(Category const& category) {
 
 void BindManager::removeCategory(Category const& category) {
     this->stopAllRepeats();
-    for (auto& bindable : this->getBindables(category, true)) {
+    for (auto& bindable : this->getBindablesIn(category, true)) {
         this->removeBindable(bindable.getID());
     }
     ranges::remove(m_categories, [&](auto const& cat) { return cat.hasParent(category); });
@@ -597,8 +728,12 @@ void BindManager::onRepeat(float dt) {
     }
 }
 
-$on_mod(DataSaved) {
+void BindManager::save() {
     for (auto& bindable : BindManager::get()->getAllBindables()) {
-        Mod::get()->setSavedValue(bindable.getID(), BindSaveData::from(bindable.getID()));
+        BindManager::get()->saveActionBinds(bindable.getID());
     }
+}
+
+$on_mod(DataSaved) {
+    BindManager::get()->save();
 }

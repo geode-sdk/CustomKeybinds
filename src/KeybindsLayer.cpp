@@ -144,13 +144,9 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
 
         setBtn->setPositionX(-40.f);
 
-        auto originalLabel = CCLabelBMFont::create(
-            fmt::format("Previous: {}", original->toString()).c_str(),
-            "bigFont.fnt"
-        );
+        auto originalLabel = original->createBindSprite();
         originalLabel->setScale(.4f);
         originalLabel->setPosition(m_obContentSize/ 2 - ccp(0, 45.f));
-        originalLabel->setColor({ 51, 255, 112 });
         m_mainLayer->addChild(originalLabel);
     }
 
@@ -374,7 +370,7 @@ void BindableNode::updateMenu(bool updateLayer) {
     size_t i = 0;
     float length = 0.f;
     for (auto& bind : binds) {
-        auto spr = createBindBtn(bind->toString().c_str());
+        auto spr = bind->createBindSprite();
         length += spr->getScaledContentSize().width;
         if (length > m_obContentSize.width / 2) {
             if (!m_expand) break;
@@ -557,7 +553,7 @@ bool KeybindsLayer::setup() {
             }
             offset += 1;
         }
-        for (auto& action : BindManager::get()->getBindables(category)) {
+        for (auto& action : BindManager::get()->getBindablesIn(category)) {
             auto node = BindableNode::create(this, action, scrollSize.width, bgColor ^= 1);
             target->addChild(node);
             m_nodes.push_back(node);

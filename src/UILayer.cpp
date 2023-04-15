@@ -64,7 +64,7 @@ $execute {
         "robtop.geometry-dash/jump-p1",
         "Jump P1",
         "Player 1 Jump",
-        { Keybind::create(KEY_Space, Modifier::None) },
+        { Keybind::create(KEY_Space, Modifier::None), ControllerBind::create(CONTROLLER_A) },
         Category::PLAY,
         false
     });
@@ -72,7 +72,7 @@ $execute {
         "robtop.geometry-dash/jump-p2",
         "Jump P2",
         "Player 2 Jump",
-        { Keybind::create(KEY_Up, Modifier::None) },
+        { Keybind::create(KEY_Up, Modifier::None), ControllerBind::create(CONTROLLER_B) },
         Category::PLAY,
         false
     });
