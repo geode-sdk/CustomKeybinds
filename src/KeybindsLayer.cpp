@@ -9,6 +9,7 @@
 static ButtonSprite* createBindBtn(CCSprite* top) {
     auto spr = ButtonSprite::create(top, 18, true, 0, "square.png"_spr, 2.f);
     spr->m_subBGSprite->setOpacity(85);
+    spr->m_subBGSprite->setColor({ 0, 0, 0 });
     spr->m_subSprite->setScale(1.f);
     spr->m_subSprite->setPosition(spr->getContentSize() / 2);
     spr->setScale(.45f);
@@ -18,6 +19,7 @@ static ButtonSprite* createBindBtn(CCSprite* top) {
 static ButtonSprite* createBindBtn(const char* text) {
     auto spr = ButtonSprite::create(text, "goldFont.fnt", "square.png"_spr, .8f);
     spr->m_BGSprite->setOpacity(85);
+    spr->m_BGSprite->setColor({ 0, 0, 0 });
     spr->setScale(.6f);
     return spr;
 }
@@ -121,13 +123,18 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
     subTitle->limitLabelWidth(m_size.width - 40.0f, .5f, .1f);
     m_mainLayer->addChild(subTitle);
 
-    auto winSize = CCDirector::get()->getWinSize();
-
     auto label = CCLabelBMFont::create("Press Keys...", "bigFont.fnt");
     label->setOpacity(155);
-    label->setPosition(winSize / 2);
+    label->setPosition(m_obContentSize / 2 + ccp(0.f, 10.f));
     label->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
     m_mainLayer->addChild(m_label = label);
+
+    m_usedByLabel = CCLabelBMFont::create("", "bigFont.fnt");
+    m_usedByLabel->setPosition(m_obContentSize / 2 + ccp(0.f, -20.f));
+    m_usedByLabel->setColor({ 243, 78, 37 });
+    m_mainLayer->addChild(m_usedByLabel);
+
+    this->updateUsedBy();
 
     auto setSpr = ButtonSprite::create(original ? "Set" : "Add", "bigFont.fnt", "GJ_button_01.png", .8f);
     setSpr->setScale(.6f);
@@ -155,6 +162,28 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
     }
 
     return true;
+}
+
+void EnterBindLayer::updateUsedBy() {
+    std::string list = "Used by ";
+    bool first = true;
+    for (auto& action : BindManager::get()->getBindablesFor(m_bind ? m_bind : m_original)) {
+        if (action.getID() == m_node->getAction().getID()) {
+            continue;
+        }
+        if (!first) {
+            list += ", ";
+        }
+        first = false;
+        list += action.getName();
+    }
+    if (!first) {
+        m_usedByLabel->setString(list.c_str());
+        m_usedByLabel->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
+    }
+    else {
+        m_usedByLabel->setString("");
+    }
 }
 
 void EnterBindLayer::onSet(CCObject*) {
@@ -190,6 +219,7 @@ ListenerResult EnterBindLayer::onPressed(PressBindEvent* event) {
         old->getParent()->addChild(m_label);
         old->removeFromParent();
         m_bind = event->getBind();
+        this->updateUsedBy();
     }
     return ListenerResult::Stop;
 }
@@ -382,6 +412,9 @@ void BindableNode::updateMenu(bool updateLayer) {
     float length = 0.f;
     for (auto& bind : binds) {
         auto spr = bind->createBindSprite();
+        if (BindManager::get()->getBindablesFor(bind).size() > 1) {
+            spr->setColor({ 174, 43, 43 });
+        }
         length += spr->getScaledContentSize().width;
         if (length > m_obContentSize.width / 2) {
             if (!m_expand) break;

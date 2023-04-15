@@ -38,8 +38,10 @@ class $modify(CCKeyboardDispatcher) {
 				if (m_bShiftPressed) {
 					modifiers |= Modifier::Shift;
 				}
-				if (PressBindEvent(Keybind::create(key, modifiers), down).post() == ListenerResult::Stop) {
-					return true;
+				if (auto bind = Keybind::create(key, modifiers)) {
+					if (PressBindEvent(bind, down).post() == ListenerResult::Stop) {
+						return true;
+					}
 				}
 			}
 			// dispatch release events for Modifier + Key combos

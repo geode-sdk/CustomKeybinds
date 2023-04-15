@@ -58,9 +58,10 @@ CCNode* Bind::createLabel() const {
     return CCLabelBMFont::create(this->toString().c_str(), "goldFont.fnt");
 }
 
-CCNode* Bind::createBindSprite() const {
+CCNodeRGBA* Bind::createBindSprite() const {
     auto bg = CCScale9Sprite::create("square.png"_spr);
     bg->setOpacity(85);
+    bg->setColor({ 0, 0, 0 });
     bg->setScale(.45f);
 
     auto top = this->createLabel();

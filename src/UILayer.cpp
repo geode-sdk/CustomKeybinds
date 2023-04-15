@@ -1,5 +1,6 @@
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
+#include <Geode/binding/PlayLayer.hpp>
 #include "../include/Keybinds.hpp"
 
 using namespace geode::prelude;

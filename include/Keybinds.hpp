@@ -51,7 +51,7 @@ namespace keybinds {
 
         virtual ~Bind() = default;
 
-        cocos2d::CCNode* createBindSprite() const;
+        cocos2d::CCNodeRGBA* createBindSprite() const;
     };
 
     enum class Modifier : unsigned int {

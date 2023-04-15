@@ -50,9 +50,11 @@ protected:
     CCNode* m_label;
     Ref<Bind> m_bind;
     Ref<Bind> m_original;
+    CCLabelBMFont* m_usedByLabel;
     EventListener<PressBindFilter> m_listener = { this, &EnterBindLayer::onPressed };
 
     bool setup(BindableNode* node, Bind* modify);
+    void updateUsedBy();
     void onSet(CCObject*);
     void onRemove(CCObject*);
     ListenerResult onPressed(PressBindEvent* event);
