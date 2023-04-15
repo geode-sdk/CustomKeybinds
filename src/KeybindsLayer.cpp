@@ -1,6 +1,10 @@
 #include "KeybindsLayer.hpp"
 #define FTS_FUZZY_MATCH_IMPLEMENTATION
 #include <Geode/external/fts/fts_fuzzy_match.h>
+#include <Geode/binding/ButtonSprite.hpp>
+#include <Geode/binding/CCMenuItemToggler.hpp>
+#include <Geode/ui/General.hpp>
+#include <Geode/ui/Scrollbar.hpp>
 
 static ButtonSprite* createBindBtn(CCSprite* top) {
     auto spr = ButtonSprite::create(top, 18, true, 0, "square.png"_spr, 2.f);
@@ -119,11 +123,11 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
 
     auto winSize = CCDirector::get()->getWinSize();
 
-    m_label = CCLabelBMFont::create("Press Keys...", "bigFont.fnt");
-    m_label->setOpacity(155);
-    m_label->setPosition(winSize / 2);
-    m_label->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
-    m_mainLayer->addChild(m_label);
+    auto label = CCLabelBMFont::create("Press Keys...", "bigFont.fnt");
+    label->setOpacity(155);
+    label->setPosition(winSize / 2);
+    label->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
+    m_mainLayer->addChild(m_label = label);
 
     auto setSpr = ButtonSprite::create(original ? "Set" : "Add", "bigFont.fnt", "GJ_button_01.png", .8f);
     setSpr->setScale(.6f);
@@ -175,9 +179,16 @@ void EnterBindLayer::onRemove(CCObject*) {
 
 ListenerResult EnterBindLayer::onPressed(PressBindEvent* event) {
     if (event->isDown()) {
-        m_label->setString(event->getBind()->toString().c_str());
-        m_label->setOpacity(255);
-        m_label->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
+        auto old = m_label;
+        m_label = event->getBind()->createLabel();
+        limitNodeSize(
+            m_label,
+            { m_size.width - 50.f, m_size.height - 100.f },
+            1.f, .1f
+        );
+        m_label->setPosition(old->getPosition());
+        old->getParent()->addChild(m_label);
+        old->removeFromParent();
         m_bind = event->getBind();
     }
     return ListenerResult::Stop;
@@ -687,6 +698,10 @@ void KeybindsLayer::onResetAll(CCObject*) {
 
 void KeybindsLayer::deselectSearchInput() {
     m_searchInput->getInput()->onClickTrackNode(false);
+}
+
+void KeybindsLayer::onDevice(DeviceEvent*) {
+    this->updateAllBinds();
 }
 
 KeybindsLayer* KeybindsLayer::create() {

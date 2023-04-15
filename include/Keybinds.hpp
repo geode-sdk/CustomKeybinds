@@ -25,14 +25,6 @@ namespace keybinds {
 
     using DeviceID = std::string;
 
-    class CUSTOM_KEYBINDS_DLL Device {
-    public:
-        virtual DeviceID getID() const = 0;
-        virtual Bind* loadBind(std::string const& data) = 0;
-        virtual std::string saveBind(Bind* bind) = 0;
-        virtual ~Device();
-    };
-
     /**
      * Base class for implementing bindings for different input devices
      */
@@ -50,11 +42,13 @@ namespace keybinds {
          */
         virtual bool isEqual(Bind* other) const;
         /**
-         * Get the bind's representation as a string
+         * Get the bind's representation as a human-readable string
          */
         virtual std::string toString() const = 0;
         virtual cocos2d::CCNode* createLabel() const;
         virtual DeviceID getDeviceID() const = 0;
+        virtual json::Value save() const = 0;
+
         virtual ~Bind() = default;
 
         cocos2d::CCNode* createBindSprite() const;
@@ -82,6 +76,7 @@ namespace keybinds {
 
     public:
         static Keybind* create(cocos2d::enumKeyCodes key, Modifier modifiers = Modifier::None);
+        static Keybind* parse(json::Value const&);
 
         cocos2d::enumKeyCodes getKey() const;
         Modifier getModifiers() const;
@@ -90,6 +85,7 @@ namespace keybinds {
         bool isEqual(Bind* other) const override;
         std::string toString() const override;
         DeviceID getDeviceID() const override;
+        json::Value save() const override;
     };
 
     class CUSTOM_KEYBINDS_DLL ControllerBind final : public Bind {
@@ -98,6 +94,7 @@ namespace keybinds {
     
     public:
         static ControllerBind* create(cocos2d::enumKeyCodes button);
+        static ControllerBind* parse(json::Value const&);
 
         cocos2d::enumKeyCodes getButton() const;
 
@@ -106,6 +103,7 @@ namespace keybinds {
         std::string toString() const override;
         cocos2d::CCNode* createLabel() const override;
         DeviceID getDeviceID() const override;
+        json::Value save() const override;
     };
 
     struct CUSTOM_KEYBINDS_DLL BindHash {
@@ -116,7 +114,7 @@ namespace keybinds {
 }
 
 namespace std {
-    template<>
+    template <>
     struct hash<keybinds::BindHash> {
         CUSTOM_KEYBINDS_DLL std::size_t operator()(keybinds::BindHash const&) const;
     };
@@ -225,16 +223,41 @@ namespace keybinds {
         PressBindFilter();
     };
 
+    class CUSTOM_KEYBINDS_DLL DeviceEvent : public geode::Event {
+    protected:
+        DeviceID m_id;
+        bool m_attached;
+    
+    public:
+        DeviceEvent(DeviceID const& id, bool attached);
+        DeviceID getID() const;
+        bool wasAttached() const;
+        bool wasDetached() const;
+    };
+
+    class CUSTOM_KEYBINDS_DLL DeviceFilter : public geode::EventFilter<DeviceEvent> {
+    protected:
+        std::optional<DeviceID> m_id;
+
+    public:
+        using Callback = void(DeviceEvent*);
+
+        geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, DeviceEvent* event);
+        DeviceFilter(std::optional<DeviceID> id = std::nullopt);
+    };
+
     struct CUSTOM_KEYBINDS_DLL RepeatOptions {
         bool enabled = true;
         size_t rate = 300;
         size_t delay = 500;
     };
     
+    using BindParser = std::function<Bind*(json::Value const&)>;
+
     class CUSTOM_KEYBINDS_DLL BindManager : public cocos2d::CCObject {
     // has to inherit from CCObject for scheduler
     public:
-        using DevicelessActions = std::unordered_map<ActionID, std::vector<std::string>>;
+        using DevicelessActions = std::unordered_map<ActionID, std::set<json::Value>>;
 
     protected:
         struct ActionData {
@@ -244,7 +267,7 @@ namespace keybinds {
         
         std::unordered_map<BindHash, std::vector<ActionID>> m_binds;
         std::unordered_map<DeviceID, DevicelessActions> m_devicelessBinds;
-        std::unordered_map<DeviceID, Device*> m_devices;
+        std::unordered_map<DeviceID, BindParser> m_devices;
         std::vector<std::pair<ActionID, ActionData>> m_actions;
         std::vector<Category> m_categories;
         geode::EventListener<PressBindFilter> m_listener =
@@ -260,7 +283,6 @@ namespace keybinds {
 
         bool loadActionBinds(ActionID const& action);
         void saveActionBinds(ActionID const& action);
-        std::pair<DeviceID, std::string> parseBindSave(std::string const& str) const;
 
         friend class InvokeBindFilter;
         friend struct json::Serialize<BindSaveData>;
@@ -269,11 +291,11 @@ namespace keybinds {
         static BindManager* get();
         void save();
 
-        void attachDevice(Device* device);
-        void detachDevice(Device* device);
+        void attachDevice(DeviceID const& device, BindParser parser);
+        void detachDevice(DeviceID const& device);
 
-        std::string getBindSaveString(Bind* bind) const;
-        Bind* loadBindFromSaveString(std::string const& str) const;
+        json::Value saveBind(Bind* bind) const;
+        Bind* loadBind(json::Value const& json) const;
 
         bool registerBindable(BindableAction const& action, ActionID const& after = "");
         void removeBindable(ActionID const& action);

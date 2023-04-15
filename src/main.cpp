@@ -1,5 +1,7 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
+#include <Geode/binding/AppDelegate.hpp>
+#include <Geode/ui/Notification.hpp>
 #include "../include/Keybinds.hpp"
 #include "KeybindsLayer.hpp"
 
@@ -71,3 +73,43 @@ class $modify(MoreOptionsLayer) {
 		KeybindsLayer::create()->show();
 	}
 };
+
+class ControllerChecker : public CCObject {
+protected:
+	bool m_cached = false;
+
+public:
+	void checkController(float) {
+		if (m_cached != AppDelegate::get()->getControllerConnected()) {
+			m_cached = AppDelegate::get()->getControllerConnected();
+			if (m_cached) {
+				BindManager::get()->attachDevice("controller"_spr, &ControllerBind::parse);
+				Notification::create(
+					"Controller Attached",
+					CCSprite::createWithSpriteFrameName("controllerBtn_A_001.png")
+				)->show();
+			}
+			else {
+				BindManager::get()->detachDevice("controller"_spr);
+				Notification::create(
+					"Controller Detached",
+					CCSprite::createWithSpriteFrameName("controllerBtn_B_001.png")
+				)->show();
+			}
+		}
+	}
+
+	ControllerChecker() {
+		this->retain();
+	}
+};
+
+$execute {
+	// check every second if a controller has been connected
+	Loader::get()->queueInGDThread([] {
+		CCScheduler::get()->scheduleSelector(
+			schedule_selector(ControllerChecker::checkController),
+			new ControllerChecker(), 1.f, false
+		);
+	});
+}

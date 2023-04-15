@@ -1,71 +1,12 @@
 #include "../include/Keybinds.hpp"
 #include <Geode/utils/ranges.hpp>
 #include <Geode/utils/string.hpp>
+#include <Geode/loader/ModEvent.hpp>
+#include <Geode/loader/Log.hpp>
+#include <GUI/CCControlExtension/CCScale9Sprite.h>
 
 using namespace geode::prelude;
 using namespace keybinds;
-
-Device::~Device() {
-    BindManager::get()->detachDevice(this);
-}
-
-class KeyboardDevice final : public Device {
-public:
-    std::string getID() const override {
-        return "keyboard"_spr;
-    }
-
-    Bind* loadBind(std::string const& data) override {
-        int mods, key;
-        std::stringstream ss(data);
-        ss >> mods;
-        if (ss.get() != '|') {
-            return nullptr;
-        }
-        ss >> key;
-        if (ss.fail()) {
-            return nullptr;
-        }
-        return Keybind::create(static_cast<enumKeyCodes>(key), static_cast<Modifier>(mods));
-    }
-
-    std::string saveBind(Bind* bind) override {
-        auto key = static_cast<Keybind*>(bind);
-        return std::to_string(static_cast<int>(key->getModifiers())) + "|" +
-            std::to_string(key->getKey());
-    }
-
-    static KeyboardDevice* get() {
-        static auto inst = new KeyboardDevice();
-        return inst;
-    }
-};
-
-class ControllerDevice final : public Device {
-public:
-    std::string getID() const override {
-        return "controller"_spr;
-    }
-
-    Bind* loadBind(std::string const& data) override {
-        int key;
-        std::stringstream ss(data);
-        ss >> key;
-        if (ss.fail()) {
-            return nullptr;
-        }
-        return ControllerBind::create(static_cast<enumKeyCodes>(key));
-    }
-
-    std::string saveBind(Bind* bind) override {
-        return std::to_string(static_cast<ControllerBind*>(bind)->getButton());
-    }
-
-    static ControllerDevice* get() {
-        static auto inst = new ControllerDevice();
-        return inst;
-    }
-};
 
 Modifier keybinds::operator|=(Modifier& a, Modifier const& b) {
     return static_cast<Modifier>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
@@ -146,6 +87,20 @@ Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
     return ret;
 }
 
+Keybind* Keybind::parse(json::Value const& value) {
+    return Keybind::create(
+        static_cast<enumKeyCodes>(value["key"].as_int()),
+        static_cast<Modifier>(value["modifiers"].as_int())
+    );
+}
+
+json::Value Keybind::save() const {
+    return json::Object {
+        { "key", static_cast<int>(m_key) },
+        { "modifiers", static_cast<int>(m_modifiers) }
+    };
+}
+
 enumKeyCodes Keybind::getKey() const {
     return m_key;
 }
@@ -195,6 +150,18 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
     ret->m_button = button;
     ret->autorelease();
     return ret;
+}
+
+ControllerBind* ControllerBind::parse(json::Value const& value) {
+    return ControllerBind::create(
+        static_cast<enumKeyCodes>(value["button"].as_double())
+    );
+}
+
+json::Value ControllerBind::save() const {
+    return json::Object {
+        { "button", static_cast<int>(m_button) },
+    };
 }
 
 enumKeyCodes ControllerBind::getButton() const {
@@ -358,17 +325,41 @@ bool PressBindEvent::isDown() const {
     return m_down;
 }
 
-geode::ListenerResult PressBindFilter::handle(geode::utils::MiniFunction<Callback> fn, PressBindEvent* event) {
+geode::ListenerResult PressBindFilter::handle(MiniFunction<Callback> fn, PressBindEvent* event) {
     return fn(event);
 }
 
 PressBindFilter::PressBindFilter() {}
 
+DeviceEvent::DeviceEvent(DeviceID const& id, bool attached)
+  : m_id(id), m_attached(attached) {}
+
+DeviceID DeviceEvent::getID() const {
+    return m_id;
+}
+
+bool DeviceEvent::wasAttached() const {
+    return m_attached;
+}
+
+bool DeviceEvent::wasDetached() const {
+    return !m_attached;
+}
+
+ListenerResult DeviceFilter::handle(MiniFunction<Callback> fn, DeviceEvent* event) {
+    if (!m_id || m_id == event->getID()) {
+        fn(event);
+    }
+    return ListenerResult::Propagate;
+}
+
+DeviceFilter::DeviceFilter(std::optional<DeviceID> id) : m_id(id) {}
+
 BindManager::BindManager() {
     this->addCategory(Category::GLOBAL);
     this->addCategory(Category::PLAY);
     this->addCategory(Category::EDITOR);
-    this->attachDevice(KeyboardDevice::get());
+    this->attachDevice("keyboard"_spr, &Keybind::parse);
     this->retain();
 }
 
@@ -377,58 +368,69 @@ BindManager* BindManager::get() {
     return inst;
 }
 
-void BindManager::attachDevice(Device* device) {
-    this->detachDevice(device);
-    m_devices.insert({ device->getID(), device });
-    for (auto& [id, actions] : m_devicelessBinds) {
-        if (id != device->getID()) {
-            continue;
-        }
-        for (auto& [action, binds] : actions) {
-            for (auto& data : binds) {
-                if (auto nbind = device->loadBind(data)) {
+void BindManager::attachDevice(DeviceID const& device, BindParser parser) {
+    if (m_devices.contains(device)) return;
+    m_devices.insert({ device, parser });
+    for (auto& [action, binds] : m_devicelessBinds[device]) {
+        for (auto& data : binds) {
+            // parser may fail
+            try {
+                if (auto nbind = parser(data)) {
                     this->addBindTo(action, nbind);
                 }
             }
-            binds.clear();
+            catch(...) {}
         }
     }
+    m_devicelessBinds.erase(device);
+    DeviceEvent(device, true).post();
 }
 
-void BindManager::detachDevice(Device* device) {
+void BindManager::detachDevice(DeviceID const& device) {
+    // Remove all binds related to this device from actions
+    // The purpose of this is so they don't show up in the UI and can't be 
+    // modified, since the attached device isn't inserted so modifying them 
+    // wouldn't be possible anyway and they shouldn't get accidentally reset 
+    // if other binds are reset
     for (auto& [bind, actions] : m_binds) {
-        if (bind.bind->getDeviceID() == device->getID()) {
-            for (auto& action : actions) {
-                m_devicelessBinds[device->getID()][action].push_back(device->saveBind(bind.bind));
-                this->removeBindFrom(action, bind.bind);
+        if (bind.bind->getDeviceID() != device) {
+            continue;
+        }
+        for (auto& action : actions) {
+            // Bind::save may fail
+            try {
+                m_devicelessBinds[device][action].insert(this->saveBind(bind.bind));
             }
+            catch(...) {}
+            this->removeBindFrom(action, bind.bind);
         }
     }
-    m_devices.erase(device->getID());
+    m_devices.erase(device);
+    DeviceEvent(device, false).post();
 }
 
-std::string BindManager::getBindSaveString(Bind* bind) const {
-    auto dev = bind->getDeviceID();
-    if (m_devices.contains(dev)) {
-        return dev + ":" + m_devices.at(dev)->saveBind(bind);
+json::Value BindManager::saveBind(Bind* bind) const {
+    try {
+        auto json = bind->save();
+        json["device"] = bind->getDeviceID();
+        return json;
     }
-    return "";
-}
-
-std::pair<DeviceID, std::string> BindManager::parseBindSave(std::string const& str) const {
-    auto off = str.find_first_of(':');
-    if (off == std::string::npos) {
-        return { "", "" };
+    catch(...) {
+        return {};
     }
-    return { str.substr(0, off), str.substr(off + 1) };
 }
 
-Bind* BindManager::loadBindFromSaveString(std::string const& data) const {
-    auto [id, sdata] = this->parseBindSave(data);
-    if (!m_devices.contains(id)) {
+Bind* BindManager::loadBind(json::Value const& json) const {
+    try {
+        auto device = json["device"].as_string();
+        if (!m_devices.contains(device)) {
+            return nullptr;
+        }
+        return m_devices.at(device)(json);
+    }
+    catch(...) {
         return nullptr;
     }
-    return m_devices.at(id)->loadBind(sdata);
 }
 
 bool BindManager::loadActionBinds(ActionID const& action) {
@@ -437,24 +439,25 @@ bool BindManager::loadActionBinds(ActionID const& action) {
         for (auto bind : value["binds"].as_array()) {
             // try directly parsing the bind from a string if the device it's for 
             // is already connected
-            if (auto b = BindManager::get()->loadBindFromSaveString(bind.as_string())) {
+            if (auto b = this->loadBind(bind)) {
                 this->addBindTo(action, b);
             }
             // otherwise save the bind's data for until the device is connected 
             // or the game is closed
             else {
-                // get the device ID and bind save data from the raw string
-                auto [id, data] = this->parseBindSave(bind.as_string());
-                // if device ID has a size, then add this to the list of unbound 
+                // if device ID exists, then add this to the list of unbound 
                 // binds
-                if (id.size()) {
-                    m_devicelessBinds[id][action].push_back(data);
+                if (bind.contains("device")) {
+                    try {
+                        m_devicelessBinds[bind["device"].as_string()][action].insert(bind);
+                    }
+                    catch(...) {}
                 }
                 // otherwise invalid bind save data
             }
         }
         // load repeat options
-        if (value.count("repeat")) {
+        if (value.contains("repeat")) {
             auto rep = value["repeat"].as_object();
             auto opts = RepeatOptions();
             opts.enabled = rep["enabled"].as_bool();
@@ -473,12 +476,12 @@ void BindManager::saveActionBinds(ActionID const& action) {
     auto obj = json::Object();
     auto binds = json::Array();
     for (auto& bind : this->getBindsFor(action)) {
-        binds.push_back(this->getBindSaveString(bind));
+        binds.push_back(this->saveBind(bind));
     }
     for (auto& [device, actions] : m_devicelessBinds) {
         if (actions.contains(action)) {
             for (auto& bind : actions.at(action)) {
-                binds.push_back(device + ":" + bind);
+                binds.push_back(bind);
             }
         }
     }
@@ -490,6 +493,7 @@ void BindManager::saveActionBinds(ActionID const& action) {
         rep["delay"] = opts.value().delay;
         obj["repeat"] = rep;
     }
+    Mod::get()->setSavedValue(action, obj);
 }
 
 bool BindManager::registerBindable(BindableAction const& action, ActionID const& after) {
@@ -602,7 +606,12 @@ void BindManager::removeCategory(Category const& category) {
 
 void BindManager::addBindTo(ActionID const& action, Bind* bind) {
     this->stopAllRepeats();
-    m_binds[bind].push_back(action);
+    if (m_devices.contains(bind->getDeviceID())) {
+        m_binds[bind].push_back(action);
+    }
+    else {
+        m_devicelessBinds[bind->getDeviceID()][action].insert(this->saveBind(bind));
+    }
 }
 
 void BindManager::removeBindFrom(ActionID const& action, Bind* bind) {
@@ -644,6 +653,9 @@ bool BindManager::hasDefaultBinds(ActionID const& action) const {
     if (auto bindable = this->getBindable(action)) {
         auto binds = this->getBindsFor(action);
         auto defs = bindable->getDefaults();
+        ranges::remove(defs, [=](auto const& def) {
+            return !m_devices.contains(def->getDeviceID());
+        });
         if (binds.size() == defs.size()) {
             for (size_t i = 0; i < binds.size(); i++) {
                 if (!binds.at(i)->isEqual(defs.at(i))) {
