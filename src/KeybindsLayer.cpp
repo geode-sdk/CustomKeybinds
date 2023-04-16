@@ -514,8 +514,10 @@ void BindableNode::onInfo(CCObject*) {
     FLAlertLayer::create(
         m_action.getName().c_str(),
         fmt::format(
-            "{}\n\nAdded by <cp>{}</c>",
-            m_action.getDescription(), m_action.getMod()->getID()
+            "{}\n\nID: <cb>{}</c>\nAdded by <cp>{}</c>",
+            m_action.getDescription(),
+            m_action.getID(),
+            m_action.getMod()->getID()
         ),
         "OK"
     )->show();
