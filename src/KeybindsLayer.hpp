@@ -68,7 +68,7 @@ protected:
     Ref<BindableNode> m_node;
     RepeatOptions m_options;
 
-    bool setup(BindableNode* node);
+    bool setup(BindableNode* node) override;
 
     void onEnabled(CCObject*);
     void textChanged(CCTextInputNode*) override;

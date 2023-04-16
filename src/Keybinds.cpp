@@ -185,7 +185,7 @@ std::string ControllerBind::toString() const {
 }
 
 CCNode* ControllerBind::createLabel() const {
-    const char* sprite = nullptr;
+    const char* sprite;
     switch (m_button) {
         case CONTROLLER_A: sprite = "controllerBtn_A_001.png"; break;
         case CONTROLLER_B: sprite = "controllerBtn_B_001.png"; break;
@@ -202,6 +202,7 @@ CCNode* ControllerBind::createLabel() const {
         // todo: are these the same
         case CONTROLLER_LB: sprite = "controllerBtn_LThumb_001.png"; break;
         case CONTROLLER_RB: sprite = "controllerBtn_RThumb_001.png"; break;
+        default: sprite = nullptr;
     }
     if (!sprite) {
         return CCLabelBMFont::create("Unk", "goldFont.fnt");
