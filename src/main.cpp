@@ -61,7 +61,8 @@ class $modify(CCKeyboardDispatcher) {
 				}
 				for (auto& held : s_held) {
 					if (PressBindEvent(Keybind::create(held, modifiers), down).post() == ListenerResult::Stop) {
-						return true;
+						// we want to pass modifiers onwards to the original
+						break;
 					}
 				}
 			}
