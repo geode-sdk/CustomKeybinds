@@ -375,15 +375,13 @@ bool BindableNode::init(
         nameLabel->setPositionY(height / 2 + 5.5f);
     }
 
-    if (action.getDescription().size()) {
-        auto infoSpr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-        infoSpr->setScale(.55f);
-        auto infoBtn = CCMenuItemSpriteExtra::create(
-            infoSpr, this, menu_selector(BindableNode::onInfo)
-        );
-        infoBtn->setPosition(nameLabel->boundingBox().getMaxX() + 15.f, height / 2);
-        m_nameMenu->addChild(infoBtn);
-    }
+    auto infoSpr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+    infoSpr->setScale(.55f);
+    auto infoBtn = CCMenuItemSpriteExtra::create(
+        infoSpr, this, menu_selector(BindableNode::onInfo)
+    );
+    infoBtn->setPosition(nameLabel->boundingBox().getMaxX() + 15.f, height / 2);
+    m_nameMenu->addChild(infoBtn);
 
     this->addChild(m_nameMenu);
 
@@ -515,11 +513,14 @@ void BindableNode::onInfo(CCObject*) {
         m_action.getName().c_str(),
         fmt::format(
             "{}\n\nID: <cb>{}</c>\nAdded by <cp>{}</c>",
-            m_action.getDescription(),
+            (m_action.getDescription().empty() ?
+                "No Description Provided" :
+                m_action.getDescription()
+            ),
             m_action.getID(),
             m_action.getMod()->getID()
         ),
-        "OK"
+        "OK" 
     )->show();
 }
 
