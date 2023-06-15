@@ -63,6 +63,19 @@ bool MyLayer::init() {
 
 Adding keybinds to the editor / `PlayLayer` is the same - just add the keybind to the Editor / Play categories, and hook `EditorUI::init` or `UILayer::init` to handle the callback. You can also pass the ID of an existing action to `BindManager::registerBindable` to place the bind after, if you for example add a new build category and would like it after the `Delete Mode` bind.
 
+## Global keybinds
+
+You can listen for global keybinds via an `$execute` block:
+
+```cpp
+$execute {
+    new EventListener([=](InvokeBindEvent* event) {
+    	// do stuff
+	return ListenerResult::Propagate;
+    }, InvokeBindFilter(nullptr, "event-id"));
+}
+```
+
 ## Programmatically triggering binds
 
 You can invoke a bind by creating and posting an `InvokeBindEvent`:
