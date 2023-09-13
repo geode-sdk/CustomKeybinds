@@ -35,33 +35,41 @@ struct $modify(UILayer) {
         (void)self.setHookPriority("UILayer::keyUp", 1000);
     }
 
+    static inline int platformButton() {
+        #ifdef GEODE_IS_MACOS
+            return 1;
+        #else
+            return 0;
+        #endif
+    }
+
     bool init() {
         if (!UILayer::init())
             return false;
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             if (down) {
-                PlayLayer::get()->pushButton(0, true);
+                PlayLayer::get()->pushButton(platformButton(), true);
             }
             else {
-                PlayLayer::get()->releaseButton(0, true);
+                PlayLayer::get()->releaseButton(platformButton(), true);
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
             if (down) {
-                PlayLayer::get()->pushButton(0, false);
+                PlayLayer::get()->pushButton(platformButton(), false);
             }
             else {
-                PlayLayer::get()->releaseButton(0, false);
+                PlayLayer::get()->releaseButton(platformButton(), false);
             }
         });
         this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
-            if (down && PlayLayer::get()->m_isPracticeMode) {
+            if (down && PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
                 this->onCheck(nullptr);
             }
         });
         this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
-            if (down && PlayLayer::get()->m_isPracticeMode) {
+            if (down && PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
                 this->onDeleteCheck(nullptr);
             }
         });
