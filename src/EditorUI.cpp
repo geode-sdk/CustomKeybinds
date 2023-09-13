@@ -118,10 +118,10 @@ struct $modify(EditorUI) {
             this->onGroupDown(nullptr);
         });
         this->defineKeybind("robtop.geometry-dash/scroll-up", [=] {
-            this->moveGameLayer({ .0f, 10.f });
+            this->moveGamelayer({ .0f, 10.f });
         });
         this->defineKeybind("robtop.geometry-dash/scroll-down", [=] {
-            this->moveGameLayer({ .0f, -10.f });
+            this->moveGamelayer({ .0f, -10.f });
         });
         this->defineKeybind("robtop.geometry-dash/zoom-in", [=] {
             this->zoomIn(nullptr);
