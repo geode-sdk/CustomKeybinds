@@ -64,7 +64,7 @@ struct $modify(UILayer) {
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             // todo: event priority
-            if (!PlayLayer::get()->m_isPaused) {
+            if (PlayLayer::get() && !PlayLayer::get()->m_isPaused) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), true);
                 }
@@ -74,7 +74,7 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (!PlayLayer::get()->m_isPaused) {
+            if (PlayLayer::get() && !PlayLayer::get()->m_isPaused) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), false);
                 }
