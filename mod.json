@@ -1,7 +1,7 @@
 {
 	"geode": "1.3.0",
 	"version": "v1.1.0",
-	"id": "hjfod.custom-keybinds",
+	"id": "geode.custom-keybinds",
 	"name": "Custom Keybinds",
 	"developer": "Geode Team",
 	"description": "Custom keybinds support for Geode",
@@ -15,5 +15,12 @@
 			"include/*.hpp"
 		]
 	},
-	"dependencies": []
+	"dependencies": [],
+	"incompatibilities": [
+		{
+			"id": "hjfod.custom-keybinds",
+			"version": "*",
+			"importance": "breaking"
+		}
+	]
 }
