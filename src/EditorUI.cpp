@@ -10,24 +10,32 @@ struct $modify(EditorUI) {
         (void)self.setHookPriority("EditorUI::keyUp", 1000);
     }
 
+    static inline int platformButton() {
+        #ifdef GEODE_IS_MACOS
+            return 1;
+        #else
+            return 0;
+        #endif
+    }
+
     bool init(LevelEditorLayer* lel) {
         if (!EditorUI::init(lel))
             return false;
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             if (down) {
-                m_editorLayer->pushButton(0, true);
+                m_editorLayer->pushButton(platformButton(), true);
             }
             else {
-                m_editorLayer->releaseButton(0, true);
+                m_editorLayer->releaseButton(platformButton(), true);
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
             if (down) {
-                m_editorLayer->pushButton(0, false);
+                m_editorLayer->pushButton(platformButton(), false);
             }
             else {
-                m_editorLayer->releaseButton(0, false);
+                m_editorLayer->releaseButton(platformButton(), false);
             }
         });
         this->defineKeybind("robtop.geometry-dash/build-mode", [=] {

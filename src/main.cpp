@@ -16,8 +16,7 @@ class $modify(CCKeyboardDispatcher) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;
 			}
-		}
-		else {
+		} else {
 			if (!keyIsModifier(key)) {
 				if (down) {
 					s_held.insert(key);
