@@ -694,6 +694,12 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
     if (m_binds.contains(event->getBind())) {
         for (auto& action : m_binds.at(event->getBind())) {
             if (event->isDown()) {
+                // Ignore OS autorepeating for repeat stuff
+                if (auto options = this->getRepeatOptionsFor(action)) {
+                    if (options.value().enabled && ranges::contains(m_repeating, [=](auto const& p) { return p.first == action; })) {
+                        return ListenerResult::Stop;
+                    }
+                }
                 this->repeat(action);
             }
             else {
@@ -719,6 +725,7 @@ void BindManager::unrepeat(ActionID const& action) {
 }
 
 void BindManager::repeat(ActionID const& action) {
+    // this is why you are supposed to pimpl stuff now i cant change the return type
     if (auto options = this->getRepeatOptionsFor(action)) {
         if (options.value().enabled) {
             m_repeating.emplace_back(action, options.value().delay / 1000.f);

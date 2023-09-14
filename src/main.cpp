@@ -11,6 +11,10 @@ using namespace keybinds;
 class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
 
+	static void onModify(auto& self) {
+		(void)self.setHookPriority("CCKeyboardDispatcher::dispatchKeyboardMSG", 100000);
+	}
+
 	void updateModifierKeys(bool shift, bool ctrl, bool alt, bool cmd) {
 		m_bShiftPressed = shift;
 		m_bControlPressed = ctrl;
@@ -19,7 +23,6 @@ class $modify(CCKeyboardDispatcher) {
 	}
 
 	bool dispatchKeyboardMSG(enumKeyCodes key, bool down) {
-		log::debug("key : {} down {}", key, down);
 		if (keyIsController(key)) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;
