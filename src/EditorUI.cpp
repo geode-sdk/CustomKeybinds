@@ -4,6 +4,14 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
+// TODO: move this to header in 1.2.0
+
+#if defined(GEODE_IS_MACOS)
+    static constexpr auto PLATFORM_CONTROL = Modifier::Command;
+#else
+    static constexpr auto PLATFORM_CONTROL = Modifier::Control;
+#endif
+
 struct $modify(EditorUI) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("EditorUI::keyDown", 1000);
@@ -250,14 +258,14 @@ $execute {
         "robtop.geometry-dash/undo",
         "Undo",
         "Undo Last Action",
-        { Keybind::create(KEY_Z, Modifier::Control) },
+        { Keybind::create(KEY_Z, PLATFORM_CONTROL) },
         Category::EDITOR_MODIFY
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/redo",
         "Redo",
         "Redo Last Action",
-        { Keybind::create(KEY_Z, Modifier::Control | Modifier::Shift) },
+        { Keybind::create(KEY_Z, PLATFORM_CONTROL | Modifier::Shift) },
         Category::EDITOR_MODIFY
     });
     BindManager::get()->registerBindable({
@@ -271,21 +279,21 @@ $execute {
         "robtop.geometry-dash/copy",
         "Copy",
         "Copy Selected Objects",
-        { Keybind::create(KEY_C, Modifier::Control) },
+        { Keybind::create(KEY_C, PLATFORM_CONTROL) },
         Category::EDITOR_MODIFY
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/paste",
         "Paste",
         "Paste Selected Objects",
-        { Keybind::create(KEY_V, Modifier::Control) },
+        { Keybind::create(KEY_V, PLATFORM_CONTROL) },
         Category::EDITOR_MODIFY
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy-paste",
         "Copy + Paste",
         "Duplicate Selected Objects",
-        { Keybind::create(KEY_D, Modifier::Control) },
+        { Keybind::create(KEY_D, PLATFORM_CONTROL) },
         Category::EDITOR_MODIFY
     });
     BindManager::get()->registerBindable({
@@ -327,7 +335,7 @@ $execute {
         "robtop.geometry-dash/playback-music",
         "Playback Music",
         "Start / Stop Playing the Level's Music",
-        { Keybind::create(KEY_Enter, Modifier::Control) },
+        { Keybind::create(KEY_Enter, PLATFORM_CONTROL) },
         Category::EDITOR_UI
     });
     BindManager::get()->registerBindable({

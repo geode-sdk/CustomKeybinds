@@ -42,8 +42,7 @@
 # Workspace files are user-specific
 *.sublime-workspace
 
-# I need to find a way to automatically remove this
-Source/Geode/pkg/uber-apk-signer.jar
+*.sublime-project
 
 # Ignore build folders
 **/build
