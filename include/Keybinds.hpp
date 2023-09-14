@@ -173,7 +173,7 @@ namespace keybinds {
             std::string const& description = "",
             std::vector<geode::Ref<Bind>> const& defaults = {},
             Category const& category = Category(),
-            bool repeatable = true,
+            bool repeatable = true, // Make this false in 2.0.0?
             geode::Mod* owner = geode::Mod::get()
         );
     };

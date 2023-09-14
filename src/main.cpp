@@ -19,6 +19,7 @@ class $modify(CCKeyboardDispatcher) {
 	}
 
 	bool dispatchKeyboardMSG(enumKeyCodes key, bool down) {
+		log::debug("key : {} down {}", key, down);
 		if (keyIsController(key)) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;

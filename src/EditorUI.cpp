@@ -203,251 +203,251 @@ $execute {
         "Build Mode",
         "Toggle the Build Tab",
         { Keybind::create(KEY_One, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/edit-mode",
         "Edit Mode",
         "Toggle the Edit Tab",
         { Keybind::create(KEY_Two, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/delete-mode",
         "Delete Mode",
         "Toggle the Delete Tab",
         { Keybind::create(KEY_Three, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/rotate-ccw",
         "Rotate CCW",
         "Rotate Object(s) Counter-Clockwise",
         { Keybind::create(KEY_Q, Modifier::None) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/rotate-cw",
         "Rotate CW",
         "Rotate Object(s) Clockwise",
         { Keybind::create(KEY_E, Modifier::None) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/flip-x",
         "Flip X",
         "Flip Object(s) Along the X-Axis",
         { Keybind::create(KEY_Q, Modifier::Alt) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/flip-y",
         "Flip Y",
         "Flip Object(s) Along the Y-Axis",
         { Keybind::create(KEY_E, Modifier::Alt) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/delete",
         "Delete Selected",
         "Delete Selected Object(s)",
         { Keybind::create(KEY_Delete, Modifier::None) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/undo",
         "Undo",
         "Undo Last Action",
         { Keybind::create(KEY_Z, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/redo",
         "Redo",
         "Redo Last Action",
         { Keybind::create(KEY_Z, PLATFORM_CONTROL | Modifier::Shift) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/deselect-all",
         "Deselect All",
         "Deselect All Objects",
         { Keybind::create(KEY_D, Modifier::Alt) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy",
         "Copy",
         "Copy Selected Objects",
         { Keybind::create(KEY_C, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/paste",
         "Paste",
         "Paste Selected Objects",
         { Keybind::create(KEY_V, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy-paste",
         "Copy + Paste",
         "Duplicate Selected Objects",
         { Keybind::create(KEY_D, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY
+        Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/toggle-rotate",
         "Rotate",
         "Toggle Rotate Control",
         { Keybind::create(KEY_R, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/toggle-free-move",
         "Free Move",
         "Toggle Free Move",
         { Keybind::create(KEY_F, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/toggle-swipe",
         "Swipe",
         "Toggle Swipe",
         { Keybind::create(KEY_T, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/toggle-snap",
         "Snap",
         "Toggle Snap",
         { Keybind::create(KEY_G, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/playtest",
         "Playtest",
         "Start / Stop Playtesting",
         { Keybind::create(KEY_Enter, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/playback-music",
         "Playback Music",
         "Start / Stop Playing the Level's Music",
         { Keybind::create(KEY_Enter, PLATFORM_CONTROL) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/prev-build-tab",
         "Previous Build Tab",
         "",
         { Keybind::create(KEY_F1, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/next-build-tab",
         "Next Build Tab",
         "",
         { Keybind::create(KEY_F2, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/next-layer",
         "Next Layer",
         "Go to Next Editor Layer",
         { Keybind::create(KEY_Right, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/prev-layer",
         "Previous Layer",
         "Go to Previous Editor Layer",
         { Keybind::create(KEY_Left, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/scroll-up",
         "Scroll Up",
         "",
         { Keybind::create(KEY_OEMPlus, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/scroll-down",
         "Scroll Down",
         "",
         { Keybind::create(KEY_OEMMinus, Modifier::None) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/zoom-in",
         "Zoom In",
         "",
         { Keybind::create(KEY_OEMPlus, Modifier::Shift) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/zoom-out",
         "Zoom Out",
         "",
         { Keybind::create(KEY_OEMMinus, Modifier::Shift) },
-        Category::EDITOR_UI
+        Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-left",
         "Move Object Left",
         "Move Selected Object(s) Left 1 Block (30 Units)",
         { Keybind::create(KEY_A, Modifier::None) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-right",
         "Move Object Right",
         "Move Selected Object(s) Right 1 Block (30 Units)",
         { Keybind::create(KEY_D, Modifier::None) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-up",
         "Move Object Up",
         "Move Selected Object(s) Up 1 Block (30 Units)",
         { Keybind::create(KEY_W, Modifier::None) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-down",
         "Move Object Down",
         "Move Selected Object(s) Down 1 Block (30 Units)",
         { Keybind::create(KEY_S, Modifier::None) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-left-small",
         "Move Object Left Small",
         "Move Selected Object(s) Left 2 Units",
         { Keybind::create(KEY_A, Modifier::Shift) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-right-small",
         "Move Object Right Small",
         "Move Selected Object(s) Right 2 Units",
         { Keybind::create(KEY_D, Modifier::Shift) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-up-small",
         "Move Object Up Small",
         "Move Selected Object(s) Up 2 Units",
         { Keybind::create(KEY_W, Modifier::Shift) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-down-small",
         "Move Object Down Small",
         "Move Selected Object(s) Down 2 Units",
         { Keybind::create(KEY_S, Modifier::Shift) },
-        Category::EDITOR_MOVE
+        Category::EDITOR_MOVE, true
     });
 }
