@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.3.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 project(CustomKeybinds VERSION 1.0.0)
 
@@ -9,7 +10,12 @@ file(GLOB SOURCES
 	src/*.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+file(GLOB OBJC_SOURCES
+    src/*.mm
+)
+set_source_files_properties(${OBJC_SOURCES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES} ${OBJC_SOURCES})
 
 if (PROJECT_IS_TOP_LEVEL)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HJFOD_CUSTOM_KEYBINDS_EXPORTING)

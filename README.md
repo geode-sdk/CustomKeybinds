@@ -10,8 +10,8 @@ You can use Custom Keybinds as a dependency by declaring it in your `mod.json`:
 {
     "dependencies": [
         {
-            "id": "hjfod.custom-keybinds",
-            "version": "v1.0.0",
+            "id": "geode.custom-keybinds",
+            "version": "v1.1.0",
             "required": true
         }
     ]
@@ -162,7 +162,7 @@ Registering a new input device is as simple as calling `BindManager::attachDevic
 
 ```cpp
 // Device ID should be prefixed with mod ID as usual
-BindManager::get()->attachDevice("toaster"_spr, );
+BindManager::get()->attachDevice("toaster"_spr, &MyParser::parse);
 ```
 
 If the device is detached while the game is running, you can unregister it similarly with `BindManager::detachDevice`.
@@ -172,7 +172,7 @@ Once you have figured out how to get inputs from your awesome toaster, you need 
 ```cpp
 void XInput_onGamingToasterCallback(double temp, int bread) {
     // Make sure all bind events are only ever posted in the GD thread !!!!
-	Loader::get()->queueInGDThread([=] {
+	Loader::get()->queueInMainThread([=] {
         PressBindEvent(ToasterBind::create(static_cast<float>(temp), bread), true).post();
     });
 }

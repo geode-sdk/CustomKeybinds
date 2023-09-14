@@ -11,6 +11,13 @@ using namespace keybinds;
 class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
 
+	void updateModifierKeys(bool shift, bool ctrl, bool alt, bool cmd) {
+		m_bShiftPressed = shift;
+		m_bControlPressed = ctrl;
+		m_bAltPressed = alt;
+		m_bCommandPressed = cmd;
+	}
+
 	bool dispatchKeyboardMSG(enumKeyCodes key, bool down) {
 		if (keyIsController(key)) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
@@ -108,7 +115,7 @@ public:
 
 $execute {
 	// check every second if a controller has been connected
-	Loader::get()->queueInGDThread([] {
+	Loader::get()->queueInMainThread([] {
 		CCScheduler::get()->scheduleSelector(
 			schedule_selector(ControllerChecker::checkController),
 			new ControllerChecker(), 1.f, false
