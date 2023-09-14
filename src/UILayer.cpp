@@ -1,4 +1,5 @@
 #include <Geode/modify/UILayer.hpp>
+#include <Geode/modify/PauseLayer.hpp>
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include "../include/Keybinds.hpp"
@@ -29,6 +30,20 @@ static void addBindSprites(CCNode* target, const char* action) {
     target->addChild(bindContainer);
 }
 
+struct $modify(PauseLayer) {
+    void customSetup() {
+        PauseLayer::customSetup();
+
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                this->keyDown(KEY_Space);
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/unpause-level");
+    }
+};
+
 struct $modify(UILayer) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("UILayer::keyDown", 1000);
@@ -48,19 +63,24 @@ struct $modify(UILayer) {
             return false;
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
-            if (down) {
-                PlayLayer::get()->pushButton(platformButton(), true);
-            }
-            else {
-                PlayLayer::get()->releaseButton(platformButton(), true);
+            // todo: event priority
+            if (!PlayLayer::get()->m_isPaused) {
+                if (down) {
+                    PlayLayer::get()->pushButton(platformButton(), true);
+                }
+                else {
+                    PlayLayer::get()->releaseButton(platformButton(), true);
+                }
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (down) {
-                PlayLayer::get()->pushButton(platformButton(), false);
-            }
-            else {
-                PlayLayer::get()->releaseButton(platformButton(), false);
+            if (!PlayLayer::get()->m_isPaused) {
+                if (down) {
+                    PlayLayer::get()->pushButton(platformButton(), false);
+                }
+                else {
+                    PlayLayer::get()->releaseButton(platformButton(), false);
+                }
             }
         });
         this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
@@ -138,5 +158,13 @@ $execute {
         "Delete a Checkpoint in Practice Mode",
         { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
         Category::PLAY, true
+    });
+
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/unpause-level",
+        "Unpause Level",
+        "Unpause the Level",
+        { Keybind::create(KEY_Space, Modifier::None) },
+        Category::PLAY, false
     });
 }
