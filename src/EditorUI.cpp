@@ -224,28 +224,28 @@ $execute {
         "Rotate CCW",
         "Rotate Object(s) Counter-Clockwise",
         { Keybind::create(KEY_Q, Modifier::None) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/rotate-cw",
         "Rotate CW",
         "Rotate Object(s) Clockwise",
         { Keybind::create(KEY_E, Modifier::None) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/flip-x",
         "Flip X",
         "Flip Object(s) Along the X-Axis",
         { Keybind::create(KEY_Q, Modifier::Alt) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/flip-y",
         "Flip Y",
         "Flip Object(s) Along the Y-Axis",
         { Keybind::create(KEY_E, Modifier::Alt) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/delete",
@@ -287,14 +287,14 @@ $execute {
         "Paste",
         "Paste Selected Objects",
         { Keybind::create(KEY_V, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy-paste",
         "Copy + Paste",
         "Duplicate Selected Objects",
         { Keybind::create(KEY_D, PLATFORM_CONTROL) },
-        Category::EDITOR_MODIFY, false
+        Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/toggle-rotate",

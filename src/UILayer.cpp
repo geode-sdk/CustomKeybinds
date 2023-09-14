@@ -130,13 +130,13 @@ $execute {
         "Place Checkpoint",
         "Place a Checkpoint in Practice Mode",
         { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
-        Category::PLAY, false
+        Category::PLAY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/delete-checkpoint",
         "Delete Checkpoint",
         "Delete a Checkpoint in Practice Mode",
         { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
-        Category::PLAY, false
+        Category::PLAY, true
     });
 }

@@ -173,7 +173,7 @@ namespace keybinds {
             std::string const& description = "",
             std::vector<geode::Ref<Bind>> const& defaults = {},
             Category const& category = Category(),
-            bool repeatable = true, // Make this false in 2.0.0?
+            bool repeatable = true, 
             geode::Mod* owner = geode::Mod::get()
         );
     };
@@ -247,7 +247,7 @@ namespace keybinds {
     };
 
     struct CUSTOM_KEYBINDS_DLL RepeatOptions {
-        bool enabled = true;
+        bool enabled = false;
         size_t rate = 300;
         size_t delay = 500;
     };
