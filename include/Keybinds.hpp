@@ -140,6 +140,7 @@ namespace keybinds {
         bool operator==(Category const&) const;
 
         static constexpr auto PLAY { "Play" };
+        static constexpr auto PLAY_PAUSE { "Play/Pause" };
         static constexpr auto EDITOR { "Editor" };
         static constexpr auto GLOBAL { "Global" };
         static constexpr auto EDITOR_UI { "Editor/UI" };
