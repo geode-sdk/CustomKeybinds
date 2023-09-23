@@ -1,4 +1,5 @@
 #include <Geode/modify/EditorUI.hpp>
+#include <Geode/modify/EditorPauseLayer.hpp>
 #include "../include/Keybinds.hpp"
 
 using namespace geode::prelude;
@@ -11,6 +12,30 @@ using namespace keybinds;
 #else
     static constexpr auto PLATFORM_CONTROL = Modifier::Control;
 #endif
+
+struct $modify(EditorPauseLayer) {
+    static void onModify(auto& self) {
+        (void)self.setHookPriority("EditorPauseLayer::keyDown", 1000);
+    }
+
+    void customSetup() {
+        EditorPauseLayer::customSetup();
+
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                this->onResume(nullptr);
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/unpause-level");
+    }
+
+    void keyDown(enumKeyCodes key) {
+        if (key == enumKeyCodes::KEY_Escape) {
+            EditorPauseLayer::keyDown(key);
+        }
+    }
+};
 
 struct $modify(EditorUI) {
     static void onModify(auto& self) {
@@ -45,6 +70,11 @@ struct $modify(EditorUI) {
             else {
                 m_editorLayer->releaseButton(platformButton(), false);
             }
+        });
+        this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
+            if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
+                EditorUI::onPause(nullptr);
+            };
         });
         this->defineKeybind("robtop.geometry-dash/build-mode", [=] {
             this->toggleMode(m_buildModeBtn);
@@ -328,7 +358,7 @@ $execute {
         "robtop.geometry-dash/playtest",
         "Playtest",
         "Start / Stop Playtesting",
-        { Keybind::create(KEY_Enter, Modifier::None) },
+        { Keybind::create(KEY_Enter, Modifier::None), ControllerBind::create(CONTROLLER_Y) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
