@@ -36,11 +36,45 @@ struct $modify(PauseLayer) {
 
         this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
             if (event->isDown()) {
-                this->keyDown(KEY_Space);
+                this->onResume(nullptr);
                 return ListenerResult::Stop;
             }
             return ListenerResult::Propagate;
         }, "robtop.geometry-dash/unpause-level");
+
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                this->onQuit(nullptr);
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/exit-level");
+
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
+                    this->onNormalMode(nullptr);
+                } else {
+                    this->onPracticeMode(nullptr);
+                }
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/practice-level");
+
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                this->onRestart(nullptr);
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/restart-level");
+    }
+
+    void keyDown(enumKeyCodes key) {
+        if (key == enumKeyCodes::KEY_Escape) {
+            PauseLayer::keyDown(key);
+        }
     }
 };
 
@@ -93,6 +127,11 @@ struct $modify(UILayer) {
                 this->onDeleteCheck(nullptr);
             }
         });
+        this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
+            if (down && PlayLayer::get() && !PlayLayer::get()->m_isPaused) {
+                PlayLayer::get()->pauseGame(true);
+            }
+        });
 
         // display practice mode button keybinds
         if (auto menu = this->getChildByID("checkpoint-menu")) {
@@ -133,7 +172,7 @@ $execute {
         "robtop.geometry-dash/jump-p1",
         "Jump P1",
         "Player 1 Jump",
-        { Keybind::create(KEY_Space, Modifier::None) },
+        { Keybind::create(KEY_Space, Modifier::None), ControllerBind::create(CONTROLLER_A), ControllerBind::create(CONTROLLER_RB) },
         Category::PLAY,
         false
     });
@@ -141,7 +180,7 @@ $execute {
         "robtop.geometry-dash/jump-p2",
         "Jump P2",
         "Player 2 Jump",
-        { Keybind::create(KEY_Up, Modifier::None) },
+        { Keybind::create(KEY_Up, Modifier::None), ControllerBind::create(CONTROLLER_LB) },
         Category::PLAY,
         false
     });
@@ -161,10 +200,38 @@ $execute {
     });
 
     BindManager::get()->registerBindable({
+        "robtop.geometry-dash/pause-level",
+        "Pause Level",
+        "Pause the Level",
+        { ControllerBind::create(CONTROLLER_Start) },
+        Category::PLAY, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/practice-level",
+        "Toggle Practice",
+        "Toggles Practice Mode",
+        { ControllerBind::create(CONTROLLER_X) },
+        Category::PLAY_PAUSE, false
+    });
+    BindManager::get()->registerBindable({
         "robtop.geometry-dash/unpause-level",
         "Unpause Level",
         "Unpause the Level",
-        { Keybind::create(KEY_Space, Modifier::None) },
-        Category::PLAY, false
+        { Keybind::create(KEY_Space, Modifier::None), ControllerBind::create(CONTROLLER_Start) },
+        Category::PLAY_PAUSE, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/exit-level",
+        "Exit Level",
+        "Exit the Level",
+        { ControllerBind::create(CONTROLLER_B) },
+        Category::PLAY_PAUSE, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/restart-level",
+        "Restart level",
+        "Restarts the Level",
+        { },
+        Category::PLAY_PAUSE, false
     });
 }
