@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
 
-project(CustomKeybinds VERSION 1.1.2)
+project(CustomKeybinds VERSION 1.2.1)
 
 file(GLOB SOURCES
 	src/*.hpp
@@ -27,7 +27,7 @@ else()
     message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
-add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
+add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 target_link_libraries(${PROJECT_NAME} geode-sdk)
 create_geode_file(${PROJECT_NAME})

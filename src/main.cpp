@@ -12,7 +12,7 @@ class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
 
 	static void onModify(auto& self) {
-		(void)self.setHookPriority("CCKeyboardDispatcher::dispatchKeyboardMSG", 100000);
+		(void)self.setHookPriority("cocos2d::CCKeyboardDispatcher::dispatchKeyboardMSG", 100000);
 	}
 
 	void updateModifierKeys(bool shift, bool ctrl, bool alt, bool cmd) {

@@ -78,11 +78,32 @@ struct $modify(PauseLayer) {
     }
 };
 
+static Hook* s_dtorHook = nullptr;
+
 struct $modify(UILayer) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("UILayer::keyDown", 1000);
         (void)self.setHookPriority("UILayer::keyUp", 1000);
+
+        // why did i do this and now i cant even change it
+        if (auto res = self.getHook("UILayer::UILayer")) { // this is the dtor
+            auto hook = res.unwrap();
+            s_dtorHook = hook;
+
+            hook->setPriority(-1000);
+            hook->setAutoEnable(false);
+        }
     }
+
+    // why absolute
+    void destructor() {
+        // call the dtor
+        UILayer::~UILayer();
+
+        // blame absolute
+        CCLayerColor::~CCLayerColor();
+    }
+
 
     static inline int platformButton() {
         #ifdef GEODE_IS_MACOS
@@ -95,6 +116,16 @@ struct $modify(UILayer) {
     bool init() {
         if (!UILayer::init())
             return false;
+
+        // why absolute
+        if (
+            Loader::get()->isModLoaded("absolllute.megahack") && 
+            Loader::get()->getLoadedMod("absolllute.megahack")->getVersion() 
+            <= VersionInfo(7, 1, 1, VersionTag(VersionTag::Beta, 5)), 
+            !s_dtorHook->isEnabled()
+        ) {
+            (void)Mod::get()->enableHook(s_dtorHook);
+        }
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             // todo: event priority
