@@ -92,13 +92,17 @@ struct $modify(UILayer) {
         #endif
     }
 
+    bool isPaused() {
+        return getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr;
+    }
+
     bool init() {
         if (!UILayer::init())
             return false;
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             // todo: event priority
-            if (PlayLayer::get() && CCDirector::get()->getSmoothFixCheck()) {
+            if (PlayLayer::get() && !this->isPaused()) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), true);
                 }
@@ -108,7 +112,7 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (PlayLayer::get() && CCDirector::get()->getSmoothFixCheck()) {
+            if (PlayLayer::get() && !this->isPaused()) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), false);
                 }
@@ -128,7 +132,7 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
-            if (down && PlayLayer::get() && CCDirector::get()->getSmoothFixCheck()) {
+            if (down && PlayLayer::get() && !this->isPaused()) {
                 PlayLayer::get()->pauseGame(true);
             }
         });
