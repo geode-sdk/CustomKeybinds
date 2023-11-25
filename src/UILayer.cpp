@@ -96,13 +96,18 @@ struct $modify(UILayer) {
         return getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr;
     }
 
+    bool isCurrentPlayLayer() {
+        auto playLayer = getChildOfType<PlayLayer>(CCScene::get(), 0);
+        return playLayer != nullptr && playLayer == PlayLayer::get() && getChildOfType<UILayer>(playLayer, 0) == this;
+    }
+
     bool init() {
         if (!UILayer::init())
             return false;
         
         this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
             // todo: event priority
-            if (PlayLayer::get() && !this->isPaused()) {
+            if (this->isCurrentPlayLayer() && !this->isPaused()) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), true);
                 }
@@ -112,7 +117,7 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (PlayLayer::get() && !this->isPaused()) {
+            if (this->isCurrentPlayLayer() && !this->isPaused()) {
                 if (down) {
                     PlayLayer::get()->pushButton(platformButton(), false);
                 }
@@ -122,17 +127,17 @@ struct $modify(UILayer) {
             }
         });
         this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
-            if (down && PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
+            if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
                 this->onCheck(nullptr);
             }
         });
         this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
-            if (down && PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
+            if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
                 this->onDeleteCheck(nullptr);
             }
         });
         this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
-            if (down && PlayLayer::get() && !this->isPaused()) {
+            if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
                 PlayLayer::get()->pauseGame(true);
             }
         });
