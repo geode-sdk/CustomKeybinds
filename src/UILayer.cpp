@@ -85,11 +85,7 @@ struct $modify(UILayer) {
     }
 
     static inline int platformButton() {
-        #ifdef GEODE_IS_MACOS
-            return 1;
-        #else
-            return 0;
-        #endif
+        return 1;
     }
 
     bool isPaused() {
@@ -101,63 +97,59 @@ struct $modify(UILayer) {
         return playLayer != nullptr && playLayer == PlayLayer::get() && getChildOfType<UILayer>(playLayer, 0) == this;
     }
 
-    bool init() {
-        if (!UILayer::init())
+    bool init(GJBaseGameLayer* layer) {
+        if (!UILayer::init(layer))
             return false;
-        
-        this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
-            // todo: event priority
-            if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                if (down) {
-                    PlayLayer::get()->pushButton(platformButton(), true);
+
+        // delay by a single frame
+        geode::Loader::get()->queueInMainThread([this] {
+            // do not do anything in the editor
+            if (!PlayLayer::get()) return;
+
+            this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
+                // todo: event priority
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(platformButton(), down, false);
                 }
-                else {
-                    PlayLayer::get()->releaseButton(platformButton(), true);
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(platformButton(), down, true);
                 }
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                if (down) {
-                    PlayLayer::get()->pushButton(platformButton(), false);
+            });
+            this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
+                    this->onCheck(nullptr);
                 }
-                else {
-                    PlayLayer::get()->releaseButton(platformButton(), false);
+            });
+            this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
+                    this->onDeleteCheck(nullptr);
                 }
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
-            if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
-                this->onCheck(nullptr);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
-            if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
-                this->onDeleteCheck(nullptr);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
-            if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
-                PlayLayer::get()->pauseGame(true);
+            });
+            this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->pauseGame(true);
+                }
+            });
+
+            // display practice mode button keybinds
+            if (auto menu = this->getChildByID("checkpoint-menu")) {
+                if (auto add = menu->getChildByID("add-checkpoint-button")) {
+                    addBindSprites(
+                        static_cast<CCMenuItemSpriteExtra*>(add)->getNormalImage(),
+                        "robtop.geometry-dash/place-checkpoint"
+                    );
+                }
+                if (auto rem = menu->getChildByID("remove-checkpoint-button")) {
+                    addBindSprites(
+                        static_cast<CCMenuItemSpriteExtra*>(rem)->getNormalImage(),
+                        "robtop.geometry-dash/delete-checkpoint"
+                    );
+                }
             }
         });
 
-        // display practice mode button keybinds
-        if (auto menu = this->getChildByID("checkpoint-menu")) {
-            if (auto add = menu->getChildByID("add-checkpoint-button")) {
-                addBindSprites(
-                    static_cast<CCMenuItemSpriteExtra*>(add)->getNormalImage(),
-                    "robtop.geometry-dash/place-checkpoint"
-                );
-            }
-            if (auto rem = menu->getChildByID("remove-checkpoint-button")) {
-                addBindSprites(
-                    static_cast<CCMenuItemSpriteExtra*>(rem)->getNormalImage(),
-                    "robtop.geometry-dash/delete-checkpoint"
-                );
-            }
-        }
-        
         return true;
     }
 

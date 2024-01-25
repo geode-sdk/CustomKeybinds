@@ -47,7 +47,7 @@ namespace keybinds {
         virtual std::string toString() const = 0;
         virtual cocos2d::CCNode* createLabel() const;
         virtual DeviceID getDeviceID() const = 0;
-        virtual json::Value save() const = 0;
+        virtual matjson::Value save() const = 0;
 
         virtual ~Bind() = default;
 
@@ -76,7 +76,7 @@ namespace keybinds {
 
     public:
         static Keybind* create(cocos2d::enumKeyCodes key, Modifier modifiers = Modifier::None);
-        static Keybind* parse(json::Value const&);
+        static Keybind* parse(matjson::Value const&);
 
         cocos2d::enumKeyCodes getKey() const;
         Modifier getModifiers() const;
@@ -85,16 +85,16 @@ namespace keybinds {
         bool isEqual(Bind* other) const override;
         std::string toString() const override;
         DeviceID getDeviceID() const override;
-        json::Value save() const override;
+        matjson::Value save() const override;
     };
 
     class CUSTOM_KEYBINDS_DLL ControllerBind final : public Bind {
     protected:
         cocos2d::enumKeyCodes m_button;
-    
+
     public:
         static ControllerBind* create(cocos2d::enumKeyCodes button);
-        static ControllerBind* parse(json::Value const&);
+        static ControllerBind* parse(matjson::Value const&);
 
         cocos2d::enumKeyCodes getButton() const;
 
@@ -103,7 +103,7 @@ namespace keybinds {
         std::string toString() const override;
         cocos2d::CCNode* createLabel() const override;
         DeviceID getDeviceID() const override;
-        json::Value save() const override;
+        matjson::Value save() const override;
     };
 
     struct CUSTOM_KEYBINDS_DLL BindHash {
@@ -127,7 +127,7 @@ namespace keybinds {
     using ActionID = std::string;
     class CUSTOM_KEYBINDS_DLL Category final {
         std::string m_value;
-    
+
     public:
         Category() = default;
         Category(const char* path);
@@ -157,7 +157,7 @@ namespace keybinds {
         std::vector<geode::Ref<Bind>> m_defaults;
         Category m_category;
         bool m_repeatable;
-    
+
     public:
         ActionID getID() const;
         std::string getName() const;
@@ -174,7 +174,7 @@ namespace keybinds {
             std::string const& description = "",
             std::vector<geode::Ref<Bind>> const& defaults = {},
             Category const& category = Category(),
-            bool repeatable = true, 
+            bool repeatable = true,
             geode::Mod* owner = geode::Mod::get()
         );
     };
@@ -200,7 +200,7 @@ namespace keybinds {
 
     public:
         using Callback = geode::ListenerResult(InvokeBindEvent*);
-        
+
         geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, InvokeBindEvent* event);
         InvokeBindFilter(cocos2d::CCNode* target, ActionID const& id);
     };
@@ -209,7 +209,7 @@ namespace keybinds {
     protected:
         Bind* m_bind;
         bool m_down;
-    
+
     public:
         PressBindEvent(Bind* bind, bool down);
         Bind* getBind() const;
@@ -219,7 +219,7 @@ namespace keybinds {
     class CUSTOM_KEYBINDS_DLL PressBindFilter : public geode::EventFilter<PressBindEvent> {
     public:
         using Callback = geode::ListenerResult(PressBindEvent*);
-        
+
         geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, PressBindEvent* event);
         PressBindFilter();
     };
@@ -228,7 +228,7 @@ namespace keybinds {
     protected:
         DeviceID m_id;
         bool m_attached;
-    
+
     public:
         DeviceEvent(DeviceID const& id, bool attached);
         DeviceID getID() const;
@@ -252,20 +252,20 @@ namespace keybinds {
         size_t rate = 300;
         size_t delay = 500;
     };
-    
-    using BindParser = std::function<Bind*(json::Value const&)>;
+
+    using BindParser = std::function<Bind*(matjson::Value const&)>;
 
     class CUSTOM_KEYBINDS_DLL BindManager : public cocos2d::CCObject {
     // has to inherit from CCObject for scheduler
     public:
-        using DevicelessActions = std::unordered_map<ActionID, std::set<json::Value>>;
+        using DevicelessActions = std::unordered_map<ActionID, std::set<matjson::Value>>;
 
     protected:
         struct ActionData {
             BindableAction definition;
             RepeatOptions repeat;
         };
-        
+
         std::unordered_map<BindHash, std::vector<ActionID>> m_binds;
         std::unordered_map<DeviceID, DevicelessActions> m_devicelessBinds;
         std::unordered_map<DeviceID, BindParser> m_devices;
@@ -286,7 +286,7 @@ namespace keybinds {
         void saveActionBinds(ActionID const& action);
 
         friend class InvokeBindFilter;
-        friend struct json::Serialize<BindSaveData>;
+        friend struct matjson::Serialize<BindSaveData>;
 
     public:
         static BindManager* get();
@@ -295,8 +295,8 @@ namespace keybinds {
         void attachDevice(DeviceID const& device, BindParser parser);
         void detachDevice(DeviceID const& device);
 
-        json::Value saveBind(Bind* bind) const;
-        Bind* loadBind(json::Value const& json) const;
+        matjson::Value saveBind(Bind* bind) const;
+        Bind* loadBind(matjson::Value const& json) const;
 
         bool registerBindable(BindableAction const& action, ActionID const& after = "");
         void removeBindable(ActionID const& action);
@@ -306,11 +306,11 @@ namespace keybinds {
         std::vector<BindableAction> getBindablesFor(Bind* bind) const;
         std::vector<Category> getAllCategories() const;
         /**
-         * Add a new bindable category. If the category is a subcategory (its 
-         * ID has a slash, like "Editor/Modify"), then all its parent 
-         * categories are inserted aswell, and the subcategory is added after 
+         * Add a new bindable category. If the category is a subcategory (its
+         * ID has a slash, like "Editor/Modify"), then all its parent
+         * categories are inserted aswell, and the subcategory is added after
          * its parent's last subcategory
-         * @param category The category to add. Specify a subcategory by 
+         * @param category The category to add. Specify a subcategory by
          * including a slash in the name (like "Editor/Modify")
          */
         void addCategory(Category const& category);

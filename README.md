@@ -35,12 +35,12 @@ $execute {
         "Throw a backflip",
         // Default binds
         { Keybind::create(KEY_Q, Modifier::None) },
-        // Category; use slashes for specifying subcategories. See the 
+        // Category; use slashes for specifying subcategories. See the
         // Category class for default categories
         "My Mod/Awesome Tricks"
     });
 }
-``` 
+```
 
 Now your bind shows up in the UI, and the user can assign their own binds to it. To make the bind also do stuff, you need to add an event listener for `InvokeBindEvent`. If your bind is global (can be used from anywhere in-game), you should add the event listener in the same `$execute` block. If the bind is layer-specific, add it in the layer's `init`:
 
@@ -52,7 +52,7 @@ bool MyLayer::init() {
         if (event->isDown()) {
             // do a backflip!
         }
-        // Return Propagate if you want other actions with the same bind to 
+        // Return Propagate if you want other actions with the same bind to
         // also be fired, or Stop if you want to halt propagation
         return ListenerResult::Propagate;
     }, "backflip"_spr);
@@ -113,15 +113,15 @@ public:
         return ret;
     }
     // Parse from JSON
-    static ToasterBind* parse(json::Value const& json) {
+    static ToasterBind* parse(matjson::Value const& json) {
         return ToasterBind::create(
             static_cast<BreadType>(json["bread"].as_int()),
             static_cast<float>(json["temperature"].as_double())
         );
     }
     // Save to JSON
-    json::Value save() const override {
-        return json::Object {
+    matjson::Value save() const override {
+        return matjson::Object {
             { "bread", static_cast<int>(m_bread) },
             { "temperature", m_temperature },
         };
@@ -133,7 +133,7 @@ public:
 
     // Get the hash for this bind
     size_t getHash() const override {
-        return std::hash<float>()(m_temperature) ^ static_cast<size_t>(m_bread); 
+        return std::hash<float>()(m_temperature) ^ static_cast<size_t>(m_bread);
     }
 
     // Check if this bind is equal to another
@@ -145,7 +145,7 @@ public:
     }
 
     // Convert to string
-    // By default, the bind is displayed in the UI as just the string in a 
+    // By default, the bind is displayed in the UI as just the string in a
     // label. If you want to show something else, override createLabel()
     std::string toString() const override {
         return fmt::format("Temp {} & Bread {}", m_temperature, m_bread);

@@ -41,7 +41,7 @@ bool keybinds::keyIsModifier(enumKeyCodes key) {
         key == KEY_Shift ||
         key == KEY_LeftShift ||
         key == KEY_RightShift ||
-        key == KEY_Alt || 
+        key == KEY_Alt ||
         key == KEY_LeftWindowsKey ||
         key == KEY_RightWindowsKey;
 }
@@ -73,7 +73,7 @@ CCNodeRGBA* Bind::createBindSprite() const {
     bg->addChild(top);
 
     top->setPosition(bg->getContentSize() / 2);
-    
+
     return bg;
 }
 
@@ -81,22 +81,22 @@ Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
     if (key == KEY_None || key == KEY_Unknown || keyIsController(key)) {
         return nullptr;
     }
-    auto ret = new Keybind(); 
+    auto ret = new Keybind();
     ret->m_key = key;
     ret->m_modifiers = modifiers;
     ret->autorelease();
     return ret;
 }
 
-Keybind* Keybind::parse(json::Value const& value) {
+Keybind* Keybind::parse(matjson::Value const& value) {
     return Keybind::create(
         static_cast<enumKeyCodes>(value["key"].as_int()),
         static_cast<Modifier>(value["modifiers"].as_int())
     );
 }
 
-json::Value Keybind::save() const {
-    return json::Object {
+matjson::Value Keybind::save() const {
+    return matjson::Object {
         { "key", static_cast<int>(m_key) },
         { "modifiers", static_cast<int>(m_modifiers) }
     };
@@ -147,20 +147,20 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
     if (!keyIsController(button)) {
         return nullptr;
     }
-    auto ret = new ControllerBind(); 
+    auto ret = new ControllerBind();
     ret->m_button = button;
     ret->autorelease();
     return ret;
 }
 
-ControllerBind* ControllerBind::parse(json::Value const& value) {
+ControllerBind* ControllerBind::parse(matjson::Value const& value) {
     return ControllerBind::create(
         static_cast<enumKeyCodes>(value["button"].as_double())
     );
 }
 
-json::Value ControllerBind::save() const {
-    return json::Object {
+matjson::Value ControllerBind::save() const {
+    return matjson::Object {
         { "button", static_cast<int>(m_button) },
     };
 }
@@ -390,9 +390,9 @@ void BindManager::attachDevice(DeviceID const& device, BindParser parser) {
 
 void BindManager::detachDevice(DeviceID const& device) {
     // Remove all binds related to this device from actions
-    // The purpose of this is so they don't show up in the UI and can't be 
-    // modified, since the attached device isn't inserted so modifying them 
-    // wouldn't be possible anyway and they shouldn't get accidentally reset 
+    // The purpose of this is so they don't show up in the UI and can't be
+    // modified, since the attached device isn't inserted so modifying them
+    // wouldn't be possible anyway and they shouldn't get accidentally reset
     // if other binds are reset
     for (auto& [bind, actions] : m_binds) {
         if (bind.bind->getDeviceID() != device) {
@@ -411,7 +411,7 @@ void BindManager::detachDevice(DeviceID const& device) {
     DeviceEvent(device, false).post();
 }
 
-json::Value BindManager::saveBind(Bind* bind) const {
+matjson::Value BindManager::saveBind(Bind* bind) const {
     try {
         auto json = bind->save();
         json["device"] = bind->getDeviceID();
@@ -422,7 +422,7 @@ json::Value BindManager::saveBind(Bind* bind) const {
     }
 }
 
-Bind* BindManager::loadBind(json::Value const& json) const {
+Bind* BindManager::loadBind(matjson::Value const& json) const {
     try {
         auto device = json["device"].as_string();
         if (!m_devices.contains(device)) {
@@ -437,17 +437,17 @@ Bind* BindManager::loadBind(json::Value const& json) const {
 
 bool BindManager::loadActionBinds(ActionID const& action) {
     try {
-        auto value = Mod::get()->template getSavedValue<json::Object>(action);
+        auto value = Mod::get()->template getSavedValue<matjson::Object>(action);
         for (auto bind : value["binds"].as_array()) {
-            // try directly parsing the bind from a string if the device it's for 
+            // try directly parsing the bind from a string if the device it's for
             // is already connected
             if (auto b = this->loadBind(bind)) {
                 this->addBindTo(action, b);
             }
-            // otherwise save the bind's data for until the device is connected 
+            // otherwise save the bind's data for until the device is connected
             // or the game is closed
             else {
-                // if device ID exists, then add this to the list of unbound 
+                // if device ID exists, then add this to the list of unbound
                 // binds
                 if (bind.contains("device")) {
                     try {
@@ -475,8 +475,8 @@ bool BindManager::loadActionBinds(ActionID const& action) {
 }
 
 void BindManager::saveActionBinds(ActionID const& action) {
-    auto obj = json::Object();
-    auto binds = json::Array();
+    auto obj = matjson::Object();
+    auto binds = matjson::Array();
     for (auto& bind : this->getBindsFor(action)) {
         binds.push_back(this->saveBind(bind));
     }
@@ -489,7 +489,7 @@ void BindManager::saveActionBinds(ActionID const& action) {
     }
     obj["binds"] = binds;
     if (auto opts = this->getRepeatOptionsFor(action)) {
-        auto rep = json::Object();
+        auto rep = matjson::Object();
         rep["enabled"] = opts.value().enabled;
         rep["rate"] = opts.value().rate;
         rep["delay"] = opts.value().delay;
@@ -504,7 +504,7 @@ bool BindManager::registerBindable(BindableAction const& action, ActionID const&
         return false;
     }
     if (auto ix = ranges::indexOf(m_actions, [&](auto const& a) { return a.first == after; })) {
-        m_actions.insert(m_actions.begin() + ix.value() + 1, { 
+        m_actions.insert(m_actions.begin() + ix.value() + 1, {
             action.getID(),
             { .definition = action, .repeat = RepeatOptions() }
         });

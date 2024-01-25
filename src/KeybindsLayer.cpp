@@ -33,7 +33,7 @@ protected:
     bool init(KeybindsLayer* layer, std::string const& title, float width, size_t offset) {
         if (!CCNode::init())
             return false;
-        
+
         m_layer = layer;
 
         constexpr float height = 25.f;
@@ -43,7 +43,7 @@ protected:
         bg->setAnchorPoint({ .0f, .0f });
         bg->setContentSize({ width, height });
         bg->setID("fold-layer");
-        
+
         auto menu = CCMenu::create();
         menu->setContentSize({ height, height });
         menu->ignoreAnchorPointForPosition(false);
@@ -82,7 +82,7 @@ protected:
 
     void onFold(CCObject*) {
         m_folded ^= 1;
-        for (auto& child : CCArrayExt<CCNode>(m_pChildren)) {
+        for (auto child : CCArrayExt<CCNode*>(m_pChildren)) {
             if (child->getID() != "fold-layer") {
                 child->setVisible(!m_folded);
             }
@@ -339,7 +339,7 @@ bool BindableNode::init(
 ) {
     if (!CCNode::init())
         return false;
-    
+
     constexpr float height = 30.f;
 
     m_layer = layer;
@@ -520,7 +520,7 @@ void BindableNode::onInfo(CCObject*) {
             m_action.getID(),
             m_action.getMod()->getID()
         ),
-        "OK" 
+        "OK"
     )->show();
 }
 
@@ -529,7 +529,7 @@ BindableAction const& BindableNode::getAction() const {
 }
 
 std::string BindableNode::getMatchString() const {
-    auto res = m_action.getMod()->getName() + " " + 
+    auto res = m_action.getMod()->getName() + " " +
         m_action.getCategory().toString() + " " +
         m_action.getName() + " ";
     for (auto& bind : BindManager::get()->getBindsFor(m_action.getID())) {
@@ -647,7 +647,7 @@ void KeybindsLayer::updateVisibility() {
     for (auto& container : m_containers) {
         if (container != m_scroll->m_contentLayer && m_query.size()) {
             bool hasVisibleChildren = false;
-            for (auto& child : CCArrayExt<CCNode>(container->getChildren())) {
+            for (auto child : CCArrayExt<CCNode*>(container->getChildren())) {
                 if (child->getID() != "fold-layer" && child->isVisible()) {
                     hasVisibleChildren = true;
                 }
