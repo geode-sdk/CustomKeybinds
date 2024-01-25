@@ -22,7 +22,7 @@ class $modify(CCKeyboardDispatcher) {
 		m_bCommandPressed = cmd;
 	}
 
-	bool dispatchKeyboardMSG(enumKeyCodes key, bool down) {
+	bool dispatchKeyboardMSG(enumKeyCodes key, bool down, bool p2) {
 		if (keyIsController(key)) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;
@@ -77,7 +77,7 @@ class $modify(CCKeyboardDispatcher) {
 				}
 			}
 		}
-		return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down);
+		return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
 	}
 };
 

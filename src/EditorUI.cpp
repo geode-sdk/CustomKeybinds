@@ -44,160 +44,148 @@ struct $modify(EditorUI) {
     }
 
     static inline int platformButton() {
-        #ifdef GEODE_IS_MACOS
-            return 1;
-        #else
-            return 0;
-        #endif
+        return 1;
     }
 
     bool init(LevelEditorLayer* lel) {
         if (!EditorUI::init(lel))
             return false;
-        
-        this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
-            if (down) {
-                m_editorLayer->pushButton(platformButton(), true);
-            }
-            else {
-                m_editorLayer->releaseButton(platformButton(), true);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-            if (down) {
-                m_editorLayer->pushButton(platformButton(), false);
-            }
-            else {
-                m_editorLayer->releaseButton(platformButton(), false);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
-            if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
-                EditorUI::onPause(nullptr);
-            };
-        });
-        this->defineKeybind("robtop.geometry-dash/build-mode", [=] {
-            this->toggleMode(m_buildModeBtn);
-        });
-        this->defineKeybind("robtop.geometry-dash/edit-mode", [=] {
-            this->toggleMode(m_editModeBtn);
-        });
-        this->defineKeybind("robtop.geometry-dash/delete-mode", [=] {
-            this->toggleMode(m_deleteModeBtn);
-        });
-        this->defineKeybind("robtop.geometry-dash/rotate-ccw", [=] {
-            this->transformObjectCall(EditCommand::RotateCCW);
-        });
-        this->defineKeybind("robtop.geometry-dash/rotate-cw", [=] {
-            this->transformObjectCall(EditCommand::RotateCW);
-        });
-        this->defineKeybind("robtop.geometry-dash/flip-x", [=] {
-            this->transformObjectCall(EditCommand::FlipX);
-        });
-        this->defineKeybind("robtop.geometry-dash/flip-y", [=] {
-            this->transformObjectCall(EditCommand::FlipY);
-        });
-        this->defineKeybind("robtop.geometry-dash/delete", [=] {
-            this->onDeleteSelected(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/undo", [=] {
-            this->undoLastAction(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/redo", [=] {
-            this->redoLastAction(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/deselect-all", [=] {
-            this->deselectAll();
-        });
-        this->defineKeybind("robtop.geometry-dash/copy", [=] {
-            this->onCopy(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/paste", [=] {
-            this->onPaste(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/copy-paste", [=] {
-            this->onDuplicate(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/toggle-rotate", [=] {
-            this->toggleEnableRotate(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/toggle-free-move", [=] {
-            this->toggleFreeMove(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/toggle-swipe", [=] {
-            this->toggleSwipe(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/toggle-snap", [=] {
-            this->toggleSnap(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/playtest", [=] {
-            if (m_editorLayer->m_playbackMode == PlaybackMode::Playing) {
-                this->onStopPlaytest(nullptr);
-            }
-            else {
-                this->onPlaytest(nullptr);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/playback-music", [=] {
-            if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) {
-                this->onPlayback(nullptr);
-            }
-        });
-        this->defineKeybind("robtop.geometry-dash/prev-build-tab", [=] {
-            auto t = m_selectedTab - 1;
-            if (t < 0) {
-                t = m_tabsArray->count() - 1;
-            }
-            this->selectBuildTab(t);
-        });
-        this->defineKeybind("robtop.geometry-dash/next-build-tab", [=] {
-            auto t = m_selectedTab + 1;
-            if (t > static_cast<int>(m_tabsArray->count() - 1)) {
-                t = 0;
-            }
-            this->selectBuildTab(t);
-        });
-        this->defineKeybind("robtop.geometry-dash/next-layer", [=] {
-            this->onGroupUp(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/prev-layer", [=] {
-            this->onGroupDown(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/scroll-up", [=] {
-            this->moveGamelayer({ .0f, 10.f });
-        });
-        this->defineKeybind("robtop.geometry-dash/scroll-down", [=] {
-            this->moveGamelayer({ .0f, -10.f });
-        });
-        this->defineKeybind("robtop.geometry-dash/zoom-in", [=] {
-            this->zoomIn(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/zoom-out", [=] {
-            this->zoomOut(nullptr);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-left", [=] {
-            this->moveObjectCall(EditCommand::Left);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-right", [=] {
-            this->moveObjectCall(EditCommand::Right);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-up", [=] {
-            this->moveObjectCall(EditCommand::Up);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-down", [=] {
-            this->moveObjectCall(EditCommand::Down);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [=] {
-            this->moveObjectCall(EditCommand::SmallLeft);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-right-small", [=] {
-            this->moveObjectCall(EditCommand::SmallRight);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-up-small", [=] {
-            this->moveObjectCall(EditCommand::SmallUp);
-        });
-        this->defineKeybind("robtop.geometry-dash/move-obj-down-small", [=] {
-            this->moveObjectCall(EditCommand::SmallDown);
+
+        Loader::get()->queueInMainThread([this] {
+            this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
+                m_editorLayer->queueButton(platformButton(), down, false);
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
+                m_editorLayer->queueButton(platformButton(), down, true);
+            });
+            this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
+                if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
+                    EditorUI::onPause(nullptr);
+                };
+            });
+            this->defineKeybind("robtop.geometry-dash/build-mode", [=] {
+                this->toggleMode(m_buildModeBtn);
+            });
+            this->defineKeybind("robtop.geometry-dash/edit-mode", [=] {
+                this->toggleMode(m_editModeBtn);
+            });
+            this->defineKeybind("robtop.geometry-dash/delete-mode", [=] {
+                this->toggleMode(m_deleteModeBtn);
+            });
+            this->defineKeybind("robtop.geometry-dash/rotate-ccw", [=] {
+                this->transformObjectCall(EditCommand::RotateCCW);
+            });
+            this->defineKeybind("robtop.geometry-dash/rotate-cw", [=] {
+                this->transformObjectCall(EditCommand::RotateCW);
+            });
+            this->defineKeybind("robtop.geometry-dash/flip-x", [=] {
+                this->transformObjectCall(EditCommand::FlipX);
+            });
+            this->defineKeybind("robtop.geometry-dash/flip-y", [=] {
+                this->transformObjectCall(EditCommand::FlipY);
+            });
+            this->defineKeybind("robtop.geometry-dash/delete", [=] {
+                this->onDeleteSelected(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/undo", [=] {
+                this->undoLastAction(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/redo", [=] {
+                this->redoLastAction(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/deselect-all", [=] {
+                this->deselectAll();
+            });
+            this->defineKeybind("robtop.geometry-dash/copy", [=] {
+                this->onCopy(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/paste", [=] {
+                this->onPaste(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/copy-paste", [=] {
+                this->onDuplicate(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-rotate", [=] {
+                this->toggleEnableRotate(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-free-move", [=] {
+                this->toggleFreeMove(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-swipe", [=] {
+                this->toggleSwipe(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-snap", [=] {
+                this->toggleSnap(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/playtest", [=] {
+                if (m_editorLayer->m_playbackMode == PlaybackMode::Playing) {
+                    this->onStopPlaytest(nullptr);
+                }
+                else {
+                    this->onPlaytest(nullptr);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/playback-music", [=] {
+                if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) {
+                    this->onPlayback(nullptr);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/prev-build-tab", [=] {
+                auto t = m_selectedTab - 1;
+                if (t < 0) {
+                    t = m_tabsArray->count() - 1;
+                }
+                this->selectBuildTab(t);
+            });
+            this->defineKeybind("robtop.geometry-dash/next-build-tab", [=] {
+                auto t = m_selectedTab + 1;
+                if (t > static_cast<int>(m_tabsArray->count() - 1)) {
+                    t = 0;
+                }
+                this->selectBuildTab(t);
+            });
+            this->defineKeybind("robtop.geometry-dash/next-layer", [=] {
+                this->onGroupUp(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/prev-layer", [=] {
+                this->onGroupDown(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/scroll-up", [=] {
+                this->moveGamelayer({ .0f, 10.f });
+            });
+            this->defineKeybind("robtop.geometry-dash/scroll-down", [=] {
+                this->moveGamelayer({ .0f, -10.f });
+            });
+            this->defineKeybind("robtop.geometry-dash/zoom-in", [=] {
+                this->zoomIn(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/zoom-out", [=] {
+                this->zoomOut(nullptr);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-left", [=] {
+                this->moveObjectCall(EditCommand::Left);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-right", [=] {
+                this->moveObjectCall(EditCommand::Right);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-up", [=] {
+                this->moveObjectCall(EditCommand::Up);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-down", [=] {
+                this->moveObjectCall(EditCommand::Down);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [=] {
+                this->moveObjectCall(EditCommand::SmallLeft);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-right-small", [=] {
+                this->moveObjectCall(EditCommand::SmallRight);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-up-small", [=] {
+                this->moveObjectCall(EditCommand::SmallUp);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-down-small", [=] {
+                this->moveObjectCall(EditCommand::SmallDown);
+            });
         });
 
         return true;
