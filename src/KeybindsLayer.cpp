@@ -1,4 +1,5 @@
 #include "KeybindsLayer.hpp"
+#include "Geode/loader/Event.hpp"
 #define FTS_FUZZY_MATCH_IMPLEMENTATION
 #include <Geode/external/fts/fts_fuzzy_match.h>
 #include <Geode/binding/ButtonSprite.hpp>
@@ -209,6 +210,9 @@ void EnterBindLayer::onRemove(CCObject*) {
 ListenerResult EnterBindLayer::onPressed(PressBindEvent* event) {
     if (event->isDown()) {
         auto old = m_label;
+        if (event->getBind() == nullptr) {
+            return ListenerResult::Stop;
+        }
         m_label = event->getBind()->createLabel();
         limitNodeSize(
             m_label,
