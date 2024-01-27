@@ -9,6 +9,11 @@
 	"developer": "Geode Team",
 	"description": "Custom keybinds support for Geode",
 	"resources": {
+		"spritesheets": {
+			"KB_ControllerSheet": [
+				"resources/controller/*.png"
+			]
+		},
 		"sprites": [
 			"resources/*.png"
 		]

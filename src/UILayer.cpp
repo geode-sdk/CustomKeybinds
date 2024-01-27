@@ -3,6 +3,9 @@
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include "../include/Keybinds.hpp"
+#include "Geode/Enums.hpp"
+#include "Geode/GeneratedPredeclare.hpp"
+#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
 
 using namespace geode::prelude;
 using namespace keybinds;
@@ -132,6 +135,11 @@ struct $modify(UILayer) {
                     PlayLayer::get()->pauseGame(true);
                 }
             });
+            this->defineKeybind("robtop.geometry-dash/restart-level", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->resetLevel();
+                }
+            });
 
             // display practice mode button keybinds
             if (auto menu = this->getChildByID("checkpoint-menu")) {
@@ -233,7 +241,13 @@ $execute {
         "robtop.geometry-dash/restart-level",
         "Restart level",
         "Restarts the Level",
-        { },
+        { Keybind::create(cocos2d::KEY_R, Modifier::None) },
         Category::PLAY_PAUSE, false
     });
+    // BindManager::get()->registerBindable({
+    //     "robtop.geometry-dash/move-left",
+    //     "Move left",
+    //     "Moves the player left in platformer mode",
+    //     { Keybind::create(cocos2d::KEY_A), Keybind::create(cocos2d::KEY_ArrowLeft), Keybind::create(cocos2d::CONTROLLER_Left), Keybind::create() }
+    // });
 }

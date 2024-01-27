@@ -1,4 +1,6 @@
 #include "../include/Keybinds.hpp"
+#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
+#include "Geode/cocos/sprite_nodes/CCSprite.h"
 #include <Geode/utils/ranges.hpp>
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
@@ -21,6 +23,7 @@ bool keybinds::operator&(Modifier const& a, Modifier const& b) {
 }
 
 std::string keybinds::keyToString(enumKeyCodes key) {
+    log::info("{}", static_cast<int>(key));
     switch (key) {
         case KEY_None:      return "";
         case KEY_C:         return "C";
@@ -28,6 +31,14 @@ std::string keybinds::keyToString(enumKeyCodes key) {
         case KEY_Divide:    return "Div";
         case KEY_OEMPlus:   return "Plus";
         case KEY_OEMMinus:  return "Minus";
+        case CONTROLLER_LTHUMBSTICK_DOWN: return "L_THUMBSTICK_DOWN";
+        case CONTROLLER_LTHUMBSTICK_LEFT: return "L_THUMBSTICK_LEFT";
+        case CONTROLLER_LTHUMBSTICK_UP: return "L_THUMBSTICK_UP";
+        case CONTROLLER_LTHUMBSTICK_RIGHT: return "L_THUMBSTICK_RIGHT";
+        case CONTROLLER_RTHUMBSTICK_RIGHT: return "R_THUMBSTICK_RIGHT";
+        case CONTROLLER_RTHUMBSTICK_LEFT: return "L_THUMBSTICK_RIGHT";
+        case CONTROLLER_RTHUMBSTICK_DOWN: return "L_THUMBSTICK_DOWN";
+        case CONTROLLER_RTHUMBSTICK_UP: return "L_THUMBSTICK_UP";
         case static_cast<enumKeyCodes>(-1): return "Unk";
         default: return CCKeyboardDispatcher::get()->keyToString(key);
     }
@@ -47,7 +58,7 @@ bool keybinds::keyIsModifier(enumKeyCodes key) {
 }
 
 bool keybinds::keyIsController(enumKeyCodes key) {
-    return key >= CONTROLLER_A && key <= CONTROLLER_Right;
+    return key >= CONTROLLER_A && key <= CONTROLLER_RTHUMBSTICK_RIGHT;
 }
 
 bool Bind::isEqual(Bind* other) const {
@@ -155,7 +166,7 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
 
 ControllerBind* ControllerBind::parse(matjson::Value const& value) {
     return ControllerBind::create(
-        static_cast<enumKeyCodes>(value["button"].as_double())
+        static_cast<enumKeyCodes>(value["button"].as_int())
     );
 }
 
@@ -197,17 +208,66 @@ CCNode* ControllerBind::createLabel() const {
         case CONTROLLER_Left: sprite = "controllerBtn_DPad_Left_001.png"; break;
         case CONTROLLER_Up: sprite = "controllerBtn_DPad_Up_001.png"; break;
         case CONTROLLER_Right: sprite = "controllerBtn_DPad_Right_001.png"; break;
-        case CONTROLLER_LT: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_RT: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_LT: sprite = "controllerBtn_LT_001.png"_spr; break;
+        case CONTROLLER_RT: sprite = "controllerBtn_RT_001.png"_spr; break;
         // todo: are these the same
-        case CONTROLLER_LB: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_RB: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_LB: sprite = "controllerBtn_LB_001.png"_spr; break;
+        case CONTROLLER_RB: sprite = "controllerBtn_RB_001.png"_spr; break;
+        case CONTROLLER_LTHUMBSTICK_DOWN: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_LEFT: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_RIGHT: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_UP: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_RIGHT: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_DOWN: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_LEFT: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_UP: sprite = "controllerBtn_RThumb_001.png"; break;
         default: sprite = nullptr;
     }
     if (!sprite) {
         return CCLabelBMFont::create("Unk", "goldFont.fnt");
     }
-    return CCSprite::createWithSpriteFrameName(sprite);
+    auto spr = CCSprite::createWithSpriteFrameName(sprite);
+    log::info("Creating sprite");
+    switch (m_button) {
+        case CONTROLLER_LTHUMBSTICK_DOWN:
+        case CONTROLLER_RTHUMBSTICK_DOWN: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(13.f, -5.5f));
+            arrow->setScale(0.7f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_LEFT:
+        case CONTROLLER_RTHUMBSTICK_LEFT: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(-5.5f, 13.5f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(90.f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_RIGHT:
+        case CONTROLLER_RTHUMBSTICK_RIGHT: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(31.5f, 13.f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(270.f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_UP:
+        case CONTROLLER_RTHUMBSTICK_UP: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(13.f, 31.f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(180.f);
+            spr->addChild(arrow);
+            break;
+        }
+
+        default: {}
+    }
+    return spr;
 }
 
 std::string ControllerBind::getDeviceID() const {

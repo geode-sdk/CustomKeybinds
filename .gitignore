@@ -49,3 +49,6 @@
 
 # ILY vscode
 **/.vscode
+
+# Clang cache
+.cache
