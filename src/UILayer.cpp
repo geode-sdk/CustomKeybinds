@@ -6,7 +6,6 @@
 #include "../include/Keybinds.hpp"
 #include "Geode/Enums.hpp"
 #include "Geode/GeneratedPredeclare.hpp"
-#include "Geode/binding/GameManager.hpp"
 #include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
 
 using namespace geode::prelude;
@@ -91,10 +90,6 @@ struct $modify(PauseLayer) {
 };
 
 struct $modify(UILayer) {
-    // TODO remove shitty hack
-    // This is such a shitty hack but I'm not finding the pad for playlayer stuff
-    // bool pressedToggleHitboxes = false;
-
     static void onModify(auto& self) {
         (void)self.setHookPriority("UILayer::keyDown", 1000);
         (void)self.setHookPriority("UILayer::keyUp", 1000);
@@ -178,12 +173,12 @@ struct $modify(UILayer) {
                     PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Right), down, true);
                 }
             });
-            // this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
-            //     if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
-            //         m_fields->pressedToggleHitboxes = true;
-            //         this->keyDown(enumKeyCodes::KEY_P);
-            //     }
-            // });
+            this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                    // TODO actually reverse PlayLayer::toggleDebugDraw (its inlined and needs 2 members, a bool and a CCDrawNode*)
+                    this->keyDown(enumKeyCodes::KEY_P);
+                }
+            });
             // display practice mode button keybinds
             if (auto menu = this->getChildByID("checkpoint-menu")) {
                 if (auto add = menu->getChildByID("add-checkpoint-button")) {
@@ -214,12 +209,7 @@ struct $modify(UILayer) {
 
     void keyDown(enumKeyCodes key) {
         if (key == enumKeyCodes::KEY_Escape || key == enumKeyCodes::KEY_P) {
-            // if (key == enumKeyCodes::KEY_P && m_fields->pressedToggleHitboxes) {
-            //     m_fields->pressedToggleHitboxes = false;
-            //     UILayer::keyDown(key);
-            // } else {
-                UILayer::keyDown(key);
-            // }
+            UILayer::keyDown(key);
         }
     }
     void keyUp(enumKeyCodes) {}
@@ -296,13 +286,13 @@ $execute {
         { ControllerBind::create(CONTROLLER_Start) },
         Category::PLAY, false
     });
-    // BindManager::get()->registerBindable({
-    //     "robtop.geometry-dash/toggle-hitboxes",
-    //     "Toggle hitboxes",
-    //     "Toggles hitboxes while in practice mode",
-    //     { Keybind::create(KEY_P) },
-    //     Category::PLAY, false
-    // });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/toggle-hitboxes",
+        "Toggle hitboxes",
+        "Toggles hitboxes while in practice mode",
+        { Keybind::create(KEY_P) },
+        Category::PLAY, false
+    });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/restart-level",
         "Restart level",
