@@ -176,7 +176,9 @@ struct $modify(UILayer) {
             this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
                 if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     // TODO actually reverse PlayLayer::toggleDebugDraw (its inlined and needs 2 members, a bool and a CCDrawNode*)
+                    allowKeyDownThrough = true;
                     this->keyDown(enumKeyCodes::KEY_P);
+                    allowKeyDownThrough = false;
                 }
             });
             // display practice mode button keybinds
@@ -207,8 +209,10 @@ struct $modify(UILayer) {
         }, id);
     }
 
+    // silly hack for hitboxes..
+    static inline bool allowKeyDownThrough = false;
     void keyDown(enumKeyCodes key) {
-        if (key == enumKeyCodes::KEY_Escape || key == enumKeyCodes::KEY_P) {
+        if (key == enumKeyCodes::KEY_Escape || allowKeyDownThrough) {
             UILayer::keyDown(key);
         }
     }
