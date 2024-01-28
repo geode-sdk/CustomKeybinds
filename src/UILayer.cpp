@@ -223,7 +223,8 @@ $execute {
         { 
             Keybind::create(KEY_Space), 
             Keybind::create(KEY_W),
-            ControllerBind::create(CONTROLLER_A), 
+            ControllerBind::create(CONTROLLER_A),
+            ControllerBind::create(CONTROLLER_Up),
             ControllerBind::create(CONTROLLER_RB) 
         },
         Category::PLAY,
