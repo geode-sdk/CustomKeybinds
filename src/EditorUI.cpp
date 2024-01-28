@@ -1,7 +1,10 @@
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
+#include <unordered_map>
+#include <unordered_set>
 #include "../include/Keybinds.hpp"
 #include "Geode/Enums.hpp"
+#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
 
 using namespace geode::prelude;
 using namespace keybinds;
@@ -37,6 +40,8 @@ struct $modify(EditorPauseLayer) {
         }
     }
 };
+
+std::unordered_set<enumKeyCodes> g_allowedKeyCodes;
 
 struct $modify(EditorUI) {
     static void onModify(auto& self) {
@@ -199,9 +204,43 @@ struct $modify(EditorUI) {
             this->defineKeybind("robtop.geometry-dash/move-obj-down-small", [=] {
                 this->moveObjectCall(EditCommand::SmallDown);
             });
+            this->defineKeybind("robtop.geometry-dash/lock-preview", [=] {
+                g_allowedKeyCodes.insert(KEY_F1);
+                this->keyDown(KEY_F1);
+            });
+            this->defineKeybind("robtop.geometry-dash/unlock-preview", [=] {
+                g_allowedKeyCodes.insert(KEY_F2);
+                this->keyDown(KEY_F2);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-preview-mode", [=] {
+                g_allowedKeyCodes.insert(KEY_F3);
+                this->keyDown(KEY_F3);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-particle-icons", [=] {
+                g_allowedKeyCodes.insert(KEY_F4);
+                this->keyDown(KEY_F4);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-editor-hitboxes", [=] {
+                g_allowedKeyCodes.insert(KEY_F5);
+                this->keyDown(KEY_F5);
+            });
+            this->defineKeybind("robtop.geometry-dash/toggle-hide-invisible", [=] {
+                g_allowedKeyCodes.insert(KEY_F6);
+                this->keyDown(KEY_F6);
+            });
         });
 
         return true;
+    }
+
+    TodoReturn transformObjectCall(EditCommand p0) {
+        log::info("{}", static_cast<int>(p0));
+        return EditorUI::transformObjectCall(p0);
+    }
+
+    TodoReturn moveObjectCall(EditCommand p0) {
+        log::info("{}", static_cast<int>(p0));
+        return EditorUI::moveObjectCall(p0);
     }
 
     void defineKeybind(const char* id, std::function<void(bool)> callback) {
@@ -221,7 +260,12 @@ struct $modify(EditorUI) {
     }
 
     void keyDown(enumKeyCodes key) {
-        if (key == enumKeyCodes::KEY_Escape) {
+        // TODO: I'll let F keys through until we figure out how to toggle them
+        if (key == enumKeyCodes::KEY_Escape || (key >= enumKeyCodes::KEY_F1 && key <= enumKeyCodes::KEY_F6)) {
+            EditorUI::keyDown(key);
+        }
+        if (g_allowedKeyCodes.contains(key)) {
+            g_allowedKeyCodes.erase(key);
             EditorUI::keyDown(key);
         }
     }
@@ -424,6 +468,54 @@ $execute {
         "",
         { Keybind::create(KEY_OEMMinus, Modifier::Shift) },
         Category::EDITOR_UI, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/lock-preview",
+        "Lock Preview",
+        "Locks the editor preview line at the center of the camera",
+        { Keybind::create(KEY_F1) },
+        Category::EDITOR_UI, 
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/unlock-preview",
+        "Unlock Preview",
+        "Unlocks the editor preview line",
+        { Keybind::create(KEY_F2) },
+        Category::EDITOR_UI, 
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/toggle-preview-mode",
+        "Toggle Preview Mode",
+        "Toggles preview mode ON/OFF",
+        { Keybind::create(KEY_F3) },
+        Category::EDITOR_UI, 
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/toggle-particle-icons",
+        "Toggle Particle Icons",
+        "Toggles between showing particles or showing their icons",
+        { Keybind::create(KEY_F4) },
+        Category::EDITOR_UI, 
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/toggle-editor-hitboxes",
+        "Toggle Editor Hitboxes",
+        "Toggles hitboxes in the editor",
+        { Keybind::create(KEY_F5) },
+        Category::EDITOR_UI, 
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/toggle-hide-invisible",
+        "Toggle Hide Invisible",
+        "Toggles visibility of hidden objects",
+        { Keybind::create(KEY_F6) },
+        Category::EDITOR_UI, 
+        false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-obj-left",
