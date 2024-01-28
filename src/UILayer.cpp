@@ -252,7 +252,7 @@ $execute {
         "robtop.geometry-dash/move-left-p2",
         "Move left",
         "Moves P2 left in platformer mode",
-        { Keybind::create(KEY_ArrowLeft), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
+        { Keybind::create(KEY_Left), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
         Category::PLAY,
         true
     });
@@ -260,7 +260,7 @@ $execute {
         "robtop.geometry-dash/move-right-p2",
         "Move right",
         "Moves P2 right in platformer mode",
-        { Keybind::create(KEY_ArrowRight), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
+        { Keybind::create(KEY_Right), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
         Category::PLAY,
         true
     });
