@@ -225,7 +225,6 @@ CCNode* ControllerBind::createLabel() const {
         return CCLabelBMFont::create("Unk", "goldFont.fnt");
     }
     auto spr = CCSprite::createWithSpriteFrameName(sprite);
-    log::info("Creating sprite");
     switch (m_button) {
         case CONTROLLER_LTHUMBSTICK_DOWN:
         case CONTROLLER_RTHUMBSTICK_DOWN: {
