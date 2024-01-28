@@ -274,6 +274,7 @@ namespace keybinds {
         geode::EventListener<PressBindFilter> m_listener =
             geode::EventListener<PressBindFilter>(this, &BindManager::onDispatch);
         std::vector<std::pair<ActionID, float>> m_repeating;
+        std::unordered_set<ActionID> m_held;
 
         BindManager();
 

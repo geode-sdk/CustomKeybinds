@@ -220,7 +220,12 @@ $execute {
         "robtop.geometry-dash/jump-p1",
         "Jump P1",
         "Player 1 Jump",
-        { Keybind::create(KEY_Space), ControllerBind::create(CONTROLLER_A), ControllerBind::create(CONTROLLER_RB) },
+        { 
+            Keybind::create(KEY_Space), 
+            Keybind::create(KEY_W),
+            ControllerBind::create(CONTROLLER_A), 
+            ControllerBind::create(CONTROLLER_RB) 
+        },
         Category::PLAY,
         false
     });
@@ -234,35 +239,35 @@ $execute {
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-left-p1",
-        "Move left",
+        "Move left P1",
         "Moves P1 left in platformer mode",
         { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
         Category::PLAY,
-        true
+        false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-right-p1",
-        "Move right",
+        "Move right P1",
         "Moves P1 right in platformer mode",
         { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
         Category::PLAY,
-        true
+        false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-left-p2",
-        "Move left",
+        "Move left P2",
         "Moves P2 left in platformer mode",
         { Keybind::create(KEY_Left), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
         Category::PLAY,
-        true
+        false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-right-p2",
-        "Move right",
+        "Move right P2",
         "Moves P2 right in platformer mode",
         { Keybind::create(KEY_Right), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
         Category::PLAY,
-        true
+        false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/place-checkpoint",
