@@ -166,7 +166,7 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
 
 ControllerBind* ControllerBind::parse(matjson::Value const& value) {
     return ControllerBind::create(
-        static_cast<enumKeyCodes>(value["button"].as_int())
+        static_cast<enumKeyCodes>(value["button"].as_double())
     );
 }
 

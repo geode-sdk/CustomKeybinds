@@ -72,6 +72,13 @@ struct $modify(PauseLayer) {
             }
             return ListenerResult::Propagate;
         }, "robtop.geometry-dash/restart-level");
+        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            if (event->isDown()) {
+                this->onRestartFull(nullptr);
+                return ListenerResult::Stop;
+            }
+            return ListenerResult::Propagate;
+        }, "robtop.geometry-dash/full-restart-level");
     }
 
     void keyDown(enumKeyCodes key) {
@@ -140,6 +147,31 @@ struct $modify(UILayer) {
                     PlayLayer::get()->resetLevel();
                 }
             });
+            this->defineKeybind("robtop.geometry-dash/full-restart-level", [=](bool down) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->fullReset();
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p1", [=](bool down) {
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Left), down, false);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p1", [=](bool down) {
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Right), down, false);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p2", [=](bool down) {
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Left), down, true);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p2", [=](bool down) {
+                if (this->isCurrentPlayLayer() && !this->isPaused()) {
+                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Right), down, true);
+                }
+            });
 
             // display practice mode button keybinds
             if (auto menu = this->getChildByID("checkpoint-menu")) {
@@ -182,7 +214,7 @@ $execute {
         "robtop.geometry-dash/jump-p1",
         "Jump P1",
         "Player 1 Jump",
-        { Keybind::create(KEY_Space, Modifier::None), ControllerBind::create(CONTROLLER_A), ControllerBind::create(CONTROLLER_RB) },
+        { Keybind::create(KEY_Space), ControllerBind::create(CONTROLLER_A), ControllerBind::create(CONTROLLER_RB) },
         Category::PLAY,
         false
     });
@@ -190,9 +222,41 @@ $execute {
         "robtop.geometry-dash/jump-p2",
         "Jump P2",
         "Player 2 Jump",
-        { Keybind::create(KEY_Up, Modifier::None), ControllerBind::create(CONTROLLER_LB) },
+        { Keybind::create(KEY_Up), ControllerBind::create(CONTROLLER_LB) },
         Category::PLAY,
         false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-left-p1",
+        "Move left",
+        "Moves P1 left in platformer mode",
+        { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
+        Category::PLAY,
+        true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-right-p1",
+        "Move right",
+        "Moves P1 right in platformer mode",
+        { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
+        Category::PLAY,
+        true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-left-p2",
+        "Move left",
+        "Moves P2 left in platformer mode",
+        { Keybind::create(KEY_ArrowLeft), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
+        Category::PLAY,
+        true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-right-p2",
+        "Move right",
+        "Moves P2 right in platformer mode",
+        { Keybind::create(KEY_ArrowRight), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
+        Category::PLAY,
+        true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/place-checkpoint",
@@ -244,10 +308,11 @@ $execute {
         { Keybind::create(cocos2d::KEY_R, Modifier::None) },
         Category::PLAY_PAUSE, false
     });
-    // BindManager::get()->registerBindable({
-    //     "robtop.geometry-dash/move-left",
-    //     "Move left",
-    //     "Moves the player left in platformer mode",
-    //     { Keybind::create(cocos2d::KEY_A), Keybind::create(cocos2d::KEY_ArrowLeft), Keybind::create(cocos2d::CONTROLLER_Left), Keybind::create() }
-    // });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/full-restart-level",
+        "Full restart level",
+        "Restarts the level from the beginning",
+        { Keybind::create(KEY_R, Modifier::Control) },
+        Category::PLAY_PAUSE, false
+    });
 }
