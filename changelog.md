@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.2
+
+- Add DPad Up as default for P1 Jump
+- Make keybind info popup wider
+
 ## v1.3.1
 
 - Changed the name of the default platformer binds (move left right)
