@@ -1,6 +1,7 @@
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 #include "../include/Keybinds.hpp"
+#include "Geode/Enums.hpp"
 
 using namespace geode::prelude;
 using namespace keybinds;
@@ -39,7 +40,7 @@ struct $modify(EditorPauseLayer) {
 
 struct $modify(EditorUI) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("EditorUI::keyDown", 1000);
+        (void)self.setHookPriority("EditorUI::keyDown", 1000000);
         (void)self.setHookPriority("EditorUI::keyUp", 1000);
     }
 
@@ -57,6 +58,18 @@ struct $modify(EditorUI) {
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
                 m_editorLayer->queueButton(platformButton(), down, true);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
+                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Left), down, false);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
+                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Right), down, false);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
+                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Left), down, true);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
+                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Right), down, true);
             });
             this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
                 if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
