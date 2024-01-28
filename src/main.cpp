@@ -3,6 +3,7 @@
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/ui/Notification.hpp>
 #include "../include/Keybinds.hpp"
+#include "Geode/modify/Modify.hpp"
 #include "KeybindsLayer.hpp"
 
 using namespace geode::prelude;
@@ -12,7 +13,7 @@ class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
 
 	static void onModify(auto& self) {
-		(void)self.setHookPriority("cocos2d::CCKeyboardDispatcher::dispatchKeyboardMSG", 100000);
+		(void)self.setHookPriority("cocos2d::CCKeyboardDispatcher::dispatchKeyboardMSG", 1000);
 	}
 
 	void updateModifierKeys(bool shift, bool ctrl, bool alt, bool cmd) {

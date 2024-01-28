@@ -4,7 +4,6 @@
 #include <Geode/utils/ranges.hpp>
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
-#include <Geode/loader/Log.hpp>
 #include <GUI/CCControlExtension/CCScale9Sprite.h>
 
 using namespace geode::prelude;
@@ -23,7 +22,6 @@ bool keybinds::operator&(Modifier const& a, Modifier const& b) {
 }
 
 std::string keybinds::keyToString(enumKeyCodes key) {
-    log::info("{}", static_cast<int>(key));
     switch (key) {
         case KEY_None:      return "";
         case KEY_C:         return "C";
