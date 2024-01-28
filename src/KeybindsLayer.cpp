@@ -514,9 +514,10 @@ void BindableNode::onExpand(CCObject*) {
 
 void BindableNode::onInfo(CCObject*) {
     FLAlertLayer::create(
+        nullptr,
         m_action.getName().c_str(),
         fmt::format(
-            "{}\n\nID: <cb>{}</c>\nAdded by <cp>{}</c>",
+            "{}\n\nID: <cb>{}</c> \nAdded by <cp>{}</c>",
             (m_action.getDescription().empty() ?
                 "No Description Provided" :
                 m_action.getDescription()
@@ -524,7 +525,9 @@ void BindableNode::onInfo(CCObject*) {
             m_action.getID(),
             m_action.getMod()->getID()
         ),
-        "OK"
+        "Ok",
+        nullptr,
+        360.f
     )->show();
 }
 
