@@ -192,6 +192,30 @@ struct $modify(EditorUI) {
             this->defineKeybind("robtop.geometry-dash/move-obj-down", [=] {
                 this->moveObjectCall(EditCommand::Down);
             });
+            this->defineKeybind("robtop.geometry-dash/move-obj-half-left", [=] {
+                this->moveObjectCall(EditCommand::HalfLeft);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-half-right", [=] {
+                this->moveObjectCall(EditCommand::HalfRight);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-half-up", [=] {
+                this->moveObjectCall(EditCommand::HalfUp);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-half-down", [=] {
+                this->moveObjectCall(EditCommand::HalfDown);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-big-left", [=] {
+                this->moveObjectCall(EditCommand::BigLeft);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-big-right", [=] {
+                this->moveObjectCall(EditCommand::BigRight);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-big-up", [=] {
+                this->moveObjectCall(EditCommand::BigUp);
+            });
+            this->defineKeybind("robtop.geometry-dash/move-obj-big-down", [=] {
+                this->moveObjectCall(EditCommand::BigDown);
+            });
             this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [=] {
                 this->moveObjectCall(EditCommand::SmallLeft);
             });
@@ -571,6 +595,62 @@ $execute {
         "Move Object Down Small",
         "Move Selected Object(s) Down 2 Units",
         { Keybind::create(KEY_S, Modifier::Shift) },
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-half-left",
+        "Move Object Half Left",
+        "Move Selected Object(s) half of a Block left (15 Units)",
+        {Keybind::create(KEY_A, Modifier::Control | Modifier::Alt)},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-half-right",
+        "Move Object Half Right",
+        "Move Selected Object(s) half of a Block right (15 Units)",
+        {Keybind::create(KEY_D, Modifier::Control | Modifier::Alt)},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-half-up",
+        "Move Object Half Up",
+        "Move Selected Object(s) half of a Block up (15 Units)",
+        {Keybind::create(KEY_W, Modifier::Control | Modifier::Alt)},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-half-down",
+        "Move Object Half Down",
+        "Move Selected Object(s) half of a Block down (15 Units)",
+        {Keybind::create(KEY_S, Modifier::Control | Modifier::Alt)},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-big-left",
+        "Move Object Big Left",
+        "Move Selected Object(s) 5 Blocks left (150 Units)",
+        {},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-big-right",
+        "Move Object Big Right",
+        "Move Selected Object(s) 5 Blocks right (150 Units)",
+        {},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-big-up",
+        "Move Object Big Up",
+        "Move Selected Object(s) 5 Blocks up (150 Units)",
+        {},
+        Category::EDITOR_MOVE, true
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-obj-big-down",
+        "Move Object Big Down",
+        "Move Selected Object(s) 5 Blocks down (150 Units)",
+        {},
         Category::EDITOR_MOVE, true
     });
 }
