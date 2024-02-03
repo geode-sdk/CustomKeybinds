@@ -144,12 +144,12 @@ struct $modify(UILayer) {
                 }
             });
             this->defineKeybind("robtop.geometry-dash/restart-level", [=](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused() && PlayLayer::get()->canPauseGame()) {
                     PlayLayer::get()->resetLevel();
                 }
             });
             this->defineKeybind("robtop.geometry-dash/full-restart-level", [=](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused() && PlayLayer::get()->canPauseGame()) {
                     PlayLayer::get()->fullReset();
                 }
             });
