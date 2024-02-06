@@ -192,30 +192,6 @@ struct $modify(EditorUI) {
             this->defineKeybind("robtop.geometry-dash/move-obj-down", [=] {
                 this->moveObjectCall(EditCommand::Down);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-half-left", [=] {
-                this->moveObjectCall(EditCommand::HalfLeft);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-half-right", [=] {
-                this->moveObjectCall(EditCommand::HalfRight);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-half-up", [=] {
-                this->moveObjectCall(EditCommand::HalfUp);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-half-down", [=] {
-                this->moveObjectCall(EditCommand::HalfDown);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-big-left", [=] {
-                this->moveObjectCall(EditCommand::BigLeft);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-big-right", [=] {
-                this->moveObjectCall(EditCommand::BigRight);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-big-up", [=] {
-                this->moveObjectCall(EditCommand::BigUp);
-            });
-            this->defineKeybind("robtop.geometry-dash/move-obj-big-down", [=] {
-                this->moveObjectCall(EditCommand::BigDown);
-            });
             this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [=] {
                 this->moveObjectCall(EditCommand::SmallLeft);
             });
