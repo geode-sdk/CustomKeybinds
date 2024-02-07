@@ -703,6 +703,9 @@ void BindManager::resetBindsToDefault(ActionID const& action) {
     this->stopAllRepeats();
     this->removeAllBindsFrom(action);
     if (auto bindable = this->getBindable(action)) {
+        if (auto repeat = this->getRepeatOptionsFor(action)) {
+            this->setRepeatOptionsFor(action, RepeatOptions());
+        }
         for (auto& def : bindable->getDefaults()) {
             this->addBindTo(action, def);
         }

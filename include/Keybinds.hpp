@@ -248,8 +248,8 @@ namespace keybinds {
     };
 
     struct CUSTOM_KEYBINDS_DLL RepeatOptions {
-        bool enabled = false;
-        size_t rate = 300;
+        bool enabled = true;
+        size_t rate = 50;
         size_t delay = 500;
     };
 
