@@ -234,12 +234,10 @@ struct $modify(EditorUI) {
     }
 
     TodoReturn transformObjectCall(EditCommand p0) {
-        log::info("{}", static_cast<int>(p0));
         return EditorUI::transformObjectCall(p0);
     }
 
     TodoReturn moveObjectCall(EditCommand p0) {
-        log::info("{}", static_cast<int>(p0));
         return EditorUI::moveObjectCall(p0);
     }
 
