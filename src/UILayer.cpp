@@ -108,6 +108,16 @@ struct $modify(UILayer) {
         return playLayer != nullptr && playLayer == PlayLayer::get() && getChildOfType<UILayer>(playLayer, 0) == this;
     }
 
+    void pressKeyFallthrough(enumKeyCodes key, bool down) {
+        allowKeyDownThrough = true;
+        if (down) {
+            this->keyDown(key);
+        } else {
+            this->keyUp(key);
+        }
+        allowKeyDownThrough = false;
+    }
+
     bool init(GJBaseGameLayer* layer) {
         if (!UILayer::init(layer))
             return false;
@@ -118,25 +128,16 @@ struct $modify(UILayer) {
             if (!PlayLayer::get()) return;
 
             this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
-                // todo: event priority
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(platformButton(), down, false);
-                }
+                this->pressKeyFallthrough(KEY_Space, down);
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(platformButton(), down, true);
-                }
+                this->pressKeyFallthrough(KEY_Up, down);
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
-                if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
-                    this->onCheck(nullptr);
-                }
+                this->pressKeyFallthrough(KEY_Z, down);
             });
             this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
-                if (down && this->isCurrentPlayLayer() && PlayLayer::get()->m_isPracticeMode) {
-                    this->onDeleteCheck(nullptr);
-                }
+                this->pressKeyFallthrough(KEY_X, down);
             });
             this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
                 if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
@@ -154,31 +155,21 @@ struct $modify(UILayer) {
                 }
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p1", [=](bool down) {
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Left), down, false);
-                }
+                this->pressKeyFallthrough(KEY_A, down);
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p1", [=](bool down) {
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Right), down, false);
-                }
+                this->pressKeyFallthrough(KEY_D, down);
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p2", [=](bool down) {
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Left), down, true);
-                }
+                this->pressKeyFallthrough(KEY_Left, down);
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p2", [=](bool down) {
-                if (this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->queueButton(static_cast<int>(PlayerButton::Right), down, true);
-                }
+                this->pressKeyFallthrough(KEY_Right, down);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
                 if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
-                    // TODO actually reverse PlayLayer::toggleDebugDraw (its inlined and needs 2 members, a bool and a CCDrawNode*)
-                    allowKeyDownThrough = true;
-                    this->keyDown(enumKeyCodes::KEY_P);
-                    allowKeyDownThrough = false;
+                    // This assumes you have quick keys on
+                    this->pressKeyFallthrough(KEY_P, down);
                 }
             });
             // display practice mode button keybinds
@@ -211,12 +202,18 @@ struct $modify(UILayer) {
 
     // silly hack for hitboxes..
     static inline bool allowKeyDownThrough = false;
-    void keyDown(enumKeyCodes key) {
+    void keyDown(enumKeyCodes key) override {
         if (key == enumKeyCodes::KEY_Escape || allowKeyDownThrough) {
             UILayer::keyDown(key);
+            allowKeyDownThrough = false;
         }
     }
-    void keyUp(enumKeyCodes) {}
+    void keyUp(enumKeyCodes key) override {
+        if (allowKeyDownThrough) {
+            UILayer::keyUp(key);
+            allowKeyDownThrough = false;
+        }
+    }
 };
 
 $execute {
