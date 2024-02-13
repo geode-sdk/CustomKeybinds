@@ -11,12 +11,6 @@ using namespace keybinds;
 
 // TODO: move this to header in 1.2.0
 
-#if defined(GEODE_IS_MACOS)
-    static constexpr auto PLATFORM_CONTROL = Modifier::Command;
-#else
-    static constexpr auto PLATFORM_CONTROL = Modifier::Control;
-#endif
-
 class EvilBypass : public CCKeyboardDispatcher {
 public:
     bool setControlPressed(bool pressed) {
@@ -128,28 +122,28 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_Delete);
             });
             this->defineKeybind("robtop.geometry-dash/undo", [=] {
-                this->passThroughKeyDown(KEY_Z, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/redo", [=] {
-                this->passThroughKeyDown(KEY_Z, PLATFORM_CONTROL | Modifier::Shift);
+                this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl | Modifier::Shift);
             });
             this->defineKeybind("robtop.geometry-dash/deselect-all", [=] {
                 this->passThroughKeyDown(KEY_D, Modifier::Alt);
             });
             this->defineKeybind("robtop.geometry-dash/copy", [=] {
-                this->passThroughKeyDown(KEY_C, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_C, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/paste", [=] {
-                this->passThroughKeyDown(KEY_V, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_V, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/copy-paste", [=] {
-                this->passThroughKeyDown(KEY_D, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_D, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-rotate", [=] {
                 this->passThroughKeyDown(KEY_R);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-transform", [=] {
-                this->passThroughKeyDown(KEY_T, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_T, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-free-move", [=] {
                 this->passThroughKeyDown(KEY_F);
@@ -164,7 +158,7 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_Enter);
             });
             this->defineKeybind("robtop.geometry-dash/playback-music", [=] {
-                this->passThroughKeyDown(KEY_Enter, PLATFORM_CONTROL);
+                this->passThroughKeyDown(KEY_Enter, Modifier::PlatformControl);
             });
             this->defineKeybind("robtop.geometry-dash/prev-build-tab", [=] {
                 // not passthrough because this is different from vanilla
@@ -246,7 +240,7 @@ struct $modify(EditorUI) {
                 auto x = std::to_string(i);
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
                 this->defineKeybind("robtop.geometry-dash/save-editor-position-" + x, [=] {
-                    this->passThroughKeyDown(key, PLATFORM_CONTROL);
+                    this->passThroughKeyDown(key, Modifier::PlatformControl);
                 });
                 this->defineKeybind("robtop.geometry-dash/load-editor-position-" + x, [=] {
                     this->passThroughKeyDown(key, Modifier::Alt);
@@ -370,14 +364,14 @@ $execute {
         "robtop.geometry-dash/undo",
         "Undo",
         "Undo Last Action",
-        { Keybind::create(KEY_Z, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_Z, Modifier::PlatformControl) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/redo",
         "Redo",
         "Redo Last Action",
-        { Keybind::create(KEY_Z, PLATFORM_CONTROL | Modifier::Shift) },
+        { Keybind::create(KEY_Z, Modifier::PlatformControl | Modifier::Shift) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
@@ -391,21 +385,21 @@ $execute {
         "robtop.geometry-dash/copy",
         "Copy",
         "Copy Selected Objects",
-        { Keybind::create(KEY_C, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_C, Modifier::PlatformControl) },
         Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/paste",
         "Paste",
         "Paste Selected Objects",
-        { Keybind::create(KEY_V, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_V, Modifier::PlatformControl) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy-paste",
         "Copy + Paste",
         "Duplicate Selected Objects",
-        { Keybind::create(KEY_D, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_D, Modifier::PlatformControl) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
@@ -419,7 +413,7 @@ $execute {
         "robtop.geometry-dash/toggle-transform",
         "Transform",
         "Toggle Transform Control",
-        { Keybind::create(KEY_T, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_T, Modifier::PlatformControl) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
@@ -454,7 +448,7 @@ $execute {
         "robtop.geometry-dash/playback-music",
         "Playback Music",
         "Start / Stop Playing the Level's Music",
-        { Keybind::create(KEY_Enter, PLATFORM_CONTROL) },
+        { Keybind::create(KEY_Enter, Modifier::PlatformControl) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
@@ -624,7 +618,7 @@ $execute {
             "Save Editor Position " + x,
             "Save the current editor camera position in the slot " + x + ". "
             "You can reload this slot back with Load Editor Position " + x,
-            { Keybind::create(static_cast<enumKeyCodes>(KEY_Zero + i), PLATFORM_CONTROL) },
+            { Keybind::create(static_cast<enumKeyCodes>(KEY_Zero + i), Modifier::PlatformControl) },
             Category::EDITOR_UI, false
         });
         BindManager::get()->registerBindable({
