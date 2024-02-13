@@ -2,7 +2,8 @@
 
 ## v1.5.2
  - Fix unpausing with space also causing the player to jump
- - Fix missing "Pan editor while swiping" editor keybind
+ - Add missing "Pan editor while swiping" editor keybind
+ - Add missing "Transform" editor keybind
 
 ## v1.5.1
  - Fix not being able to hold from respawn in PlayLayer
