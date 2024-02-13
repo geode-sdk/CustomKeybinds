@@ -246,6 +246,16 @@ struct $modify(EditorUI) {
                     this->passThroughKeyDown(key, Modifier::Alt);
                 });
             }
+            this->defineKeybind("robtop.geometry-dash/pan-editor", [=](bool down) {
+                if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) {
+                    s_allowPassThrough = true;
+                    if (down) {
+                        this->keyDown(KEY_Space);
+                    } else {
+                        this->keyUp(KEY_Space);
+                    }
+                }
+            });
         });
 
         return true;
@@ -300,7 +310,12 @@ struct $modify(EditorUI) {
             EditorUI::keyDown(key);
         }
     }
-    void keyUp(enumKeyCodes) {}
+    void keyUp(enumKeyCodes key) {
+        if (s_allowPassThrough) {
+            s_allowPassThrough = false;
+            EditorUI::keyUp(key);
+        }
+    }
 };
 
 $execute {
@@ -629,4 +644,11 @@ $execute {
             Category::EDITOR_UI, false
         });
     }
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/pan-editor",
+        "Pan Editor While Swiping",
+        "Allows you to pan in the editor if you have swipe enabled",
+        { Keybind::create(KEY_Space) },
+        Category::EDITOR_UI, false
+    });
 }
