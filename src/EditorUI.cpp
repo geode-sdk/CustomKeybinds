@@ -14,7 +14,7 @@ using namespace keybinds;
 #if defined(GEODE_IS_MACOS)
     static constexpr auto PLATFORM_CONTROL = Modifier::Command;
 #else
-    static constexpr auto PLATFORM_CONTROL = PLATFORM_CONTROL;
+    static constexpr auto PLATFORM_CONTROL = Modifier::Control;
 #endif
 
 class EvilBypass : public CCKeyboardDispatcher {
