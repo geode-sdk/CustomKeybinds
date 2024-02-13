@@ -109,6 +109,9 @@ struct $modify(UILayer) {
     }
 
     void pressKeyFallthrough(enumKeyCodes key, bool down) {
+        // amazing hack
+        if (this->isPaused())
+            return;
         allowKeyDownThrough = true;
         if (down) {
             this->keyDown(key);
@@ -200,7 +203,6 @@ struct $modify(UILayer) {
         }, id);
     }
 
-    // silly hack for hitboxes..
     static inline bool allowKeyDownThrough = false;
     void keyDown(enumKeyCodes key) override {
         if (key == enumKeyCodes::KEY_Escape || allowKeyDownThrough) {
