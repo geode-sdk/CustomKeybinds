@@ -1,3 +1,4 @@
+#include <Geode/Bindings.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
 #include <unordered_map>
