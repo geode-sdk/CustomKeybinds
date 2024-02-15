@@ -91,12 +91,8 @@ struct $modify(PauseLayer) {
 
 struct $modify(UILayer) {
     static void onModify(auto& self) {
-        // These are negative because in this class we make a lot of use of the fallthrough trick,
-        // and if a mod hooks these functions (cough megahack), then their hook gets called twice.
-        // Doing this makes their hook only get called once, although `key` will be the key we are pretending to press,
-        // however i think its a fair compromise.
-        (void)self.setHookPriority("UILayer::keyDown", -1000);
-        (void)self.setHookPriority("UILayer::keyUp", -1000);
+        (void)self.setHookPriority("UILayer::keyDown", 1000);
+        (void)self.setHookPriority("UILayer::keyUp", 1000);
     }
 
     static inline int platformButton() {
