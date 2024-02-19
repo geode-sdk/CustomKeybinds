@@ -130,16 +130,16 @@ struct $modify(UILayer) {
             // do not do anything in the editor
             if (!PlayLayer::get()) return;
 
-            this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/jump-p1", [=](bool down) {
                 this->pressKeyFallthrough(KEY_Space, down);
             });
-            this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/jump-p2", [=](bool down) {
                 this->pressKeyFallthrough(KEY_Up, down);
             });
-            this->defineKeybind("robtop.geometry-dash/place-checkpoint", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/place-checkpoint", [=](bool down) {
                 this->pressKeyFallthrough(KEY_Z, down);
             });
-            this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/delete-checkpoint", [=](bool down) {
                 this->pressKeyFallthrough(KEY_X, down);
             });
             this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
@@ -157,19 +157,19 @@ struct $modify(UILayer) {
                     PlayLayer::get()->fullReset();
                 }
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p1", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/move-left-p1", [=](bool down) {
                 this->pressKeyFallthrough(KEY_A, down);
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p1", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/move-right-p1", [=](bool down) {
                 this->pressKeyFallthrough(KEY_D, down);
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p2", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/move-left-p2", [=](bool down) {
                 this->pressKeyFallthrough(KEY_Left, down);
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p2", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/move-right-p2", [=](bool down) {
                 this->pressKeyFallthrough(KEY_Right, down);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
+            this->defineKeybindStop("robtop.geometry-dash/toggle-hitboxes", [=](bool down) {
                 if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     // This assumes you have quick keys on
                     this->pressKeyFallthrough(KEY_P, down);
@@ -200,6 +200,14 @@ struct $modify(UILayer) {
         PlayLayer::get()->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
             callback(event->isDown());
             return ListenerResult::Propagate;
+        }, id);
+    }
+
+    void defineKeybindStop(const char* id, std::function<void(bool)> callback) {
+        // adding the events to playlayer instead
+        PlayLayer::get()->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+            callback(event->isDown());
+            return ListenerResult::Stop;
         }, id);
     }
 
