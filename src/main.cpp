@@ -94,8 +94,8 @@ protected:
 
 public:
 	void checkController(float) {
-		if (m_cached != AppDelegate::get()->getControllerConnected()) {
-			m_cached = AppDelegate::get()->getControllerConnected();
+		if (m_cached != PlatformToolbox::isControllerConnected()) {
+			m_cached = PlatformToolbox::isControllerConnected();
 			if (m_cached) {
 				BindManager::get()->attachDevice("controller"_spr, &ControllerBind::parse);
 				Notification::create(
