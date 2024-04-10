@@ -261,11 +261,11 @@ struct $modify(EditorUI) {
         return true;
     }
 
-    TodoReturn transformObjectCall(EditCommand p0) {
+    void transformObjectCall(EditCommand p0) {
         return EditorUI::transformObjectCall(p0);
     }
 
-    TodoReturn moveObjectCall(EditCommand p0) {
+    void moveObjectCall(EditCommand p0) {
         return EditorUI::moveObjectCall(p0);
     }
 
@@ -527,7 +527,7 @@ $execute {
         "Lock Preview",
         "Locks the editor preview line at the center of the camera",
         { Keybind::create(KEY_F1) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
@@ -535,7 +535,7 @@ $execute {
         "Unlock Preview",
         "Unlocks the editor preview line",
         { Keybind::create(KEY_F2) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
@@ -543,7 +543,7 @@ $execute {
         "Toggle Preview Mode",
         "Toggles preview mode ON/OFF",
         { Keybind::create(KEY_F3) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
@@ -551,7 +551,7 @@ $execute {
         "Toggle Particle Icons",
         "Toggles between showing particles or showing their icons",
         { Keybind::create(KEY_F4) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
@@ -559,7 +559,7 @@ $execute {
         "Toggle Editor Hitboxes",
         "Toggles hitboxes in the editor",
         { Keybind::create(KEY_F5) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
@@ -567,7 +567,7 @@ $execute {
         "Toggle Hide Invisible",
         "Toggles visibility of hidden objects",
         { Keybind::create(KEY_F6) },
-        Category::EDITOR_UI, 
+        Category::EDITOR_UI,
         false
     });
     BindManager::get()->registerBindable({
