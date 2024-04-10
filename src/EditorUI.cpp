@@ -158,7 +158,9 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_Enter);
             });
             this->defineKeybind("robtop.geometry-dash/playback-music", [=] {
-                this->passThroughKeyDown(KEY_Enter, Modifier::PlatformControl);
+                // RobTop broke this in 2.2, which makes it trigger the playtest keybind
+                // this->passThroughKeyDown(KEY_Enter, Modifier::PlatformControl);
+                EditorUI::onPlayback(nullptr);
             });
             this->defineKeybind("robtop.geometry-dash/prev-build-tab", [=] {
                 // not passthrough because this is different from vanilla
