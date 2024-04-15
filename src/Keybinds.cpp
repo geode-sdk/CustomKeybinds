@@ -1,7 +1,8 @@
 #include "../include/Keybinds.hpp"
-#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
-#include "Geode/cocos/sprite_nodes/CCSprite.h"
-#include "Geode/loader/Event.hpp"
+
+#include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
+#include <Geode/cocos/sprite_nodes/CCSprite.h>
+#include <Geode/loader/Event.hpp>
 #include <Geode/utils/ranges.hpp>
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
@@ -759,7 +760,7 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
                 if (!m_held.contains(action)) {
                     m_held.insert(action);
                     inserted = true;
-                }
+                } 
                 if (auto options = this->getRepeatOptionsFor(action)) {
                     if (options.value().enabled && ranges::contains(m_repeating, [=](auto const& p) { return p.first == action; })) {
                         return ListenerResult::Stop;
