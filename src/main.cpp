@@ -69,11 +69,16 @@ class $modify(CCKeyboardDispatcher) {
 					return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
 				}
 				std::unordered_set<Modifier> modifiersToToggle = this->getModifiersToToggle(key, down);
+				bool ok = true;
 				for (auto& held : s_held) {
+					if (!ok) {
+						break;
+					}
 					for (Modifier modifiers : modifiersToToggle) {
 						Keybind* bind = Keybind::create(held, modifiers);
 						if (bind && PressBindEvent(bind, down).post() == ListenerResult::Stop) {
 							// we want to pass modifiers onwards to the original
+							ok = false;
 							break;
 						}
 					}
