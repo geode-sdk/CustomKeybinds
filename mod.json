@@ -32,5 +32,10 @@
 			"version": "*",
 			"importance": "breaking"
 		}
-	]
+	],
+	"settings": {
+		"open-menu": {
+			"type": "custom"
+		}
+	}
 }

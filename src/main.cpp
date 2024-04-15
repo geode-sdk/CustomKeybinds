@@ -2,8 +2,10 @@
 #include <Geode/modify/MoreOptionsLayer.hpp>
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/ui/Notification.hpp>
+#include <Geode/modify/Modify.hpp>
+#include <Geode/loader/SettingNode.hpp>
+#include <Geode/loader/Setting.hpp>
 #include "../include/Keybinds.hpp"
-#include "Geode/modify/Modify.hpp"
 #include "KeybindsLayer.hpp"
 
 using namespace geode::prelude;
@@ -126,4 +128,58 @@ $execute {
 			new ControllerChecker(), 1.f, false
 		);
 	});
+}
+
+// Have to make a SettingValue even if it holds no value
+class DummySettingValue : public SettingValue {
+public:
+	DummySettingValue(std::string const& key, std::string const& mod) : SettingValue(key, mod) {}
+	bool load(matjson::Value const& json) override { return true; }
+	bool save(matjson::Value&) const override { return true; }
+	SettingNode* createNode(float width) override;
+};
+
+class ButtonSettingNode : public SettingNode {
+protected:
+	bool init(SettingValue* value, float width) {
+		if (!SettingNode::init(value))
+			return false;
+
+		this->setContentSize({ width, 40.f });
+
+		auto* sprite = ButtonSprite::create("Edit Keys", 0, false, "bigFont.fnt", "GJ_button_04.png", 24.5f, 0.4f);
+		auto* btn = CCMenuItemSpriteExtra::create(sprite, this, menu_selector(ButtonSettingNode::onOpen));
+		auto* menu = CCMenu::create();
+		menu->setPosition({ width / 2, 20.f });
+		menu->addChild(btn);
+		this->addChild(menu);
+
+		return true;
+	}
+	void onOpen(CCObject*) {
+		KeybindsLayer::create()->show();
+	}
+public:
+	void commit() override { this->dispatchCommitted(); }
+	bool hasUncommittedChanges() override { return false; }
+	bool hasNonDefaultValue() override { return false; }
+	void resetToDefault() override {}
+
+	static ButtonSettingNode* create(SettingValue* value, float width) {
+		auto ret = new ButtonSettingNode();
+		if (ret && ret->init(value, width)) {
+			ret->autorelease();
+			return ret;
+		}
+		CC_SAFE_DELETE(ret);
+		return nullptr;
+	}
+};
+
+SettingNode* DummySettingValue::createNode(float width) {
+	return ButtonSettingNode::create(this, width);
+}
+
+$execute {
+	Mod::get()->registerCustomSetting("open-menu", std::make_unique<DummySettingValue>(std::string("open-menu"), Mod::get()->getID()));
 }
