@@ -766,8 +766,8 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
 
         if (
             (!options || options.value().enabled)
-            && this->isActionBindHeld(action, event->getBind()) 
             && event->isDown()
+            && this->isActionBindHeld(action, event->getBind()) 
         ) {
             continue;
         }
@@ -795,9 +795,11 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
             }
         }
 
-        // Instantly return if the event handler tells us to        
-        if (InvokeBindEvent(action, event->isDown()).post() == ListenerResult::Stop) {
-            return ListenerResult::Stop;
+        if (
+            ret != ListenerResult::Stop &&
+            InvokeBindEvent(action, event->isDown()).post() == ListenerResult::Stop
+        ) {
+            ret = ListenerResult::Stop;
         }
     }
     return ret;
