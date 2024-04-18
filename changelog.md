@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.3
+
+ - Fix modifiers not being properly handled on release
+ - Fix "unpause" sometimes not working
+
 ## v1.5.2
  - Fix unpausing with space also causing the player to jump
  - Add missing "Pan editor while swiping" editor keybind
