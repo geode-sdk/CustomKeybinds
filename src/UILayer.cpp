@@ -50,7 +50,6 @@ struct $modify(PauseLayer) {
             // Remove any popups (looking at you, confirm exit)
             CCScene* active = CCDirector::sharedDirector()->getRunningScene();
             if (auto alert = getChildOfType<FLAlertLayer>(active, 0)) {
-                active->removeChild(alert);
                 return ListenerResult::Propagate;
             }
             this->onResume(nullptr);
