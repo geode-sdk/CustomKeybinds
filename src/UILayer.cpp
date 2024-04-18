@@ -51,6 +51,7 @@ struct $modify(PauseLayer) {
             CCScene* active = CCDirector::sharedDirector()->getRunningScene();
             if (auto alert = getChildOfType<FLAlertLayer>(active, 0)) {
                 active->removeChild(alert);
+                return ListenerResult::Propagate;
             }
             this->onResume(nullptr);
 
@@ -145,7 +146,8 @@ struct $modify(UILayer) {
                 if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->handleButton(down, 1, true);
+                PlayLayer::get()->queueButton(1, down, false);
+                m_p1Jumping = true;
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
@@ -153,6 +155,7 @@ struct $modify(UILayer) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->handleButton(down, 1, false);
+                m_p2Jumping = true;
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
