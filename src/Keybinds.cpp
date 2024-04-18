@@ -812,6 +812,19 @@ bool BindManager::isActionBindHeld(ActionID const& action, Bind* bind) {
 }
 
 void BindManager::markActionBindHeld(ActionID const& action, Bind* bind) {
+    if (!m_binds.contains(bind)) {
+        return;
+    }
+
+    if (!ranges::contains(
+        m_binds.at(bind),
+        [action](ActionID const& act) { 
+            return act == action; 
+        })
+    ) {
+        return;
+    }
+
     if (!m_downActionBinds.contains(action)) {
         std::unordered_set<size_t> hashes = { bind->getHash() };
         m_downActionBinds.insert(std::make_pair(action, hashes));
@@ -823,6 +836,19 @@ void BindManager::markActionBindHeld(ActionID const& action, Bind* bind) {
 
 void BindManager::unmarkActionBindHeld(ActionID const& action, Bind* bind) {
     if (!m_downActionBinds.contains(action)) {
+        return;
+    }
+
+    if (!m_binds.contains(bind)) {
+        return;
+    }
+
+    if (!ranges::contains(
+        m_binds.at(bind),
+        [action](ActionID const& act) { 
+            return act == action; 
+        })
+    ) {
         return;
     }
 

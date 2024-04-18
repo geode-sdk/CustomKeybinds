@@ -293,8 +293,20 @@ namespace keybinds {
         bool loadActionBinds(ActionID const& action);
         void saveActionBinds(ActionID const& action);
 
+        /// Checks if a specific Bind + Action combo is being held.
+        /// @param action the action ID we are checking
+        /// @param bind the bind we are checking
+        /// @returns true if the action bind is being held, false otherwise
         bool isActionBindHeld(ActionID const& action, Bind* bind);
+
+        /// Marks a bind that belongs to an action as held. No changes will be made if the action doesn't use the bind.
+        /// @param action the action ID
+        /// @param bind the bind we are marking as held, has to belong to the action
         void markActionBindHeld(ActionID const& action, Bind* bind);
+
+        /// Marks a bind that belongs to an action as released. No changes will be made if the action doesn't use the bind.
+        /// @param action the action ID
+        /// @param bind the bind we are marking as released, has to belong to the action
         void unmarkActionBindHeld(ActionID const& action, Bind* bind);
 
         friend class InvokeBindFilter;
