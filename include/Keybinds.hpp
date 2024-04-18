@@ -6,6 +6,7 @@
 #include <Geode/loader/Mod.hpp>
 #include <Geode/loader/Event.hpp>
 #include <cocos2d.h>
+#include <unordered_map>
 
 #ifdef GEODE_IS_WINDOWS
     #ifdef HJFOD_CUSTOM_KEYBINDS_EXPORTING
@@ -278,8 +279,7 @@ namespace keybinds {
         std::vector<Category> m_categories;
         geode::EventListener<PressBindFilter> m_listener =
             geode::EventListener<PressBindFilter>(this, &BindManager::onDispatch);
-        std::vector<std::pair<ActionID, float>> m_repeating;
-        std::unordered_set<ActionID> m_held;
+        std::unordered_map<ActionID, float> m_repeating;
 
         BindManager();
 
