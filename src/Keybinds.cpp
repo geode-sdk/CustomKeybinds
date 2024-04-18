@@ -7,6 +7,7 @@
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
 #include <GUI/CCControlExtension/CCScale9Sprite.h>
+#include <unordered_set>
 #include <utility>
 
 using namespace geode::prelude;
@@ -758,22 +759,78 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
         return ListenerResult::Propagate;
     }
 
+    ListenerResult ret = ListenerResult::Propagate;
+
     for (auto& action : m_binds.at(event->getBind())) {
-        if (event->isDown()) {
-            if (auto options = this->getRepeatOptionsFor(action)) {
-                if (options.value().enabled && ranges::contains(m_repeating, [=](auto const& p) { return p.first == action; })) {
-                    return ListenerResult::Stop;
-                }
-            }
-            this->repeat(action);
-        } else {
-            this->unrepeat(action);
+        std::optional<RepeatOptions> options = this->getRepeatOptionsFor(action);
+
+        if (
+            (!options || options.value().enabled)
+            && this->isActionBindHeld(action, event->getBind()) 
+            && event->isDown()
+        ) {
+            continue;
         }
+
+        if (options && options.value().enabled) {
+            // Handle repeating binds
+
+            if (m_repeating.contains(action)) {
+                // Technically, we have found a binding, so we need to stop GD's execution of dispatchKeyboardMSG
+                ret = ListenerResult::Stop;
+                continue;
+            }
+            if (event->isDown()) {
+                this->repeat(action);
+            } else if (!event->isDown()) {
+                this->unrepeat(action);
+            }
+        } else {
+            // Handle non-repeating binds
+
+            if (event->isDown()) {
+                this->markActionBindHeld(action, event->getBind());
+            } else {
+                this->unmarkActionBindHeld(action, event->getBind());
+            }
+        }
+
+        // Instantly return if the event handler tells us to        
         if (InvokeBindEvent(action, event->isDown()).post() == ListenerResult::Stop) {
             return ListenerResult::Stop;
         }
     }
-    return ListenerResult::Propagate;
+    return ret;
+}
+
+bool BindManager::isActionBindHeld(ActionID const& action, Bind* bind) {
+    if (!m_downActionBinds.contains(action)) {
+        return false;
+    }
+
+    return m_downActionBinds.at(action).contains(bind->getHash());
+}
+
+void BindManager::markActionBindHeld(ActionID const& action, Bind* bind) {
+    if (!m_downActionBinds.contains(action)) {
+        std::unordered_set<size_t> hashes = { bind->getHash() };
+        m_downActionBinds.insert(std::make_pair(action, hashes));
+        return;
+    }
+
+    m_downActionBinds.at(action).insert(bind->getHash());
+}
+
+void BindManager::unmarkActionBindHeld(ActionID const& action, Bind* bind) {
+    if (!m_downActionBinds.contains(action)) {
+        return;
+    }
+
+    std::unordered_set<size_t>& binds = m_downActionBinds.at(action);
+    binds.erase(bind->getHash());
+    if (binds.empty()) {
+        m_downActionBinds.erase(action);
+    }
 }
 
 void BindManager::stopAllRepeats() {

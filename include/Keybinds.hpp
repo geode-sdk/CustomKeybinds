@@ -7,6 +7,7 @@
 #include <Geode/loader/Event.hpp>
 #include <cocos2d.h>
 #include <unordered_map>
+#include <unordered_set>
 
 #ifdef GEODE_IS_WINDOWS
     #ifdef HJFOD_CUSTOM_KEYBINDS_EXPORTING
@@ -280,6 +281,7 @@ namespace keybinds {
         geode::EventListener<PressBindFilter> m_listener =
             geode::EventListener<PressBindFilter>(this, &BindManager::onDispatch);
         std::unordered_map<ActionID, float> m_repeating;
+        std::unordered_map<ActionID, std::unordered_set<size_t>> m_downActionBinds;
 
         BindManager();
 
@@ -290,6 +292,10 @@ namespace keybinds {
 
         bool loadActionBinds(ActionID const& action);
         void saveActionBinds(ActionID const& action);
+
+        bool isActionBindHeld(ActionID const& action, Bind* bind);
+        void markActionBindHeld(ActionID const& action, Bind* bind);
+        void unmarkActionBindHeld(ActionID const& action, Bind* bind);
 
         friend class InvokeBindFilter;
         friend struct matjson::Serialize<BindSaveData>;

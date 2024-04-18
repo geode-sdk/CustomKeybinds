@@ -145,14 +145,14 @@ struct $modify(UILayer) {
                 if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_Space, down);
+                PlayLayer::get()->handleButton(down, 1, true);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
                 if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_Up, down);
+                PlayLayer::get()->handleButton(down, 1, false);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
