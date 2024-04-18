@@ -1,7 +1,8 @@
 #include "../include/Keybinds.hpp"
-#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
-#include "Geode/cocos/sprite_nodes/CCSprite.h"
-#include "Geode/loader/Event.hpp"
+
+#include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
+#include <Geode/cocos/sprite_nodes/CCSprite.h>
+#include <Geode/loader/Event.hpp>
 #include <Geode/utils/ranges.hpp>
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
@@ -752,32 +753,33 @@ void BindManager::setRepeatOptionsFor(ActionID const& action, RepeatOptions cons
 }
 
 ListenerResult BindManager::onDispatch(PressBindEvent* event) {
-    if (m_binds.contains(event->getBind())) {
-        for (auto& action : m_binds.at(event->getBind())) {
-            bool inserted = false;
-            if (event->isDown()) {
-                if (!m_held.contains(action)) {
-                    m_held.insert(action);
-                    inserted = true;
+    if (!m_binds.contains(event->getBind())) {
+        return ListenerResult::Propagate;
+    }
+    for (auto& action : m_binds.at(event->getBind())) {
+        bool inserted = false;
+        if (event->isDown()) {
+            if (!m_held.contains(action)) {
+                m_held.insert(action);
+                inserted = true;
+            } 
+            if (auto options = this->getRepeatOptionsFor(action)) {
+                if (options.value().enabled && ranges::contains(m_repeating, [=](auto const& p) { return p.first == action; })) {
+                    return ListenerResult::Stop;
                 }
-                if (auto options = this->getRepeatOptionsFor(action)) {
-                    if (options.value().enabled && ranges::contains(m_repeating, [=](auto const& p) { return p.first == action; })) {
-                        return ListenerResult::Stop;
-                    }
-                }
-                this->repeat(action);
             }
-            else {
-                m_held.erase(action);
-                this->unrepeat(action);
-            }
-            auto options = this->getRepeatOptionsFor(action);
-            if ((!options.has_value() || !options.value().enabled) && !inserted && m_held.contains(action)) {
-                return ListenerResult::Stop;
-            }
-            if (InvokeBindEvent(action, event->isDown()).post() == ListenerResult::Stop) {
-                return ListenerResult::Stop;
-            }
+            this->repeat(action);
+        }
+        else {
+            m_held.erase(action);
+            this->unrepeat(action);
+        }
+        auto options = this->getRepeatOptionsFor(action);
+        if ((!options.has_value() || !options.value().enabled) && !inserted && m_held.contains(action)) {
+            return ListenerResult::Stop;
+        }
+        if (InvokeBindEvent(action, event->isDown()).post() == ListenerResult::Stop) {
+            return ListenerResult::Stop;
         }
     }
     return ListenerResult::Propagate;
