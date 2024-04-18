@@ -147,7 +147,11 @@ struct $modify(UILayer) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->queueButton(1, down, false);
-                m_p1Jumping = true;
+                if (down) {
+                    m_p1Jumping = true;
+                } else {
+                    m_p1Jumping = false;
+                }
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
@@ -155,7 +159,11 @@ struct $modify(UILayer) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->handleButton(down, 1, false);
-                m_p2Jumping = true;
+                if (down) {
+                    m_p2Jumping = true;
+                } else {
+                    m_p2Jumping = false;
+                }
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
