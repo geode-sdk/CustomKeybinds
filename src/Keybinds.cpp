@@ -775,7 +775,7 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
         if (options && options.value().enabled) {
             // Handle repeating binds
 
-            if (m_repeating.contains(action)) {
+            if (event->isDown() && m_repeating.contains(action)) {
                 // Technically, we have found a binding, so we need to stop GD's execution of dispatchKeyboardMSG
                 ret = ListenerResult::Stop;
                 continue;
