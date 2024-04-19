@@ -142,7 +142,7 @@ struct $modify(UILayer) {
             if (!PlayLayer::get()) return;
 
             this->defineKeybind("robtop.geometry-dash/jump-p1", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->queueButton(1, down, false);
@@ -154,7 +154,7 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->handleButton(down, 1, false);
