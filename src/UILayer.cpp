@@ -157,7 +157,7 @@ struct $modify(UILayer) {
                 if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->handleButton(down, 1, false);
+                PlayLayer::get()->queueButton(1, down, true);
                 if (down) {
                     m_p2Jumping = true;
                 } else {
