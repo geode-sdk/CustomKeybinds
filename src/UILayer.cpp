@@ -166,10 +166,16 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_Z, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_X, down);
                 return ListenerResult::Stop;
             });
@@ -192,18 +198,30 @@ struct $modify(UILayer) {
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_A, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_D, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_Left, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
+                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_Right, down);
                 return ListenerResult::Stop;
             });
