@@ -54,3 +54,5 @@
 .cache
 
 build-*/
+
+.idea/
