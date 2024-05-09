@@ -1,6 +1,8 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
 #include <Geode/binding/AppDelegate.hpp>
+#include <Geode/binding/PlatformToolbox.hpp>
+#include <Geode/binding/ButtonSprite.hpp>
 #include <Geode/ui/Notification.hpp>
 #include <Geode/modify/Modify.hpp>
 #include <Geode/loader/SettingNode.hpp>
