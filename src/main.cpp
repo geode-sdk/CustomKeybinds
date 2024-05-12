@@ -1,5 +1,6 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
+#include <Geode/modify/CCEGLView.hpp>
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/PlatformToolbox.hpp>
 #include <Geode/binding/ButtonSprite.hpp>
@@ -17,6 +18,29 @@
 
 using namespace geode::prelude;
 using namespace keybinds;
+
+class $modify(CCEGLView){
+
+	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
+
+		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
+
+		switch(key){
+			case GLFW_KEY_LEFT_SHIFT:
+				keycode = enumKeyCodes::KEY_LeftShift;
+				break;
+			case GLFW_KEY_RIGHT_SHIFT:
+				keycode = enumKeyCodes::KEY_RightShift;
+				break;
+		}
+
+		if(keycode != enumKeyCodes::KEY_Unknown){
+			CCKeyboardDispatcher::get()->dispatchKeyboardMSG(keycode, action >= 1, action == 2);
+		}
+
+		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
+	}
+};
 
 class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
