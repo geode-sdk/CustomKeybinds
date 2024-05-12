@@ -21,8 +21,7 @@ using namespace keybinds;
 
 class $modify(CCEGLView){
 
-	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
+	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
 
 		switch(key){
@@ -37,7 +36,6 @@ class $modify(CCEGLView){
 		if(keycode != enumKeyCodes::KEY_Unknown){
 			CCKeyboardDispatcher::get()->dispatchKeyboardMSG(keycode, action >= 1, action == 2);
 		}
-
 		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
 	}
 };
