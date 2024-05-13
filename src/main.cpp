@@ -93,7 +93,7 @@ class $modify(CCKeyboardDispatcher) {
 			// dispatch release events for Modifier + Key combos
 			else {
 				// If no actual key was being held, just modifiers
-				if(!down) {
+				if (!down) {
 					// Stop repeats here, resolves repeat issue when keys and modifiers are pressed in reverse
 					BindManager::get()->stopAllRepeats();
 					if (s_held.empty()) {
