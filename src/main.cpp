@@ -21,6 +21,10 @@ using namespace keybinds;
 
 class $modify(CCEGLView){
 
+	/**
+	* GD does not pass shift into dispatchKeyboardMSG, causing the modifier to break when holding.
+	* We need to manually pass in shift from onGLFWKeyCallback to resolve this bug.
+	*/
 	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
 
@@ -89,13 +93,13 @@ class $modify(CCKeyboardDispatcher) {
 			// dispatch release events for Modifier + Key combos
 			else {
 				// If no actual key was being held, just modifiers
-				if(!down){
+				if(!down) {
+					// Stop repeats here, resolves repeat issue when keys and modifiers are pressed in reverse
 					BindManager::get()->stopAllRepeats();
 					if (s_held.empty()) {
 						return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
 					}
 				}
-
 				std::unordered_set<Modifier> modifiersToToggle = this->getModifiersToToggle(key, down);
 				bool ok = true;
 				for (auto& held : s_held) {
