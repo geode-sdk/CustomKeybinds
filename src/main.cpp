@@ -28,7 +28,7 @@ class $modify(CCEGLView){
 	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
 
-		switch(key){
+		switch (key) {
 			case GLFW_KEY_LEFT_SHIFT:
 				keycode = enumKeyCodes::KEY_LeftShift;
 				break;
@@ -37,7 +37,7 @@ class $modify(CCEGLView){
 				break;
 		}
 
-		if(keycode != enumKeyCodes::KEY_Unknown){
+		if (keycode != enumKeyCodes::KEY_Unknown) {
 			CCKeyboardDispatcher::get()->dispatchKeyboardMSG(keycode, action >= 1, action == 2);
 		}
 		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
