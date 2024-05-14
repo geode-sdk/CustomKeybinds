@@ -1,5 +1,6 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
+#include <Geode/modify/CCEGLView.hpp>
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/PlatformToolbox.hpp>
 #include <Geode/binding/ButtonSprite.hpp>
@@ -17,6 +18,31 @@
 
 using namespace geode::prelude;
 using namespace keybinds;
+
+class $modify(CCEGLView){
+
+	/**
+	* GD does not pass shift into dispatchKeyboardMSG, causing the modifier to break when holding.
+	* We need to manually pass in shift from onGLFWKeyCallback to resolve this bug.
+	*/
+	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
+
+		switch (key) {
+			case GLFW_KEY_LEFT_SHIFT:
+				keycode = enumKeyCodes::KEY_LeftShift;
+				break;
+			case GLFW_KEY_RIGHT_SHIFT:
+				keycode = enumKeyCodes::KEY_RightShift;
+				break;
+		}
+
+		if (keycode != enumKeyCodes::KEY_Unknown) {
+			CCKeyboardDispatcher::get()->dispatchKeyboardMSG(keycode, action >= 1, action == 2);
+		}
+		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
+	}
+};
 
 class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};
@@ -67,8 +93,12 @@ class $modify(CCKeyboardDispatcher) {
 			// dispatch release events for Modifier + Key combos
 			else {
 				// If no actual key was being held, just modifiers
-				if (s_held.empty() && !down) {
-					return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
+				if (!down) {
+					// Stop repeats here, resolves repeat issue when keys and modifiers are pressed in reverse
+					BindManager::get()->stopAllRepeats();
+					if (s_held.empty()) {
+						return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
+					}
 				}
 				std::unordered_set<Modifier> modifiersToToggle = this->getModifiersToToggle(key, down);
 				bool ok = true;
