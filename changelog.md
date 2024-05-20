@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.9
+
+ - Bump to Geode v2.0.0-beta.26
+ - Fix 'shift' not being passed in CCKeyboardDispatcher::dispatchKeyboardMSG
+
 ## v1.5.8
 
  - Bump to Geode v2.0.0-beta.25
