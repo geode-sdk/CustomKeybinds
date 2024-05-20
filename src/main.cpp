@@ -92,10 +92,18 @@ class $modify(CCKeyboardDispatcher) {
 			}
 			// dispatch release events for Modifier + Key combos
 			else {
+				bool stoppedRepeats = false;
+				// Solves keybinds that keep repeating after letting go of the actual key
+				if (s_held.size() > 0) {
+					BindManager::get()->stopAllRepeats();
+					stoppedRepeats = true;
+				}
 				// If no actual key was being held, just modifiers
 				if (!down) {
 					// Stop repeats here, resolves repeat issue when keys and modifiers are pressed in reverse
-					BindManager::get()->stopAllRepeats();
+					if (!stoppedRepeats) {
+						BindManager::get()->stopAllRepeats();
+					}
 					if (s_held.empty()) {
 						return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
 					}
