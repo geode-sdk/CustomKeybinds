@@ -142,7 +142,7 @@ struct $modify(UILayer) {
             if (!PlayLayer::get()) return;
 
             this->defineKeybind("robtop.geometry-dash/jump-p1", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->queueButton(1, down, false);
@@ -154,7 +154,7 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->queueButton(1, down, true);
@@ -166,14 +166,14 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Z, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_X, down);
@@ -186,40 +186,40 @@ struct $modify(UILayer) {
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/restart-level", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused() && PlayLayer::get()->canPauseGame()) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     PlayLayer::get()->resetLevel();
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/full-restart-level", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused() && PlayLayer::get()->canPauseGame()) {
+                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     PlayLayer::get()->fullReset();
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_A, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_D, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Left, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
-                if (this->isPaused() || !PlayLayer::get()->canPauseGame()) {
+                if (this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Right, down);

@@ -43,7 +43,7 @@ struct $modify(EditorPauseLayer) {
     void customSetup() {
         EditorPauseLayer::customSetup();
 
-        this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
             if (event->isDown()) {
                 this->onResume(nullptr);
                 return ListenerResult::Stop;
@@ -73,96 +73,108 @@ struct $modify(EditorUI) {
         if (!EditorUI::init(lel))
             return false;
 
-        Loader::get()->queueInMainThread([this] {
-            this->defineKeybind("robtop.geometry-dash/jump-p1", [=](bool down) {
-                m_editorLayer->queueButton(platformButton(), down, false);
+        Loader::get()->queueInMainThread([this, lel] {
+            this->defineKeybind("robtop.geometry-dash/jump-p1", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(platformButton(), down, false);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/jump-p2", [=](bool down) {
-                m_editorLayer->queueButton(platformButton(), down, true);
+            this->defineKeybind("robtop.geometry-dash/jump-p2", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(platformButton(), down, true);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
-                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Left), down, false);
+            this->defineKeybind("robtop.geometry-dash/move-left-p1", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
-                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Right), down, false);
+            this->defineKeybind("robtop.geometry-dash/move-right-p1", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
-                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Left), down, true);
+            this->defineKeybind("robtop.geometry-dash/move-left-p2", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
-                m_editorLayer->queueButton(static_cast<int>(PlayerButton::Right), down, true);
+            this->defineKeybind("robtop.geometry-dash/move-right-p2", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true);
+                }
             });
-            this->defineKeybind("robtop.geometry-dash/pause-level", [=](bool down) {
+            this->defineKeybind("robtop.geometry-dash/pause-level", [this](bool down) {
                 if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
                     EditorUI::onPause(nullptr);
                 };
             });
-            this->defineKeybind("robtop.geometry-dash/build-mode", [=] {
+            this->defineKeybind("robtop.geometry-dash/build-mode", [this] {
                 this->passThroughKeyDown(KEY_One);
             });
-            this->defineKeybind("robtop.geometry-dash/edit-mode", [=] {
+            this->defineKeybind("robtop.geometry-dash/edit-mode", [this] {
                 this->passThroughKeyDown(KEY_Two);
             });
-            this->defineKeybind("robtop.geometry-dash/delete-mode", [=] {
+            this->defineKeybind("robtop.geometry-dash/delete-mode", [this] {
                 this->passThroughKeyDown(KEY_Three);
             });
-            this->defineKeybind("robtop.geometry-dash/rotate-ccw", [=] {
+            this->defineKeybind("robtop.geometry-dash/rotate-ccw", [this] {
                 this->passThroughKeyDown(KEY_Q);
             });
-            this->defineKeybind("robtop.geometry-dash/rotate-cw", [=] {
+            this->defineKeybind("robtop.geometry-dash/rotate-cw", [this] {
                 this->passThroughKeyDown(KEY_E);
             });
-            this->defineKeybind("robtop.geometry-dash/flip-x", [=] {
+            this->defineKeybind("robtop.geometry-dash/flip-x", [this] {
                 this->passThroughKeyDown(KEY_Q, Modifier::Alt);
             });
-            this->defineKeybind("robtop.geometry-dash/flip-y", [=] {
+            this->defineKeybind("robtop.geometry-dash/flip-y", [this] {
                 this->passThroughKeyDown(KEY_E, Modifier::Alt);
             });
-            this->defineKeybind("robtop.geometry-dash/delete", [=] {
+            this->defineKeybind("robtop.geometry-dash/delete", [this] {
                 this->passThroughKeyDown(KEY_Delete);
             });
-            this->defineKeybind("robtop.geometry-dash/undo", [=] {
+            this->defineKeybind("robtop.geometry-dash/undo", [this] {
                 this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl);
             });
-            this->defineKeybind("robtop.geometry-dash/redo", [=] {
+            this->defineKeybind("robtop.geometry-dash/redo", [this] {
                 this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl | Modifier::Shift);
             });
-            this->defineKeybind("robtop.geometry-dash/deselect-all", [=] {
+            this->defineKeybind("robtop.geometry-dash/deselect-all", [this] {
                 this->passThroughKeyDown(KEY_D, Modifier::Alt);
             });
-            this->defineKeybind("robtop.geometry-dash/copy", [=] {
+            this->defineKeybind("robtop.geometry-dash/copy", [this] {
                 this->passThroughKeyDown(KEY_C, Modifier::PlatformControl);
             });
-            this->defineKeybind("robtop.geometry-dash/paste", [=] {
+            this->defineKeybind("robtop.geometry-dash/paste", [this] {
                 this->passThroughKeyDown(KEY_V, Modifier::PlatformControl);
             });
-            this->defineKeybind("robtop.geometry-dash/copy-paste", [=] {
+            this->defineKeybind("robtop.geometry-dash/copy-paste", [this] {
                 this->passThroughKeyDown(KEY_D, Modifier::PlatformControl);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-rotate", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-rotate", [this] {
                 this->passThroughKeyDown(KEY_R);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-transform", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-transform", [this] {
                 this->passThroughKeyDown(KEY_T, Modifier::PlatformControl);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-free-move", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-free-move", [this] {
                 this->passThroughKeyDown(KEY_F);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-swipe", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-swipe", [this] {
                 this->passThroughKeyDown(KEY_T);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-snap", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-snap", [this] {
                 this->passThroughKeyDown(KEY_G);
             });
-            this->defineKeybind("robtop.geometry-dash/playtest", [=] {
+            this->defineKeybind("robtop.geometry-dash/playtest", [this] {
                 this->passThroughKeyDown(KEY_Enter);
             });
-            this->defineKeybind("robtop.geometry-dash/playback-music", [=] {
+            this->defineKeybind("robtop.geometry-dash/playback-music", [this] {
                 // RobTop broke this in 2.2, which makes it trigger the playtest keybind
                 // this->passThroughKeyDown(KEY_Enter, Modifier::PlatformControl);
                 EditorUI::onPlayback(nullptr);
             });
-            this->defineKeybind("robtop.geometry-dash/prev-build-tab", [=] {
+            this->defineKeybind("robtop.geometry-dash/prev-build-tab", [this] {
                 // not passthrough because this is different from vanilla
                 auto t = m_selectedTab - 1;
                 if (t < 0) {
@@ -170,7 +182,7 @@ struct $modify(EditorUI) {
                 }
                 this->selectBuildTab(t);
             });
-            this->defineKeybind("robtop.geometry-dash/next-build-tab", [=] {
+            this->defineKeybind("robtop.geometry-dash/next-build-tab", [this] {
                 // not passthrough because this is different from vanilla
                 auto t = m_selectedTab + 1;
                 if (t > static_cast<int>(m_tabsArray->count() - 1)) {
@@ -178,78 +190,78 @@ struct $modify(EditorUI) {
                 }
                 this->selectBuildTab(t);
             });
-            this->defineKeybind("robtop.geometry-dash/next-layer", [=] {
+            this->defineKeybind("robtop.geometry-dash/next-layer", [this] {
                 this->passThroughKeyDown(KEY_Right);
             });
-            this->defineKeybind("robtop.geometry-dash/prev-layer", [=] {
+            this->defineKeybind("robtop.geometry-dash/prev-layer", [this] {
                 this->passThroughKeyDown(KEY_Left);
             });
-            this->defineKeybind("robtop.geometry-dash/scroll-up", [=] {
+            this->defineKeybind("robtop.geometry-dash/scroll-up", [this] {
                 this->moveGamelayer({ .0f, 10.f });
             });
-            this->defineKeybind("robtop.geometry-dash/scroll-down", [=] {
+            this->defineKeybind("robtop.geometry-dash/scroll-down", [this] {
                 this->moveGamelayer({ .0f, -10.f });
             });
-            this->defineKeybind("robtop.geometry-dash/zoom-in", [=] {
+            this->defineKeybind("robtop.geometry-dash/zoom-in", [this] {
                 this->zoomIn(nullptr);
             });
-            this->defineKeybind("robtop.geometry-dash/zoom-out", [=] {
+            this->defineKeybind("robtop.geometry-dash/zoom-out", [this] {
                 this->zoomOut(nullptr);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-left", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-left", [this] {
                 this->passThroughKeyDown(KEY_A);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-right", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-right", [this] {
                 this->passThroughKeyDown(KEY_D);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-up", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-up", [this] {
                 this->passThroughKeyDown(KEY_W);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-down", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-down", [this] {
                 this->passThroughKeyDown(KEY_S);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-left-small", [this] {
                 this->passThroughKeyDown(KEY_A, Modifier::Shift);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-right-small", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-right-small", [this] {
                 this->passThroughKeyDown(KEY_D, Modifier::Shift);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-up-small", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-up-small", [this] {
                 this->passThroughKeyDown(KEY_W, Modifier::Shift);
             });
-            this->defineKeybind("robtop.geometry-dash/move-obj-down-small", [=] {
+            this->defineKeybind("robtop.geometry-dash/move-obj-down-small", [this] {
                 this->passThroughKeyDown(KEY_S, Modifier::Shift);
             });
-            this->defineKeybind("robtop.geometry-dash/lock-preview", [=] {
+            this->defineKeybind("robtop.geometry-dash/lock-preview", [this] {
                 this->passThroughKeyDown(KEY_F1);
             });
-            this->defineKeybind("robtop.geometry-dash/unlock-preview", [=] {
+            this->defineKeybind("robtop.geometry-dash/unlock-preview", [this] {
                 this->passThroughKeyDown(KEY_F2);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-preview-mode", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-preview-mode", [this] {
                 this->passThroughKeyDown(KEY_F3);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-particle-icons", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-particle-icons", [this] {
                 this->passThroughKeyDown(KEY_F4);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-editor-hitboxes", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-editor-hitboxes", [this] {
                 this->passThroughKeyDown(KEY_F5);
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-hide-invisible", [=] {
+            this->defineKeybind("robtop.geometry-dash/toggle-hide-invisible", [this] {
                 this->passThroughKeyDown(KEY_F6);
             });
             for (size_t i = 0; i < 10; i += 1) {
                 auto x = std::to_string(i);
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
-                this->defineKeybind("robtop.geometry-dash/save-editor-position-" + x, [=] {
+                this->defineKeybind("robtop.geometry-dash/save-editor-position-" + x, [this, key] {
                     this->passThroughKeyDown(key, Modifier::PlatformControl);
                 });
-                this->defineKeybind("robtop.geometry-dash/load-editor-position-" + x, [=] {
+                this->defineKeybind("robtop.geometry-dash/load-editor-position-" + x, [this, key] {
                     this->passThroughKeyDown(key, Modifier::Alt);
                 });
             }
-            this->defineKeybind("robtop.geometry-dash/pan-editor", [=](bool down) {
-                if (m_editorLayer->m_playbackMode != PlaybackMode::Playing) {
+            this->defineKeybind("robtop.geometry-dash/pan-editor", [this, lel](bool down) {
+                if (lel->m_playbackMode != PlaybackMode::Playing) {
                     s_allowPassThrough = true;
                     if (down) {
                         this->keyDown(KEY_Space);

@@ -58,7 +58,7 @@ class $modify(CCKeyboardDispatcher) {
 		m_bCommandPressed = cmd;
 	}
 
-	bool dispatchKeyboardMSG(enumKeyCodes key, bool down, bool p2) {
+	bool dispatchKeyboardMSG(enumKeyCodes key, bool down, bool repeat) {
 		if (keyIsController(key)) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;
@@ -105,7 +105,7 @@ class $modify(CCKeyboardDispatcher) {
 						BindManager::get()->stopAllRepeats();
 					}
 					if (s_held.empty()) {
-						return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
+						return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, repeat);
 					}
 				}
 				std::unordered_set<Modifier> modifiersToToggle = this->getModifiersToToggle(key, down);
@@ -125,7 +125,7 @@ class $modify(CCKeyboardDispatcher) {
 				}
 			}
 		}
-		return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, p2);
+		return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, repeat);
 	}
 
 	/**
