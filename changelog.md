@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.0
+
+ - Bump to Geode v3.0.0-beta.1
+
 ## v1.5.10
 
  - Fix "Key + Modifier" combos behaving weird when repeating
