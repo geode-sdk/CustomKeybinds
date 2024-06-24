@@ -260,18 +260,17 @@ struct $modify(EditorUI) {
                     this->passThroughKeyDown(key, Modifier::Alt);
                 });
             }
-            // Temporarily disabled until Tuliphook fix
-            // this->defineKeybind("robtop.geometry-dash/pan-editor", [this, lel](bool down) {
-            //     if (lel->m_playbackMode != PlaybackMode::Playing) {
-            //         s_allowPassThrough = true;
-            //         if (down) {
-            //             this->keyDown(KEY_Space);
-            //         } else {
-            //             this->keyUp(KEY_Space);
-            //         }
-            //     }
-            // });
-        });
+            this->defineKeybind("robtop.geometry-dash/pan-editor", [this, lel](bool down) {
+                if (lel->m_playbackMode != PlaybackMode::Playing) {
+                    s_allowPassThrough = true;
+                    if (down) {
+                        this->keyDown(KEY_Space);
+                    } else {
+                        this->keyUp(KEY_Space);
+                    }
+                }
+            });
+         });
 
         return true;
     }
