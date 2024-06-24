@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.2
+
+ - Re-enable `Pan editor`
+ - Bump to Geode `v3.1.0`
+
 ## v1.6.1
 
  - Remove `Pan editor` keybind temporarily
