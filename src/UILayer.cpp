@@ -120,9 +120,30 @@ struct $modify(UILayer) {
     }
 
     void pressKeyFallthrough(enumKeyCodes key, bool down) {
+        auto dispatcher = CCDirector::get()->getKeyboardDispatcher();
+
+        auto shift = dispatcher->getShiftKeyPressed();
+        auto ctrl = dispatcher->getControlKeyPressed();
+        auto alt = dispatcher->getAltKeyPressed();
+        auto cmd = dispatcher->getCommandKeyPressed();
+
+        pressKeyFallthrough(key, down, shift, ctrl, alt, cmd);
+    }
+
+    void pressKeyFallthrough(enumKeyCodes key, bool down, bool shift, bool ctrl, bool alt, bool cmd) {
         // amazing hack
         if (this->isPaused())
             return;
+
+        auto dispatcher = CCDirector::get()->getKeyboardDispatcher();
+
+        auto oShift = dispatcher->getShiftKeyPressed();
+        auto oCtrl = dispatcher->getControlKeyPressed();
+        auto oAlt = dispatcher->getAltKeyPressed();
+        auto oCmd = dispatcher->getCommandKeyPressed();
+
+        dispatcher->updateModifierKeys(shift, ctrl, alt, cmd);
+
         allowKeyDownThrough = true;
         if (down) {
             this->keyDown(key);
@@ -130,6 +151,8 @@ struct $modify(UILayer) {
             this->keyUp(key);
         }
         allowKeyDownThrough = false;
+
+        dispatcher->updateModifierKeys(oShift, oCtrl, oAlt, oCmd);
     }
 
     bool init(GJBaseGameLayer* layer) {
@@ -186,15 +209,11 @@ struct $modify(UILayer) {
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/restart-level", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->resetLevel();
-                }
+                this->pressKeyFallthrough(KEY_R, down, false, false, false, false);
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/full-restart-level", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
-                    PlayLayer::get()->fullReset();
-                }
+                this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
