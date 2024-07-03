@@ -96,7 +96,9 @@ struct $modify(UILayer) {
     }
 
     bool isPaused() {
-        return getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr;
+        return getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr
+            && getChildOfType<EndLevelLayer>(PlayLayer::get()->getParent(), 0) != nullptr
+            && getChildOfType<RetryLevelLayer>(PlayLayer::get()->getParent(), 0) != nullptr;
     }
 
     bool isCurrentPlayLayer() {
@@ -194,14 +196,14 @@ struct $modify(UILayer) {
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/restart-level", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_R, down, false, false, false, false);
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/full-restart-level", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
