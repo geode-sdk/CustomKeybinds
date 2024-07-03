@@ -209,10 +209,16 @@ struct $modify(UILayer) {
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/restart-level", [this](bool down) {
+                if (this->isPaused()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_R, down, false, false, false, false);
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("robtop.geometry-dash/full-restart-level", [this](bool down) {
+                if (this->isPaused()) {
+                    return ListenerResult::Propagate;
+                }
                 this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
                 return ListenerResult::Propagate;
             });
