@@ -1,9 +1,9 @@
 {
-	"geode": "3.1.0",
+	"geode": "3.1.1",
 	"gd": {
 		"win": "2.206"
 	},
-	"version": "v1.6.2",
+	"version": "v1.6.3",
 	"id": "geode.custom-keybinds",
 	"name": "Custom Keybinds",
 	"developer": "Geode Team",

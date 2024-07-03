@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.3
+
+ - Fix various issues in PlayLayer
+
 ## v1.6.2
 
  - Re-enable `Pan editor`
