@@ -3,6 +3,7 @@
 ## v1.6.3
 
  - Fix various issues in PlayLayer
+ - Restart keybind now requires "Quick Keys" option enabled (like in the vanilla game)
 
 ## v1.6.2
 

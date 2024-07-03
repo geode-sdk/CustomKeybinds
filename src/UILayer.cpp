@@ -373,14 +373,14 @@ $execute {
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/restart-level",
         "Restart level",
-        "Restarts the Level",
+        "Restarts the Level (needs Quick Keys enabled)",
         { Keybind::create(cocos2d::KEY_R, Modifier::None) },
         Category::PLAY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/full-restart-level",
         "Full restart level",
-        "Restarts the level from the beginning",
+        "Restarts the level from the beginning (needs Quick Keys enabled)",
         { Keybind::create(KEY_R, Modifier::Control) },
         Category::PLAY, false
     });
