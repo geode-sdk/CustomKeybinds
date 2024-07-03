@@ -76,21 +76,6 @@ struct $modify(PauseLayer) {
             }
             return ListenerResult::Propagate;
         }, "robtop.geometry-dash/practice-level");
-
-        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-            if (event->isDown()) {
-                this->onRestart(nullptr);
-                return ListenerResult::Stop;
-            }
-            return ListenerResult::Propagate;
-        }, "robtop.geometry-dash/restart-level");
-        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-            if (event->isDown()) {
-                this->onRestartFull(nullptr);
-                return ListenerResult::Stop;
-            }
-            return ListenerResult::Propagate;
-        }, "robtop.geometry-dash/full-restart-level");
     }
 
     void keyDown(enumKeyCodes key) {
