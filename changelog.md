@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.4
+
+ - Fix spacebar in PlayLayer popups
+
 ## v1.6.3
 
  - Fix various issues in PlayLayer
