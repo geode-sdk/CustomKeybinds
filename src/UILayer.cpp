@@ -96,9 +96,9 @@ struct $modify(UILayer) {
     }
 
     bool isPaused() {
-        return getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr
-            && getChildOfType<EndLevelLayer>(PlayLayer::get()->getParent(), 0) != nullptr
-            && getChildOfType<RetryLevelLayer>(PlayLayer::get()->getParent(), 0) != nullptr;
+        return !this->isCurrentPlayLayer()
+            || getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr
+            || getChildOfType<GJDropDownLayer>(PlayLayer::get(), 0) != nullptr;
     }
 
     bool isCurrentPlayLayer() {
