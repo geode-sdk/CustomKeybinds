@@ -19,8 +19,8 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
+#ifdef GEODE_IS_WINDOWS
 class $modify(CCEGLView){
-
 	/**
 	* GD does not pass shift into dispatchKeyboardMSG, causing the modifier to break when holding.
 	* We need to manually pass in shift from onGLFWKeyCallback to resolve this bug.
@@ -43,6 +43,7 @@ class $modify(CCEGLView){
 		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
 	}
 };
+#endif
 
 class $modify(CCKeyboardDispatcher) {
 	static inline std::unordered_set<enumKeyCodes> s_held {};

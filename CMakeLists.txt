@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.5.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(CustomKeybinds VERSION 1.2.2)
+project(CustomKeybinds VERSION 1.6.5)
 
 file(GLOB SOURCES
 	src/*.hpp
