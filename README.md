@@ -22,9 +22,11 @@ Adding a new keybind requires two things: registering it when your mod starts up
 Registering can be done easily using `$execute`:
 
 ```cpp
-$execute {
-    using namespace keybinds;
+#include <geode.custom-keybinds/include/Keybinds.hpp>
 
+using namespace keybinds;
+
+$execute {
     BindManager::get()->registerBindable({
         // ID, should be prefixed with mod ID
         "backlip"_spr,
@@ -44,6 +46,10 @@ $execute {
 Now your bind shows up in the UI, and the user can assign their own binds to it. To make the bind also do stuff, you need to add an event listener for `InvokeBindEvent`. If your bind is global (can be used from anywhere in-game), you should add the event listener in the same `$execute` block. If the bind is layer-specific, add it in the layer's `init`:
 
 ```cpp
+#include <geode.custom-keybinds/include/Keybinds.hpp>
+
+using namespace keybinds;
+
 bool MyLayer::init() {
     ...
 
@@ -67,6 +73,10 @@ Adding keybinds to the editor / `PlayLayer` is the same - just add the keybind t
 You can listen for global keybinds via an `$execute` block:
 
 ```cpp
+#include <geode.custom-keybinds/include/Keybinds.hpp>
+
+using namespace keybinds;
+
 $execute {
     new EventListener([=](InvokeBindEvent* event) {
     	// do stuff
@@ -96,6 +106,8 @@ Custom keybinds has been written to support more input devices, in case you want
 To add a new input device, first thing you should do is create a new bind class:
 
 ```cpp
+#include <geode.custom-keybinds/include/Keybinds.hpp>
+
 using namespace keybinds;
 
 class ToasterBind : public Bind {
