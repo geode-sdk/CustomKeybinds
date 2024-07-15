@@ -156,47 +156,47 @@ std::string Keybind::getDeviceID() const {
     return "keyboard"_spr;
 }
 
-Mousebind* Mousebind::create(MouseButton button, Modifier modifiers) {
-    auto ret = new Mousebind();
+MouseBind* MouseBind::create(MouseButton button, Modifier modifiers) {
+    auto ret = new MouseBind();
     ret->m_button = button;
     ret->m_modifiers = modifiers;
     ret->autorelease();
     return ret;
 }
-Mousebind* Mousebind::parse(matjson::Value const& value) {
-    return Mousebind::create(
+MouseBind* MouseBind::parse(matjson::Value const& value) {
+    return MouseBind::create(
         static_cast<MouseButton>(value["button"].as_int()),
         static_cast<Modifier>(value["modifiers"].as_int())
     );
 }
 
-MouseButton Mousebind::getButton() const {
+MouseButton MouseBind::getButton() const {
     return m_button;
 }
-Modifier Mousebind::getModifiers() const {
+Modifier MouseBind::getModifiers() const {
     return m_modifiers;
 }
 
-size_t Mousebind::getHash() const {
+size_t MouseBind::getHash() const {
     return static_cast<size_t>(m_button) | (static_cast<size_t>(m_modifiers) << 29);
 }
-bool Mousebind::isEqual(Bind* other) const {
-    if (auto o = typeinfo_cast<Mousebind*>(other)) {
+bool MouseBind::isEqual(Bind* other) const {
+    if (auto o = typeinfo_cast<MouseBind*>(other)) {
         return m_button == o->m_button && m_modifiers == o->m_modifiers;
     }
     return false;
 }
-std::string Mousebind::toString() const {
+std::string MouseBind::toString() const {
     switch (m_button) {
         case MouseButton::PageBack: return "Page Back";
         case MouseButton::PageNext: return "Page Next";
         default: return "Unknown (Mouse)";
     }
 }
-DeviceID Mousebind::getDeviceID() const {
+DeviceID MouseBind::getDeviceID() const {
     return "mouse"_spr;
 }
-matjson::Value Mousebind::save() const {
+matjson::Value MouseBind::save() const {
     return matjson::Object {
         { "button", static_cast<int>(m_button) },
         { "modifiers", static_cast<int>(m_modifiers) },
@@ -470,7 +470,7 @@ BindManager::BindManager() {
     this->addCategory(Category::PLAY);
     this->addCategory(Category::EDITOR);
     this->attachDevice("keyboard"_spr, &Keybind::parse);
-    this->attachDevice("mouse"_spr, &Mousebind::parse);
+    this->attachDevice("mouse"_spr, &MouseBind::parse);
     this->retain();
 }
 

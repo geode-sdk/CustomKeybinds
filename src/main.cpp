@@ -62,7 +62,7 @@ class $modify(CCEGLView){
 			if (mods & GLFW_MOD_CONTROL) {
 				modifiers |= Modifier::Control;
 			}
-			if (auto bind = Mousebind::create(*mb, modifiers)) {
+			if (auto bind = MouseBind::create(*mb, modifiers)) {
 				if (PressBindEvent(bind, action == GLFW_PRESS).post() == ListenerResult::Stop) {
 					return;
 				}

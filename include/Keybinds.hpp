@@ -100,14 +100,14 @@ namespace keybinds {
         PageNext,
     };
 
-    class CUSTOM_KEYBINDS_DLL Mousebind final : public Bind {
+    class CUSTOM_KEYBINDS_DLL MouseBind final : public Bind {
     protected:
         MouseButton m_button;
         Modifier m_modifiers;
 
     public:
-        static Mousebind* create(MouseButton button, Modifier modifiers = Modifier::None);
-        static Mousebind* parse(matjson::Value const&);
+        static MouseBind* create(MouseButton button, Modifier modifiers = Modifier::None);
+        static MouseBind* parse(matjson::Value const&);
 
         MouseButton getButton() const;
         Modifier getModifiers() const;
