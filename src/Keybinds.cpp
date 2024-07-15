@@ -188,8 +188,8 @@ bool MouseBind::isEqual(Bind* other) const {
 }
 std::string MouseBind::toString() const {
     switch (m_button) {
-        case MouseButton::PageBack: return "Page Back";
-        case MouseButton::PageNext: return "Page Next";
+        case MouseButton::Button3: return "Page Back";
+        case MouseButton::Button4: return "Page Next";
         default: return "Unknown (Mouse)";
     }
 }

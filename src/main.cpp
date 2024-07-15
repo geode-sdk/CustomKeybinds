@@ -47,8 +47,8 @@ class $modify(CCEGLView){
 	void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int mods) {
 		std::optional<MouseButton> mb;
 		switch (button) {
-			case 3: mb = MouseButton::PageBack; break;
-			case 4: mb = MouseButton::PageNext; break;
+			case 3: mb = MouseButton::Button3; break;
+			case 4: mb = MouseButton::Button4; break;
 			default: break;
 		}
 		if (mb) {

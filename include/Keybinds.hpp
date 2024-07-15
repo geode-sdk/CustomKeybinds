@@ -96,8 +96,8 @@ namespace keybinds {
     };
 
     enum class MouseButton {
-        PageBack,
-        PageNext,
+        Button3,
+        Button4,
     };
 
     class CUSTOM_KEYBINDS_DLL MouseBind final : public Bind {
