@@ -63,7 +63,7 @@ public:
     static EnterBindLayer* create(BindableNode* node, Bind* modify = nullptr);
 };
 
-class EditRepeatPopup : public Popup<BindableNode*>, public TextInputDelegate {
+class EditRepeatPopup : public Popup<BindableNode*> {
 protected:
     Ref<BindableNode> m_node;
     RepeatOptions m_options;
@@ -71,7 +71,6 @@ protected:
     bool setup(BindableNode* node) override;
 
     void onEnabled(CCObject*);
-    void textChanged(CCTextInputNode*) override;
     void onClose(CCObject*) override;
 
 public:
@@ -83,7 +82,7 @@ protected:
     ScrollLayer* m_scroll;
     std::vector<CCNode*> m_containers;
     std::vector<BindableNode*> m_nodes;
-    InputNode* m_searchInput;
+    TextInput* m_searchInput;
     CCLabelBMFont* m_resultsLabel;
     std::string m_query;
     EventListener<DeviceFilter> m_deviceListener = 

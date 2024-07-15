@@ -76,6 +76,14 @@ namespace keybinds {
     CUSTOM_KEYBINDS_DLL bool keyIsModifier(cocos2d::enumKeyCodes key);
     CUSTOM_KEYBINDS_DLL bool keyIsController(cocos2d::enumKeyCodes key);
 
+    enum class MouseButton {
+        // Lol, sorry -HJfod
+        Button3 = 0,
+        Button4 = 1,
+    };
+
+    CUSTOM_KEYBINDS_DLL std::string mouseToString(MouseButton button);
+
     class CUSTOM_KEYBINDS_DLL Keybind final : public Bind {
     protected:
         cocos2d::enumKeyCodes m_key;
@@ -93,11 +101,6 @@ namespace keybinds {
         std::string toString() const override;
         DeviceID getDeviceID() const override;
         matjson::Value save() const override;
-    };
-
-    enum class MouseButton {
-        Button3,
-        Button4,
     };
 
     class CUSTOM_KEYBINDS_DLL MouseBind final : public Bind {

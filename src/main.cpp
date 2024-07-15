@@ -63,6 +63,7 @@ class $modify(CCEGLView){
 				modifiers |= Modifier::Control;
 			}
 			if (auto bind = MouseBind::create(*mb, modifiers)) {
+				log::info("post: {}", action == GLFW_PRESS);
 				if (PressBindEvent(bind, action == GLFW_PRESS).post() == ListenerResult::Stop) {
 					return;
 				}

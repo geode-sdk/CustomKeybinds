@@ -117,33 +117,29 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
 
     auto subTitle = CCLabelBMFont::create(node->getAction().getName().c_str(), "bigFont.fnt");
     subTitle->setColor({ 51, 170, 255 });
-    subTitle->setPosition(
-        m_obContentSize.width / 2,
-        m_obContentSize.height / 2 + m_size.height / 2 - 45.0f
-    );
     subTitle->limitLabelWidth(m_size.width - 40.0f, .5f, .1f);
-    m_mainLayer->addChild(subTitle);
+    m_mainLayer->addChildAtPosition(subTitle, Anchor::Top, ccp(0, -45));
 
     auto label = CCLabelBMFont::create("Press Keys...", "bigFont.fnt");
     label->setOpacity(155);
-    label->setPosition(m_obContentSize / 2 + ccp(0.f, 10.f));
     label->limitLabelWidth(m_size.width - 50.f, .7f, .1f);
-    m_mainLayer->addChild(m_label = label);
+    m_mainLayer->addChildAtPosition(m_label = label, Anchor::Center, ccp(0, 10));
 
     m_usedByLabel = CCLabelBMFont::create("", "bigFont.fnt");
-    m_usedByLabel->setPosition(m_obContentSize / 2 + ccp(0.f, -20.f));
     m_usedByLabel->setColor({ 243, 78, 37 });
-    m_mainLayer->addChild(m_usedByLabel);
+    m_mainLayer->addChildAtPosition(m_usedByLabel, Anchor::Center, ccp(0, -20));
 
     this->updateUsedBy();
+
+    auto bottomMenu = CCMenu::create();
+    bottomMenu->setContentWidth(m_size.width);
 
     auto setSpr = ButtonSprite::create(original ? "Set" : "Add", "bigFont.fnt", "GJ_button_01.png", .8f);
     setSpr->setScale(.6f);
     auto setBtn = CCMenuItemSpriteExtra::create(
         setSpr, this, menu_selector(EnterBindLayer::onSet)
     );
-    setBtn->setPosition(0.f, -m_size.height / 2 + 25.f);
-    m_buttonMenu->addChild(setBtn);
+    bottomMenu->addChild(setBtn);
 
     if (original) {
         auto remSpr = ButtonSprite::create("Remove", "bigFont.fnt", "GJ_button_06.png", .8f);
@@ -151,16 +147,15 @@ bool EnterBindLayer::setup(BindableNode* node, Bind* original) {
         auto remBtn = CCMenuItemSpriteExtra::create(
             remSpr, this, menu_selector(EnterBindLayer::onRemove)
         );
-        remBtn->setPosition(25.f, -m_size.height / 2 + 25.f);
-        m_buttonMenu->addChild(remBtn);
-
-        setBtn->setPositionX(-40.f);
+        bottomMenu->addChild(remBtn);
 
         auto originalLabel = original->createBindSprite();
         originalLabel->setScale(.4f);
-        originalLabel->setPosition(m_obContentSize/ 2 - ccp(0, 45.f));
-        m_mainLayer->addChild(originalLabel);
+        m_mainLayer->addChildAtPosition(originalLabel, Anchor::Center, ccp(0, -45));
     }
+
+    bottomMenu->setLayout(RowLayout::create());
+    m_mainLayer->addChildAtPosition(bottomMenu, Anchor::Bottom, ccp(0, 25));
 
     return true;
 }
@@ -230,7 +225,7 @@ ListenerResult EnterBindLayer::onPressed(PressBindEvent* event) {
 
 EnterBindLayer* EnterBindLayer::create(BindableNode* node, Bind* original) {
     auto ret = new EnterBindLayer;
-    if (ret && ret->init(220.f, 200.f, node, original)) {
+    if (ret && ret->initAnchored(220.f, 200.f, node, original)) {
         ret->autorelease();
         return ret;
     }
@@ -250,70 +245,58 @@ bool EditRepeatPopup::setup(BindableNode* node) {
 
     auto subTitle = CCLabelBMFont::create(node->getAction().getName().c_str(), "bigFont.fnt");
     subTitle->setColor({ 51, 170, 255 });
-    subTitle->setPosition(
-        m_obContentSize.width / 2,
-        m_obContentSize.height / 2 + m_size.height / 2 - 45.0f
-    );
     subTitle->limitLabelWidth(m_size.width - 40.0f, .5f, .1f);
-    m_mainLayer->addChild(subTitle);
+    m_mainLayer->addChildAtPosition(subTitle, Anchor::Top, ccp(0, -45));
 
     auto rateLabel = CCLabelBMFont::create("Rate", "bigFont.fnt");
     rateLabel->setScale(.5f);
     rateLabel->setAnchorPoint({ 1.f, .5f });
-    rateLabel->setPosition(m_obContentSize / 2 + ccp(-15.f, 20.f));
-    m_mainLayer->addChild(rateLabel);
+    m_mainLayer->addChildAtPosition(rateLabel, Anchor::Center, ccp(-15, 20));
 
-    auto rateInput = InputNode::create(80.f, "ms");
-    rateInput->setPosition(m_obContentSize / 2 + ccp(35.f, 20.f));
-    rateInput->getInput()->setString(std::to_string(m_options.rate));
-    rateInput->getInput()->setDelegate(this);
-    rateInput->getInput()->setUserData(&m_options.rate);
+    auto rateInput = TextInput::create(80.f, "ms");
+    rateInput->setString(std::to_string(m_options.rate));
+    rateInput->setCallback([this](std::string const& text) {
+        if (auto num = numFromString<int>(text)) {
+            m_options.rate = *num;
+        }
+    });
     rateInput->setScale(.75f);
-    m_mainLayer->addChild(rateInput);
+    m_mainLayer->addChildAtPosition(rateInput, Anchor::Center, ccp(35, 20));
 
     auto delayLabel = CCLabelBMFont::create("Delay", "bigFont.fnt");
     delayLabel->setScale(.5f);
     delayLabel->setAnchorPoint({ 1.f, .5f });
-    delayLabel->setPosition(m_obContentSize / 2 + ccp(-15.f, -10.f));
-    m_mainLayer->addChild(delayLabel);
+    m_mainLayer->addChildAtPosition(delayLabel, Anchor::Center, ccp(-15, -10));
 
-    auto delayInput = InputNode::create(80.f, "ms");
-    delayInput->setPosition(m_obContentSize / 2 + ccp(35.f, -10.f));
-    delayInput->getInput()->setString(std::to_string(m_options.delay));
-    delayInput->getInput()->setDelegate(this);
-    delayInput->getInput()->setUserData(&m_options.delay);
+    auto delayInput = TextInput::create(80.f, "ms");
+    delayInput->getInputNode()->setString(std::to_string(m_options.delay));
+    delayInput->setCallback([this](std::string const& text) {
+        if (auto num = numFromString<int>(text)) {
+            m_options.delay = *num;
+        }
+    });
     delayInput->setScale(.75f);
-    m_mainLayer->addChild(delayInput);
+    m_mainLayer->addChildAtPosition(delayInput, Anchor::Center, ccp(35, -10));
 
     auto toggleLabel = CCLabelBMFont::create("Enable", "bigFont.fnt");
     toggleLabel->setScale(.5f);
     toggleLabel->setAnchorPoint({ .0f, .5f });
-    toggleLabel->setPosition(m_obContentSize / 2 + ccp(-15.f, -40.f));
-    m_mainLayer->addChild(toggleLabel);
+    m_mainLayer->addChildAtPosition(toggleLabel, Anchor::Center, ccp(-15, -40));
 
     auto toggle = CCMenuItemToggler::createWithStandardSprites(
         this, menu_selector(EditRepeatPopup::onEnabled), .65f
     );
-    toggle->setPosition(-35.f, -40.f);
     toggle->toggle(m_options.enabled);
-    m_buttonMenu->addChild(toggle);
+    m_buttonMenu->addChildAtPosition(toggle, Anchor::Center, ccp(-35, -40));
 
     auto okSpr = ButtonSprite::create("OK", "goldFont.fnt", "GJ_button_01.png", .8f);
     okSpr->setScale(.8f);
     auto okBtn = CCMenuItemSpriteExtra::create(
         okSpr, this, menu_selector(EditRepeatPopup::onClose)
     );
-    okBtn->setPosition(0.f, -m_size.height / 2 + 25.f);
-    m_buttonMenu->addChild(okBtn);
+    m_buttonMenu->addChildAtPosition(okBtn, Anchor::Bottom, ccp(0, 25));
 
     return true;
-}
-
-void EditRepeatPopup::textChanged(CCTextInputNode* input) {
-    try {
-        *static_cast<size_t*>(input->getUserData()) = std::stoi(input->getString());
-    }
-    catch(...) {}
 }
 
 void EditRepeatPopup::onEnabled(CCObject* sender) {
@@ -328,7 +311,7 @@ void EditRepeatPopup::onClose(CCObject*) {
 
 EditRepeatPopup* EditRepeatPopup::create(BindableNode* node) {
     auto ret = new EditRepeatPopup;
-    if (ret && ret->init(220.f, 200.f, node)) {
+    if (ret && ret->initAnchored(220.f, 200.f, node)) {
         ret->autorelease();
         return ret;
     }
@@ -566,28 +549,23 @@ bool KeybindsLayer::setup() {
     auto winSize = CCDirector::get()->getWinSize();
     auto scrollSize = CCSize { 340.f, 180.f };
 
-    m_searchInput = InputNode::create(scrollSize.width / .8f, "Search Bindings...");
-    m_searchInput->setPosition(winSize.width / 2, winSize.height / 2 + scrollSize.height / 2);
-    m_searchInput->getInput()->getPlaceholderLabel()->setAnchorPoint({ .0f, .5f });
-    m_searchInput->getInput()->updateLabel(""); // trigger position fix from Geode
-    m_searchInput->getInput()->setPositionX(
-        m_searchInput->getInput()->getPositionX() - scrollSize.width / 2 / .8f + 10.f
+    m_searchInput = TextInput::create(scrollSize.width / .8f, "Search Bindings...");
+    m_searchInput->getInputNode()->getPlaceholderLabel()->setAnchorPoint({ .0f, .5f });
+    m_searchInput->getInputNode()->updateLabel(""); // trigger position fix from Geode
+    m_searchInput->getInputNode()->setPositionX(
+        m_searchInput->getInputNode()->getPositionX() - scrollSize.width / 2 / .8f + 10.f
     );
-    m_searchInput->getInput()->setLabelPlaceholderScale(.5f);
-    m_searchInput->getInput()->setMaxLabelScale(.5f);
-    m_searchInput->getInput()->setDelegate(this);
+    m_searchInput->getInputNode()->setLabelPlaceholderScale(.5f);
+    m_searchInput->getInputNode()->setMaxLabelScale(.5f);
+    m_searchInput->getInputNode()->setDelegate(this);
     m_searchInput->setScale(.8f);
-    m_mainLayer->addChild(m_searchInput);
+    m_mainLayer->addChildAtPosition(m_searchInput, Anchor::Center, ccp(0, scrollSize.height / 2));
 
     m_resultsLabel = CCLabelBMFont::create("", "bigFont.fnt");
     m_resultsLabel->setScale(.4f);
     m_resultsLabel->setAnchorPoint({ .0f, .5f });
-    m_resultsLabel->setPosition(
-        winSize.width / 2 - scrollSize.width / 2,
-        winSize.height / 2 + scrollSize.height / 2 - 20.f
-    );
     m_resultsLabel->setZOrder(5);
-    m_mainLayer->addChild(m_resultsLabel);
+    m_mainLayer->addChildAtPosition(m_resultsLabel, Anchor::Center, ccp(-scrollSize.width / 2, scrollSize.height / 2 - 20));
 
     m_scroll = ScrollLayer::create(scrollSize);
 
@@ -624,15 +602,15 @@ bool KeybindsLayer::setup() {
         target->setLayout(layout, false);
     }
 
-    m_scroll->setPosition(winSize / 2 - scrollSize / 2 - ccp(0.f, 30.f));
     m_scroll->moveToTop();
-    m_mainLayer->addChild(m_scroll);
+    m_mainLayer->addChildAtPosition(m_scroll, Anchor::Center, -scrollSize / 2 - ccp(0, 30));
 
-    addListBorders(m_mainLayer, winSize / 2 - ccp(0.f, 30.f), scrollSize + ccp(4.f, 0.f));
+    auto listBorders = ListBorders::create();
+    listBorders->setContentSize(scrollSize + ccp(4, 0));
+    m_mainLayer->addChildAtPosition(listBorders, Anchor::Center, ccp(0, -30));
 
     auto bar = Scrollbar::create(m_scroll);
-    bar->setPosition(winSize / 2 + ccp(scrollSize.width / 2 + 20.f, -30.f));
-    m_mainLayer->addChild(bar);
+    m_mainLayer->addChildAtPosition(bar, Anchor::Center, ccp(scrollSize.width / 2 + 20, -30));
 
     auto resetAllSpr = ButtonSprite::create(
         "Reset All", "bigFont.fnt", "GJ_button_05.png", .75f
@@ -641,8 +619,7 @@ bool KeybindsLayer::setup() {
     auto resetAllBtn = CCMenuItemSpriteExtra::create(
         resetAllSpr, this, menu_selector(KeybindsLayer::onResetAll)
     );
-    resetAllBtn->setPosition(m_size.width / 2 - 50.f, m_size.height / 2 - 20.f);
-    m_buttonMenu->addChild(resetAllBtn);
+    m_buttonMenu->addChildAtPosition(resetAllBtn, Anchor::TopRight, ccp(-50, -20));
 
     this->updateVisibility();
 
@@ -740,7 +717,7 @@ void KeybindsLayer::onResetAll(CCObject*) {
 }
 
 void KeybindsLayer::deselectSearchInput() {
-    m_searchInput->getInput()->onClickTrackNode(false);
+    m_searchInput->getInputNode()->onClickTrackNode(false);
 }
 
 void KeybindsLayer::onDevice(DeviceEvent*) {
@@ -749,7 +726,7 @@ void KeybindsLayer::onDevice(DeviceEvent*) {
 
 KeybindsLayer* KeybindsLayer::create() {
     auto ret = new KeybindsLayer;
-    if (ret && ret->init(420.f, 280.f)) {
+    if (ret && ret->initAnchored(420.f, 280.f)) {
         ret->autorelease();
         return ret;
     }
