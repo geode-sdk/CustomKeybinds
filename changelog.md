@@ -3,6 +3,7 @@
 ## v1.7.1
 
  - Fix modifiers not working with mouse buttons. This most likely breaks existing mouse button bindings
+ - Restart keybind no longer requires "Quick Keys" option enabled, as it ended up confusing users
  - Internal fixes
 
 ## v1.7.0

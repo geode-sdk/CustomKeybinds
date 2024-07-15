@@ -121,6 +121,14 @@ struct $modify(UILayer) {
         if (this->isPaused())
             return;
 
+        // enable quick keys - this mildly diverts from vanilla behavior
+        // because some keybinds are only supposed to work with that option enabled
+        // however we do provide our own way to disable them
+        // so requiring them both to be enabled just ended up confusing users
+        auto GM = GameManager::sharedState();
+        auto quickKeys = GM->getGameVariable("0163");
+        GM->setGameVariable("0163", true);
+
         auto dispatcher = CCDirector::get()->getKeyboardDispatcher();
 
         auto oShift = dispatcher->getShiftKeyPressed();
@@ -139,6 +147,9 @@ struct $modify(UILayer) {
         allowKeyDownThrough = false;
 
         dispatcher->updateModifierKeys(oShift, oCtrl, oAlt, oCmd);
+
+        //disable quick keys to restore previous state
+        GM->setGameVariable("0163", quickKeys);
     }
 
     bool init(GJBaseGameLayer* layer) {
