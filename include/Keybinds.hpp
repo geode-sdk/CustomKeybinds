@@ -95,6 +95,30 @@ namespace keybinds {
         matjson::Value save() const override;
     };
 
+    enum class MouseButton {
+        PageBack,
+        PageNext,
+    };
+
+    class CUSTOM_KEYBINDS_DLL Mousebind final : public Bind {
+    protected:
+        MouseButton m_button;
+        Modifier m_modifiers;
+
+    public:
+        static Mousebind* create(MouseButton button, Modifier modifiers = Modifier::None);
+        static Mousebind* parse(matjson::Value const&);
+
+        MouseButton getButton() const;
+        Modifier getModifiers() const;
+
+        size_t getHash() const override;
+        bool isEqual(Bind* other) const override;
+        std::string toString() const override;
+        DeviceID getDeviceID() const override;
+        matjson::Value save() const override;
+    };
+
     class CUSTOM_KEYBINDS_DLL ControllerBind final : public Bind {
     protected:
         cocos2d::enumKeyCodes m_button;

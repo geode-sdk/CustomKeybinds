@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.0
+
+ - Allow assigning mouse side buttons as keybinds
+
 ## v1.6.4
 
  - Fix spacebar in PlayLayer popups

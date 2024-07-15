@@ -42,6 +42,35 @@ class $modify(CCEGLView){
 		}
 		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
 	}
+
+	void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int mods) {
+		std::optional<MouseButton> mb;
+		switch (button) {
+			case 3: mb = MouseButton::PageBack; break;
+			case 4: mb = MouseButton::PageNext; break;
+			default: break;
+		}
+		if (mb) {
+			Modifier modifiers;
+			if (mods & GLFW_MOD_SHIFT) {
+				modifiers |= Modifier::Shift;
+			}
+			if (mods & GLFW_MOD_ALT) {
+				modifiers |= Modifier::Alt;
+			}
+			if (mods & GLFW_MOD_CONTROL) {
+				modifiers |= Modifier::Control;
+			}
+			if (auto bind = Mousebind::create(*mb, modifiers)) {
+				if (PressBindEvent(bind, action == GLFW_PRESS).post() == ListenerResult::Stop) {
+					return;
+				}
+			}
+		}
+		else {
+			return CCEGLView::onGLFWMouseCallBack(window, button, action, mods);
+		}
+	}
 };
 #endif
 
@@ -64,7 +93,8 @@ class $modify(CCKeyboardDispatcher) {
 			if (PressBindEvent(ControllerBind::create(key), down).post() == ListenerResult::Stop) {
 				return true;
 			}
-		} else {
+		}
+		else {
 			if (!keyIsModifier(key)) {
 				if (down) {
 					s_held.insert(key);
