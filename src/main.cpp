@@ -1,6 +1,5 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
-#include <Geode/modify/CCEGLView.hpp>
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/PlatformToolbox.hpp>
 #include <Geode/binding/ButtonSprite.hpp>
@@ -20,6 +19,8 @@ using namespace geode::prelude;
 using namespace keybinds;
 
 #ifdef GEODE_IS_WINDOWS
+#include <Geode/modify/CCEGLView.hpp>
+
 class $modify(CCEGLView){
 	/**
 	* GD does not pass shift into dispatchKeyboardMSG, causing the modifier to break when holding.
