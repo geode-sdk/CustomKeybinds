@@ -8,6 +8,7 @@
 ## v1.7.0
 
  - Allow assigning mouse side buttons as keybinds
+ - Add Android support
 
 ## v1.6.4
 
