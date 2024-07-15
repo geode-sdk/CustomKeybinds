@@ -47,12 +47,12 @@ class $modify(CCEGLView){
 	void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int mods) {
 		std::optional<MouseButton> mb;
 		switch (button) {
-			case 3: mb = MouseButton::Button3; break;
-			case 4: mb = MouseButton::Button4; break;
+			case 3: mb = MouseButton::Button4; break;
+			case 4: mb = MouseButton::Button5; break;
 			default: break;
 		}
 		if (mb) {
-			Modifier modifiers;
+			Modifier modifiers = Modifier::None;
 			if (mods & GLFW_MOD_SHIFT) {
 				modifiers |= Modifier::Shift;
 			}
@@ -63,7 +63,6 @@ class $modify(CCEGLView){
 				modifiers |= Modifier::Control;
 			}
 			if (auto bind = MouseBind::create(*mb, modifiers)) {
-				log::info("post: {}", action == GLFW_PRESS);
 				if (PressBindEvent(bind, action == GLFW_PRESS).post() == ListenerResult::Stop) {
 					return;
 				}

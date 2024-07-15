@@ -65,8 +65,8 @@ bool keybinds::keyIsController(enumKeyCodes key) {
 
 std::string keybinds::mouseToString(MouseButton button) {
     switch (button) {
-        case MouseButton::Button3: return "Page Back";
-        case MouseButton::Button4: return "Page Next";
+        case MouseButton::Button4: return "Page Back";
+        case MouseButton::Button5: return "Page Next";
         default: return "Unknown (Mouse)";
     }
 }

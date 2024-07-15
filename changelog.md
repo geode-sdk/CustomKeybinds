@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.1
+
+ - Fix modifiers not working with mouse buttons. This most likely breaks existing mouse button bindings
+ - Internal fixes
+
 ## v1.7.0
 
  - Allow assigning mouse side buttons as keybinds

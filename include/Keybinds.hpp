@@ -77,9 +77,8 @@ namespace keybinds {
     CUSTOM_KEYBINDS_DLL bool keyIsController(cocos2d::enumKeyCodes key);
 
     enum class MouseButton {
-        // Lol, sorry -HJfod
-        Button3 = 0,
-        Button4 = 1,
+        Button4 = 0,
+        Button5 = 1,
     };
 
     CUSTOM_KEYBINDS_DLL std::string mouseToString(MouseButton button);
