@@ -16,7 +16,7 @@
         #define CUSTOM_KEYBINDS_DLL __declspec(dllimport)
     #endif
 #else
-    #define CUSTOM_KEYBINDS_DLL
+    #define CUSTOM_KEYBINDS_DLL __attribute__((visibility("default")))
 #endif
 
 struct BindSaveData;
