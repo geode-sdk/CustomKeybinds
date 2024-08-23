@@ -322,7 +322,7 @@ EditRepeatPopup* EditRepeatPopup::create(BindableNode* node) {
 bool BindableNode::init(
     KeybindsLayer* layer,
     BindableAction const& action,
-    float width, bool bgColor
+    float width, size_t offset, bool bgColor
 ) {
     if (!CCNode::init())
         return false;
@@ -346,14 +346,14 @@ bool BindableNode::init(
     m_nameMenu->ignoreAnchorPointForPosition(false);
 
     auto nameLabel = CCLabelBMFont::create(action.getName().c_str(), "bigFont.fnt");
-    nameLabel->setPosition(0.f, height / 2);
+    nameLabel->setPosition(offset > 1 ? 7.f : 0.f, height / 2);
     nameLabel->setAnchorPoint({ .0f, .5f });
     m_nameMenu->addChild(nameLabel);
     limitNodeSize(nameLabel, { width / 2 - height, height / 1.33f }, .5f, .1f);
 
     if (action.getMod() != Mod::get()) {
         auto modLabel = CCLabelBMFont::create(action.getMod()->getName().c_str(), "bigFont.fnt");
-        modLabel->setPosition(0.f, height / 2 - 7.f);
+        modLabel->setPosition(offset > 1 ? 7.f : 0.f, height / 2 - 7.f);
         modLabel->setAnchorPoint({ .0f, .5f });
         modLabel->setScale(.25f);
         modLabel->setColor({ 125, 183, 230 });
@@ -531,10 +531,10 @@ std::string BindableNode::getMatchString() const {
 BindableNode* BindableNode::create(
     KeybindsLayer* layer,
     BindableAction const& action,
-    float width, bool bgColor
+    float width, size_t offset, bool bgColor
 ) {
     auto ret = new BindableNode();
-    if (ret && ret->init(layer, action, width, bgColor)) {
+    if (ret && ret->init(layer, action, width, offset, bgColor)) {
         ret->autorelease();
         return ret;
     }
@@ -586,7 +586,7 @@ bool KeybindsLayer::setup() {
             offset += 1;
         }
         for (auto& action : BindManager::get()->getBindablesIn(category)) {
-            auto node = BindableNode::create(this, action, scrollSize.width, bgColor ^= 1);
+            auto node = BindableNode::create(this, action, scrollSize.width, offset, bgColor ^= 1);
             target->addChild(node);
             m_nodes.push_back(node);
         }

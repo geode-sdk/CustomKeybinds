@@ -23,7 +23,7 @@ protected:
     bool init(
         KeybindsLayer* layer,
         BindableAction const& action,
-        float width, bool bgColor
+        float width, size_t offset, bool bgColor
     );
     void onEditBind(CCObject* sender);
     void onAddBind(CCObject*);
@@ -36,7 +36,7 @@ public:
     static BindableNode* create(
         KeybindsLayer* layer,
         BindableAction const& action,
-        float width, bool bgColor
+        float width, size_t offset, bool bgColor
     );
 
     BindableAction const& getAction() const;
