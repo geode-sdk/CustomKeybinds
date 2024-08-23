@@ -1,5 +1,10 @@
 # Changelog
 
+## v?.?.?
+ - Separate jump/move/checkpoint keybinds for different level modes (1P/2P, Classic/Platformer)
+ - Offset binds in inner categories to improve readability
+ - Bump to Geode `v3.4.0`
+
 ## v1.7.1
 
  - Fix modifiers not working with mouse buttons. This most likely breaks existing mouse button bindings
