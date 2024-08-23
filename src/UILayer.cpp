@@ -161,8 +161,20 @@ struct $modify(UILayer) {
             // do not do anything in the editor
             if (!PlayLayer::get()) return;
 
+            this->defineKeybind("robtop.geometry-dash/jump", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                PlayLayer::get()->queueButton(1, down, false);
+                if (down) {
+                    m_p1Jumping = true;
+                } else {
+                    m_p1Jumping = false;
+                }
+                return ListenerResult::Stop;
+            });
             this->defineKeybind("robtop.geometry-dash/jump-p1", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
                     return ListenerResult::Propagate;
                 }
                 PlayLayer::get()->queueButton(1, down, false);
@@ -174,26 +186,158 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, true);
+                PlayLayer::get()->queueButton(1, down, m_dualMode);
                 if (down) {
-                    m_p2Jumping = true;
+                    if (!m_dualMode) {
+                        m_p1Jumping = true;
+                    }
+                    m_p2Jumping = m_dualMode;
                 } else {
+                    if (!m_dualMode) {
+                        m_p1Jumping = false;
+                    }
                     m_p2Jumping = false;
                 }
                 return ListenerResult::Stop;
             });
+            this->defineKeybind("robtop.geometry-dash/jump-plat", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                PlayLayer::get()->queueButton(1, down, false);
+                if (down) {
+                    m_p1Jumping = true;
+                } else {
+                    m_p1Jumping = false;
+                }
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p1-plat", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                PlayLayer::get()->queueButton(1, down, false);
+                if (down) {
+                    m_p1Jumping = true;
+                } else {
+                    m_p1Jumping = false;
+                }
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p2-plat", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                PlayLayer::get()->queueButton(1, down, m_dualMode);
+                if (down) {
+                    if (!m_dualMode) {
+                        m_p1Jumping = true;
+                    }
+                    m_p2Jumping = m_dualMode;
+                } else {
+                    if (!m_dualMode) {
+                        m_p1Jumping = false;
+                    }
+                    m_p2Jumping = false;
+                }
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_A, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_D, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_A, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_D, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_Left, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_Right, down);
+                return ListenerResult::Stop;
+            });
             this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Z, down);
                 return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [this](bool down) {
-                if (this->isPaused()) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_X, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/place-checkpoint-plat", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_Z, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/delete-checkpoint-plat", [this](bool down) {
+                if (this->isPaused() || this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_X, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/place-checkpoint-2p", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_Z, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/delete-checkpoint-2p", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_X, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/place-checkpoint-2p-plat", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
+                    return ListenerResult::Propagate;
+                }
+                this->pressKeyFallthrough(KEY_Z, down);
+                return ListenerResult::Stop;
+            });
+            this->defineKeybind("robtop.geometry-dash/delete-checkpoint-2p-plat", [this](bool down) {
+                if (this->isPaused() || !this->m_gameLayer->m_levelSettings->m_twoPlayerMode || !this->m_gameLayer->m_isPlatformer) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_X, down);
@@ -218,34 +362,6 @@ struct $modify(UILayer) {
                 }
                 this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
                 return ListenerResult::Propagate;
-            });
-            this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
-                if (this->isPaused()) {
-                    return ListenerResult::Propagate;
-                }
-                this->pressKeyFallthrough(KEY_A, down);
-                return ListenerResult::Stop;
-            });
-            this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
-                if (this->isPaused()) {
-                    return ListenerResult::Propagate;
-                }
-                this->pressKeyFallthrough(KEY_D, down);
-                return ListenerResult::Stop;
-            });
-            this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
-                if (this->isPaused()) {
-                    return ListenerResult::Propagate;
-                }
-                this->pressKeyFallthrough(KEY_Left, down);
-                return ListenerResult::Stop;
-            });
-            this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
-                if (this->isPaused()) {
-                    return ListenerResult::Propagate;
-                }
-                this->pressKeyFallthrough(KEY_Right, down);
-                return ListenerResult::Stop;
             });
             this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [this](bool down) {
                 if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
@@ -292,72 +408,180 @@ struct $modify(UILayer) {
 
 $execute {
     BindManager::get()->registerBindable({
-        "robtop.geometry-dash/jump-p1",
-        "Jump P1",
-        "Player 1 Jump",
-        { 
-            Keybind::create(KEY_Space), 
+        "robtop.geometry-dash/jump",
+        "Jump",
+        "Jump in 1P classic levels",
+        {
+            Keybind::create(KEY_Space),
             Keybind::create(KEY_W),
             ControllerBind::create(CONTROLLER_A),
             ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB) 
+            ControllerBind::create(CONTROLLER_RB)
         },
-        Category::PLAY,
+        Category::PLAY_1P_CLASSIC,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/jump-p1",
+        "Jump P1",
+        "Player 1 jump in 2P classic levels",
+        { 
+            Keybind::create(KEY_Space),
+            Keybind::create(KEY_W),
+            ControllerBind::create(CONTROLLER_A),
+            ControllerBind::create(CONTROLLER_Up),
+            ControllerBind::create(CONTROLLER_RB)
+        },
+        Category::PLAY_2P_CLASSIC,
         false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/jump-p2",
         "Jump P2",
-        "Player 2 Jump",
+        "Player 2 jump in 2P classic levels",
         { Keybind::create(KEY_Up), ControllerBind::create(CONTROLLER_LB) },
-        Category::PLAY,
+        Category::PLAY_2P_CLASSIC,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/jump-plat",
+        "Jump",
+        "Jump in 1P platformer levels",
+        {
+            Keybind::create(KEY_Space),
+            Keybind::create(KEY_W),
+            ControllerBind::create(CONTROLLER_A),
+            ControllerBind::create(CONTROLLER_Up),
+            ControllerBind::create(CONTROLLER_RB)
+        },
+        Category::PLAY_1P_PLATFORMER,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/jump-p1-plat",
+        "Jump P1",
+        "Player 1 jump in 2P platformer levels",
+        {
+            Keybind::create(KEY_Space),
+            Keybind::create(KEY_W),
+            ControllerBind::create(CONTROLLER_A),
+            ControllerBind::create(CONTROLLER_Up),
+            ControllerBind::create(CONTROLLER_RB)
+        },
+        Category::PLAY_2P_PLATFORMER,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/jump-p2-plat",
+        "Jump P2",
+        "Player 2 jump in 2P platformer levels",
+        { Keybind::create(KEY_Up), ControllerBind::create(CONTROLLER_LB) },
+        Category::PLAY_2P_PLATFORMER,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-left",
+        "Move left",
+        "Move left in 1P platformer levels",
+        { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
+        Category::PLAY_1P_PLATFORMER,
+        false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/move-right",
+        "Move right",
+        "Move right in 1P platformer levels",
+        { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
+        Category::PLAY_1P_PLATFORMER,
         false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-left-p1",
         "Move left P1",
-        "Moves P1 left in platformer mode",
+        "Player 1 move left in 2P platformer levels",
         { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
-        Category::PLAY,
+        Category::PLAY_2P_PLATFORMER,
         false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-right-p1",
         "Move right P1",
-        "Moves P1 right in platformer mode",
+        "Player 1 move right in 2P platformer levels",
         { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
-        Category::PLAY,
+        Category::PLAY_2P_PLATFORMER,
         false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-left-p2",
         "Move left P2",
-        "Moves P2 left in platformer mode",
+        "Player 2 move left in 2P platformer levels",
         { Keybind::create(KEY_Left), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
-        Category::PLAY,
+        Category::PLAY_2P_PLATFORMER,
         false 
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/move-right-p2",
         "Move right P2",
-        "Moves P2 right in platformer mode",
+        "Player 2 move right in 2P platformer levels",
         { Keybind::create(KEY_Right), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
-        Category::PLAY,
-        false 
+        Category::PLAY_2P_PLATFORMER,
+        false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/place-checkpoint",
         "Place Checkpoint",
-        "Place a Checkpoint in Practice Mode",
+        "Place a checkpoint in practice mode in 1P classic levels",
         { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
-        Category::PLAY, false 
+        Category::PLAY_1P_CLASSIC, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/delete-checkpoint",
         "Delete Checkpoint",
-        "Delete a Checkpoint in Practice Mode",
+        "Delete a checkpoint in practice mode in 1P classic levels",
         { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
-        Category::PLAY, false
+        Category::PLAY_1P_CLASSIC, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/place-checkpoint-plat",
+        "Place Checkpoint",
+        "Place a checkpoint in practice mode in 1P platformer levels",
+        { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
+        Category::PLAY_1P_PLATFORMER, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/delete-checkpoint-plat",
+        "Delete Checkpoint",
+        "Delete a checkpoint in practice mode in 1P platformer levels",
+        { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
+        Category::PLAY_1P_PLATFORMER, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/place-checkpoint-2p",
+        "Place Checkpoint",
+        "Place a checkpoint in practice mode in 2P classic levels",
+        { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
+        Category::PLAY_2P_CLASSIC, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/delete-checkpoint-2p",
+        "Delete Checkpoint",
+        "Delete a checkpoint in practice mode in 2P classic levels",
+        { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
+        Category::PLAY_2P_CLASSIC, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/place-checkpoint-2p-plat",
+        "Place Checkpoint",
+        "Place a checkpoint in practice mode in 2P platformer levels",
+        { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
+        Category::PLAY_2P_PLATFORMER, false
+    });
+    BindManager::get()->registerBindable({
+        "robtop.geometry-dash/delete-checkpoint-2p-plat",
+        "Delete Checkpoint",
+        "Delete a checkpoint in practice mode in 2P platformer levels",
+        { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
+        Category::PLAY_2P_PLATFORMER, false
     });
 
     BindManager::get()->registerBindable({

@@ -74,34 +74,64 @@ struct $modify(EditorUI) {
             return false;
 
         Loader::get()->queueInMainThread([this, lel] {
+            this->defineKeybind("robtop.geometry-dash/jump", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && !lel->m_levelSettings->m_twoPlayerMode && !lel->m_isPlatformer) {
+                    lel->queueButton(platformButton(), down, false);
+                }
+            });
             this->defineKeybind("robtop.geometry-dash/jump-p1", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode && !lel->m_isPlatformer) {
                     lel->queueButton(platformButton(), down, false);
                 }
             });
             this->defineKeybind("robtop.geometry-dash/jump-p2", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode && !lel->m_isPlatformer) {
                     lel->queueButton(platformButton(), down, true);
                 }
             });
+            this->defineKeybind("robtop.geometry-dash/jump-plat", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && !lel->m_levelSettings->m_twoPlayerMode && lel->m_isPlatformer) {
+                    lel->queueButton(platformButton(), down, false);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p1-plat", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode && lel->m_isPlatformer) {
+                    lel->queueButton(platformButton(), down, false);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/jump-p2-plat", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode && lel->m_isPlatformer) {
+                    lel->queueButton(platformButton(), down, true);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-left", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && !lel->m_levelSettings->m_twoPlayerMode) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false);
+                }
+            });
+            this->defineKeybind("robtop.geometry-dash/move-right", [lel](bool down) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && !lel->m_levelSettings->m_twoPlayerMode) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false);
+                }
+            });
             this->defineKeybind("robtop.geometry-dash/move-left-p1", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode) {
                     lel->queueButton(static_cast<int>(PlayerButton::Left), down, false);
                 }
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p1", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode) {
                     lel->queueButton(static_cast<int>(PlayerButton::Right), down, false);
                 }
             });
             this->defineKeybind("robtop.geometry-dash/move-left-p2", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true);
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, lel->m_player2);
                 }
             });
             this->defineKeybind("robtop.geometry-dash/move-right-p2", [lel](bool down) {
-                if (lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true);
+                if (lel->m_playbackMode == PlaybackMode::Playing && lel->m_levelSettings->m_twoPlayerMode) {
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, lel->m_player2);
                 }
             });
             this->defineKeybind("robtop.geometry-dash/pause-level", [this](bool down) {
