@@ -476,7 +476,7 @@ void BindableNode::onResetToDefault(CCObject*) {
             m_action.getName()
         ),
         "Cancel", "Reset",
-        [=](auto*, bool btn2) {
+        [=, this](auto*, bool btn2) {
             if (btn2) {
                 BindManager::get()->resetBindsToDefault(m_action.getID());
                 this->updateMenu();
@@ -597,7 +597,8 @@ bool KeybindsLayer::setup() {
             ->setAxisReverse(true)
             ->setCrossAxisLineAlignment(AxisAlignment::End)
             ->setAxisAlignment(AxisAlignment::End)
-            ->setGap(0.f);
+            ->setGap(0.f)
+            ->setAutoGrowAxis(0.f);
         layout->ignoreInvisibleChildren(true);
         target->setLayout(layout, false);
     }
@@ -705,7 +706,7 @@ void KeybindsLayer::onResetAll(CCObject*) {
         "Reset All",
         "Are you sure you want to <cr>reset ALL bindings to default</c>?",
         "Cancel", "Reset",
-        [=](auto*, bool btn2) {
+        [=, this](auto*, bool btn2) {
             if (btn2) {
                 for (auto& action : BindManager::get()->getAllBindables()) {
                     BindManager::get()->resetBindsToDefault(action.getID());

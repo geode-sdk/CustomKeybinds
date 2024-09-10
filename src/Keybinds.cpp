@@ -543,7 +543,7 @@ bool BindManager::hasDefaultBinds(ActionID const& action) const {
     if (auto bindable = this->getBindable(action)) {
         auto binds = this->getBindsFor(action);
         auto defs = bindable->getDefaults();
-        ranges::remove(defs, [=](auto const& def) {
+        ranges::remove(defs, [=, this](auto const& def) {
             return !m_devices.contains(def->getDeviceID());
         });
         if (binds.size() == defs.size()) {
