@@ -240,14 +240,18 @@ protected:
 
 public:
 	void checkController(float) {
-		if (m_cached != PlatformToolbox::isControllerConnected()) {
-			m_cached = PlatformToolbox::isControllerConnected();
+		//TODO: remove the android thingy once/if zmx figures out how to get the controller state through the launcher
+		bool controllerConnected = GEODE_ANDROID(true || ) PlatformToolbox::isControllerConnected();
+		if (m_cached != controllerConnected) {
+			m_cached = controllerConnected;
 			if (m_cached) {
 				BindManager::get()->attachDevice("controller"_spr, &ControllerBind::parse);
+				#ifndef GEODE_IS_ANDROID
 				Notification::create(
 					"Controller Attached",
 					CCSprite::createWithSpriteFrameName("controllerBtn_A_001.png")
 				)->show();
+				#endif
 			}
 			else {
 				BindManager::get()->detachDevice("controller"_spr);
