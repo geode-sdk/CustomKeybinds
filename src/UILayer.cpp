@@ -414,9 +414,11 @@ $execute {
         {
             Keybind::create(KEY_Space),
             Keybind::create(KEY_W),
+            Keybind::create(KEY_Up),
             ControllerBind::create(CONTROLLER_A),
             ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB)
+            ControllerBind::create(CONTROLLER_RB),
+            ControllerBind::create(CONTROLLER_LB)
         },
         Category::PLAY_1P_CLASSIC,
         false
@@ -464,9 +466,11 @@ $execute {
         {
             Keybind::create(KEY_Space),
             Keybind::create(KEY_W),
+            Keybind::create(KEY_Up),
             ControllerBind::create(CONTROLLER_A),
             ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB)
+            ControllerBind::create(CONTROLLER_RB),
+            ControllerBind::create(CONTROLLER_LB)
         },
         Category::PLAY_2P_PLATFORMER,
         false
