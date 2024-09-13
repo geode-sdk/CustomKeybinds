@@ -1,9 +1,10 @@
 # Changelog
 
-## v?.?.?
+## v1.8.0
  - Separate jump/move/checkpoint keybinds for different level modes (1P/2P, Classic/Platformer)
  - Offset binds in inner categories to improve readability
- - Bump to Geode `v3.4.0`
+ - Enabled controller support on Android
+ - Bump to Geode `v3.6.0`
 
 ## v1.7.1
 
