@@ -452,9 +452,11 @@ $execute {
         {
             Keybind::create(KEY_Space),
             Keybind::create(KEY_W),
+            Keybind::create(KEY_Up),
             ControllerBind::create(CONTROLLER_A),
             ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB)
+            ControllerBind::create(CONTROLLER_RB),
+            ControllerBind::create(CONTROLLER_LB)
         },
         Category::PLAY_1P_PLATFORMER,
         false
@@ -466,11 +468,9 @@ $execute {
         {
             Keybind::create(KEY_Space),
             Keybind::create(KEY_W),
-            Keybind::create(KEY_Up),
             ControllerBind::create(CONTROLLER_A),
             ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB),
-            ControllerBind::create(CONTROLLER_LB)
+            ControllerBind::create(CONTROLLER_RB)
         },
         Category::PLAY_2P_PLATFORMER,
         false
@@ -487,7 +487,13 @@ $execute {
         "robtop.geometry-dash/move-left",
         "Move left",
         "Move left in 1P platformer levels",
-        { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
+        {
+            Keybind::create(cocos2d::KEY_A),
+            ControllerBind::create(CONTROLLER_Left),
+            ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT),
+            Keybind::create(KEY_Left),
+            ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT)
+        },
         Category::PLAY_1P_PLATFORMER,
         false
     });
@@ -495,7 +501,13 @@ $execute {
         "robtop.geometry-dash/move-right",
         "Move right",
         "Move right in 1P platformer levels",
-        { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
+        {
+            Keybind::create(cocos2d::KEY_D),
+            ControllerBind::create(CONTROLLER_Right),
+            ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT),
+            Keybind::create(KEY_Right),
+            ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT)
+        },
         Category::PLAY_1P_PLATFORMER,
         false
     });
@@ -503,7 +515,11 @@ $execute {
         "robtop.geometry-dash/move-left-p1",
         "Move left P1",
         "Player 1 move left in 2P platformer levels",
-        { Keybind::create(cocos2d::KEY_A), ControllerBind::create(CONTROLLER_Left), ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT) },
+        {
+            Keybind::create(cocos2d::KEY_A),
+            ControllerBind::create(CONTROLLER_Left),
+            ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT)
+        },
         Category::PLAY_2P_PLATFORMER,
         false 
     });
@@ -511,7 +527,11 @@ $execute {
         "robtop.geometry-dash/move-right-p1",
         "Move right P1",
         "Player 1 move right in 2P platformer levels",
-        { Keybind::create(cocos2d::KEY_D), ControllerBind::create(CONTROLLER_Right), ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT) },
+        {
+            Keybind::create(cocos2d::KEY_D),
+            ControllerBind::create(CONTROLLER_Right),
+            ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT)
+        },
         Category::PLAY_2P_PLATFORMER,
         false 
     });
@@ -519,7 +539,10 @@ $execute {
         "robtop.geometry-dash/move-left-p2",
         "Move left P2",
         "Player 2 move left in 2P platformer levels",
-        { Keybind::create(KEY_Left), ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT) },
+        {
+            Keybind::create(KEY_Left),
+            ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT)
+        },
         Category::PLAY_2P_PLATFORMER,
         false 
     });
@@ -527,7 +550,10 @@ $execute {
         "robtop.geometry-dash/move-right-p2",
         "Move right P2",
         "Player 2 move right in 2P platformer levels",
-        { Keybind::create(KEY_Right), ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT) },
+        {
+            Keybind::create(KEY_Right),
+            ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT)
+        },
         Category::PLAY_2P_PLATFORMER,
         false
     });
