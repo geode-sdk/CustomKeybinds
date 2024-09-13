@@ -173,10 +173,6 @@ namespace keybinds {
         bool operator==(Category const&) const;
 
         static constexpr auto PLAY { "Play" };
-        static constexpr auto PLAY_1P_CLASSIC { "Play/Classic 1P" };
-        static constexpr auto PLAY_1P_PLATFORMER { "Play/Platformer 1P" };
-        static constexpr auto PLAY_2P_CLASSIC { "Play/Classic 2P" };
-        static constexpr auto PLAY_2P_PLATFORMER { "Play/Platformer 2P" };
         static constexpr auto PLAY_PAUSE { "Play/Pause" };
         static constexpr auto EDITOR { "Editor" };
         static constexpr auto GLOBAL { "Global" };
