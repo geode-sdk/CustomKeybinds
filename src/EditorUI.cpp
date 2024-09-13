@@ -104,11 +104,6 @@ struct $modify(EditorUI) {
                     lel->queueButton(static_cast<int>(PlayerButton::Right), down, true);
                 }
             });
-            this->defineKeybind("robtop.geometry-dash/pause-level", [this](bool down) {
-                if(down && !getChildOfType<EditorPauseLayer>(this->getParent(), 0)) {
-                    EditorUI::onPause(nullptr);
-                };
-            });
             this->defineKeybind("robtop.geometry-dash/build-mode", [this] {
                 this->passThroughKeyDown(KEY_One);
             });
@@ -470,7 +465,7 @@ $execute {
         "robtop.geometry-dash/playtest",
         "Playtest",
         "Start / Stop Playtesting",
-        { Keybind::create(KEY_Enter, Modifier::None), ControllerBind::create(CONTROLLER_Y) },
+        { Keybind::create(KEY_Enter, Modifier::None), ControllerBind::create(CONTROLLER_Start) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
