@@ -2,7 +2,6 @@
 
 #include <Geode/ui/Popup.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
-#include <Geode/ui/InputNode.hpp>
 #include <Geode/binding/TextInputDelegate.hpp>
 #include "../include/Keybinds.hpp"
 

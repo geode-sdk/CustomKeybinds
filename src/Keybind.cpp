@@ -16,16 +16,16 @@ Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
 
 Keybind* Keybind::parse(matjson::Value const& value) {
     return Keybind::create(
-        static_cast<enumKeyCodes>(value["key"].as_int()),
-        static_cast<Modifier>(value["modifiers"].as_int())
+        static_cast<enumKeyCodes>(value["key"].asInt().unwrapOr(0)),
+        static_cast<Modifier>(value["modifiers"].asInt().unwrapOr(0))
     );
 }
 
 matjson::Value Keybind::save() const {
-    return matjson::Object {
+    return matjson::makeObject({
         { "key", static_cast<int>(m_key) },
         { "modifiers", static_cast<int>(m_modifiers) }
-    };
+    });
 }
 
 enumKeyCodes Keybind::getKey() const {

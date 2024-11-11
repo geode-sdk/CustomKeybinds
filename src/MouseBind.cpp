@@ -12,8 +12,8 @@ MouseBind* MouseBind::create(MouseButton button, Modifier modifiers) {
 }
 MouseBind* MouseBind::parse(matjson::Value const& value) {
     return MouseBind::create(
-        static_cast<MouseButton>(value["button"].as_int()),
-        static_cast<Modifier>(value["modifiers"].as_int())
+        static_cast<MouseButton>(value["button"].asInt().unwrapOrDefault()),
+        static_cast<Modifier>(value["modifiers"].asInt().unwrapOrDefault())
     );
 }
 
@@ -54,8 +54,8 @@ DeviceID MouseBind::getDeviceID() const {
     return "mouse"_spr;
 }
 matjson::Value MouseBind::save() const {
-    return matjson::Object {
+    return matjson::makeObject({
         { "button", static_cast<int>(m_button) },
         { "modifiers", static_cast<int>(m_modifiers) },
-    };
+    });
 }

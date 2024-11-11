@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Geode/DefaultInclude.hpp>
-#include <Geode/utils/MiniFunction.hpp>
 #include <Geode/utils/cocos.hpp>
 #include <Geode/loader/Mod.hpp>
 #include <Geode/loader/Event.hpp>
@@ -234,7 +233,7 @@ namespace keybinds {
     public:
         using Callback = geode::ListenerResult(InvokeBindEvent*);
 
-        geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, InvokeBindEvent* event);
+        geode::ListenerResult handle(std::function<Callback> fn, InvokeBindEvent* event);
         InvokeBindFilter(cocos2d::CCNode* target, ActionID const& id);
     };
 
@@ -253,7 +252,7 @@ namespace keybinds {
     public:
         using Callback = geode::ListenerResult(PressBindEvent*);
 
-        geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, PressBindEvent* event);
+        geode::ListenerResult handle(std::function<Callback> fn, PressBindEvent* event);
         PressBindFilter();
     };
 
@@ -276,7 +275,7 @@ namespace keybinds {
     public:
         using Callback = void(DeviceEvent*);
 
-        geode::ListenerResult handle(geode::utils::MiniFunction<Callback> fn, DeviceEvent* event);
+        geode::ListenerResult handle(std::function<Callback> fn, DeviceEvent* event);
         DeviceFilter(std::optional<DeviceID> id = std::nullopt);
     };
 

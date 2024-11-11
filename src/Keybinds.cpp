@@ -189,7 +189,7 @@ bool InvokeBindEvent::isDown() const {
     return m_down;
 }
 
-ListenerResult InvokeBindFilter::handle(utils::MiniFunction<Callback> fn, InvokeBindEvent* event) {
+ListenerResult InvokeBindFilter::handle(std::function<Callback> fn, InvokeBindEvent* event) {
     if (event->getID() == m_id) {
         return fn(event);
     }
@@ -211,7 +211,7 @@ bool PressBindEvent::isDown() const {
     return m_down;
 }
 
-geode::ListenerResult PressBindFilter::handle(MiniFunction<Callback> fn, PressBindEvent* event) {
+geode::ListenerResult PressBindFilter::handle(std::function<Callback> fn, PressBindEvent* event) {
     return fn(event);
 }
 
@@ -232,7 +232,7 @@ bool DeviceEvent::wasDetached() const {
     return !m_attached;
 }
 
-ListenerResult DeviceFilter::handle(MiniFunction<Callback> fn, DeviceEvent* event) {
+ListenerResult DeviceFilter::handle(std::function<Callback> fn, DeviceEvent* event) {
     if (!m_id || m_id == event->getID()) {
         fn(event);
     }
@@ -309,7 +309,10 @@ matjson::Value BindManager::saveBind(Bind* bind) const {
 
 Bind* BindManager::loadBind(matjson::Value const& json) const {
     try {
-        auto device = json["device"].as_string();
+        auto res = json["device"].asString();
+        if (!res)
+            return nullptr;
+        auto device = res.unwrap();
         if (!m_devices.contains(device)) {
             return nullptr;
         }
@@ -321,9 +324,9 @@ Bind* BindManager::loadBind(matjson::Value const& json) const {
 }
 
 bool BindManager::loadActionBinds(ActionID const& action) {
-    try {
-        auto value = Mod::get()->template getSavedValue<matjson::Object>(action);
-        for (auto bind : value["binds"].as_array()) {
+    auto inner = [&]() -> Result<> {
+        auto value = Mod::get()->getSavedValue<matjson::Value>(action);
+        for (auto bind : value["binds"]) {
             // try directly parsing the bind from a string if the device it's for
             // is already connected
             if (auto b = this->loadBind(bind)) {
@@ -334,9 +337,9 @@ bool BindManager::loadActionBinds(ActionID const& action) {
             else {
                 // if device ID exists, then add this to the list of unbound
                 // binds
-                if (bind.contains("device")) {
+                if (bind.contains("device") && bind["device"].isString()) {
                     try {
-                        m_devicelessBinds[bind["device"].as_string()][action].insert(bind);
+                        m_devicelessBinds[bind["device"].asString().unwrap()][action].insert(bind);
                     }
                     catch(...) {}
                 }
@@ -345,36 +348,34 @@ bool BindManager::loadActionBinds(ActionID const& action) {
         }
         // load repeat options
         if (value.contains("repeat")) {
-            auto rep = value["repeat"].as_object();
+            auto rep = value["repeat"];
             auto opts = RepeatOptions();
-            opts.enabled = rep["enabled"].as_bool();
-            opts.rate = rep["rate"].as_int();
-            opts.delay = rep["delay"].as_int();
+            GEODE_UNWRAP_INTO(opts.enabled, rep["enabled"].asBool());
+            GEODE_UNWRAP_INTO(opts.rate, rep["rate"].asInt());
+            GEODE_UNWRAP_INTO(opts.delay, rep["delay"].asInt());
             this->setRepeatOptionsFor(action, opts);
         }
-        return true;
-    }
-    catch(...) {
-        return false;
-    }
+        return Ok();
+    };
+    return inner().isOk();
 }
 
 void BindManager::saveActionBinds(ActionID const& action) {
-    auto obj = matjson::Object();
-    auto binds = matjson::Array();
+    auto obj = matjson::Value::object();
+    auto binds = matjson::Value::array();
     for (auto& bind : this->getBindsFor(action)) {
-        binds.push_back(this->saveBind(bind));
+        binds.push(this->saveBind(bind));
     }
     for (auto& [device, actions] : m_devicelessBinds) {
         if (actions.contains(action)) {
             for (auto& bind : actions.at(action)) {
-                binds.push_back(bind);
+                binds.push(bind);
             }
         }
     }
     obj["binds"] = binds;
     if (auto opts = this->getRepeatOptionsFor(action)) {
-        auto rep = matjson::Object();
+        auto rep = matjson::Value::object();
         rep["enabled"] = opts.value().enabled;
         rep["rate"] = opts.value().rate;
         rep["delay"] = opts.value().delay;

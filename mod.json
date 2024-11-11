@@ -1,7 +1,7 @@
 {
-	"geode": "3.6.0",
+	"geode": "4.0.0",
 	"gd": {
-		"win": "2.206",
+		"win": "2.2073",
 		"android": "2.206"
 	},
 	"version": "v1.9.0",
@@ -29,7 +29,7 @@
 	"incompatibilities": [],
 	"settings": {
 		"open-menu": {
-			"type": "custom"
+			"type": "custom:open-menu"
 		}
 	}
 }

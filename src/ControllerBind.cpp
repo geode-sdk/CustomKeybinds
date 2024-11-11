@@ -15,14 +15,14 @@ ControllerBind* ControllerBind::create(enumKeyCodes button) {
 
 ControllerBind* ControllerBind::parse(matjson::Value const& value) {
     return ControllerBind::create(
-        static_cast<enumKeyCodes>(value["button"].as_double())
+        static_cast<enumKeyCodes>(value["button"].asInt().unwrapOr(0))
     );
 }
 
 matjson::Value ControllerBind::save() const {
-    return matjson::Object {
+    return matjson::makeObject({
         { "button", static_cast<int>(m_button) },
-    };
+    });
 }
 
 enumKeyCodes ControllerBind::getButton() const {

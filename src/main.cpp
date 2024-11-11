@@ -5,7 +5,6 @@
 #include <Geode/binding/ButtonSprite.hpp>
 #include <Geode/ui/Notification.hpp>
 #include <Geode/modify/Modify.hpp>
-#include <Geode/loader/SettingNode.hpp>
 #include <Geode/loader/Setting.hpp>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDispatcher.h>
@@ -279,18 +278,18 @@ $execute {
 }
 
 // Have to make a SettingValue even if it holds no value
-class DummySettingValue : public SettingValue {
+class DummySetting : public SettingBaseValue<int> {
 public:
-	DummySettingValue(std::string const& key, std::string const& mod) : SettingValue(key, mod) {}
-	bool load(matjson::Value const& json) override { return true; }
-	bool save(matjson::Value&) const override { return true; }
+	static Result<std::shared_ptr<SettingV3>> parse(std::string const&, std::string const&, matjson::Value const&) {
+		return Ok(std::make_shared<DummySetting>());
+	};
 	SettingNode* createNode(float width) override;
 };
 
-class ButtonSettingNode : public SettingNode {
+class ButtonSettingNode : public SettingValueNode<DummySetting> {
 protected:
-	bool init(SettingValue* value, float width) {
-		if (!SettingNode::init(value))
+	bool init(std::shared_ptr<DummySetting>& setting, float width) {
+		if (!SettingValueNodeV3::init(setting, width))
 			return false;
 
 		this->setContentSize({ width, 40.f });
@@ -308,12 +307,11 @@ protected:
 		KeybindsLayer::create()->show();
 	}
 public:
-	void commit() override { this->dispatchCommitted(); }
-	bool hasUncommittedChanges() override { return false; }
-	bool hasNonDefaultValue() override { return false; }
-	void resetToDefault() override {}
+	void updateState(CCNode* invoker) override {
+		SettingValueNodeV3::updateState(invoker);
+	}
 
-	static ButtonSettingNode* create(SettingValue* value, float width) {
+	static ButtonSettingNode* create(std::shared_ptr<DummySetting> value, float width) {
 		auto ret = new ButtonSettingNode();
 		if (ret && ret->init(value, width)) {
 			ret->autorelease();
@@ -324,10 +322,10 @@ public:
 	}
 };
 
-SettingNode* DummySettingValue::createNode(float width) {
-	return ButtonSettingNode::create(this, width);
+SettingNode* DummySetting::createNode(float width) {
+	return ButtonSettingNode::create(std::static_pointer_cast<DummySetting>(shared_from_this()), width);
 }
 
 $execute {
-	Mod::get()->registerCustomSetting("open-menu", std::make_unique<DummySettingValue>(std::string("open-menu"), Mod::get()->getID()));
+	(void) Mod::get()->registerCustomSettingType("open-menu", &DummySetting::parse);
 }

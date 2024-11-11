@@ -257,7 +257,7 @@ bool EditRepeatPopup::setup(BindableNode* node) {
     rateInput->setString(std::to_string(m_options.rate));
     rateInput->setCallback([this](std::string const& text) {
         if (auto num = numFromString<int>(text)) {
-            m_options.rate = *num;
+            m_options.rate = num.unwrap();
         }
     });
     rateInput->setScale(.75f);
@@ -272,7 +272,7 @@ bool EditRepeatPopup::setup(BindableNode* node) {
     delayInput->getInputNode()->setString(std::to_string(m_options.delay));
     delayInput->setCallback([this](std::string const& text) {
         if (auto num = numFromString<int>(text)) {
-            m_options.delay = *num;
+            m_options.delay = num.unwrap();
         }
     });
     delayInput->setScale(.75f);

@@ -49,7 +49,7 @@ struct $modify(PauseLayer) {
 
             // Remove any popups (looking at you, confirm exit)
             CCScene* active = CCDirector::sharedDirector()->getRunningScene();
-            if (auto alert = getChildOfType<FLAlertLayer>(active, 0)) {
+            if (auto alert = active->getChildByType<FLAlertLayer>(0)) {
                 return ListenerResult::Propagate;
             }
             this->onResume(nullptr);
@@ -96,13 +96,13 @@ struct $modify(UILayer) {
 
     bool isPaused() {
         return !this->isCurrentPlayLayer()
-            || getChildOfType<PauseLayer>(PlayLayer::get()->getParent(), 0) != nullptr
-            || getChildOfType<GJDropDownLayer>(PlayLayer::get(), 0) != nullptr;
+            || PlayLayer::get()->getParent()->getChildByType<PauseLayer>(0) != nullptr
+            || PlayLayer::get()->getChildByType<GJDropDownLayer>(0) != nullptr;
     }
 
     bool isCurrentPlayLayer() {
-        auto playLayer = getChildOfType<PlayLayer>(CCScene::get(), 0);
-        return playLayer != nullptr && playLayer == PlayLayer::get() && getChildOfType<UILayer>(playLayer, 0) == this;
+        auto playLayer = CCScene::get()->getChildByType<PlayLayer>(0);
+        return playLayer != nullptr && playLayer == PlayLayer::get() && playLayer->getChildByType<UILayer>(0) == this;
     }
 
     void pressKeyFallthrough(enumKeyCodes key, bool down) {
