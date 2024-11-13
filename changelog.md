@@ -1,4 +1,6 @@
 # Changelog
+## v1.10.0
+ - Updated for GD 2.2074
 
 ## v1.9.0
  - Unseparate jump/move/checkpoint keybinds for different level modes (1P/2P, Classic/Platformer)
