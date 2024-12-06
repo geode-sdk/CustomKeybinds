@@ -318,6 +318,8 @@ namespace keybinds {
         bool loadActionBinds(ActionID const& action);
         void saveActionBinds(ActionID const& action);
 
+        void fixEmptyBindsBug();
+
         /// Checks if a specific Bind + Action combo is being held.
         /// @param action the action ID we are checking
         /// @param bind the bind we are checking

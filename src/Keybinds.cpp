@@ -242,6 +242,7 @@ ListenerResult DeviceFilter::handle(std::function<Callback> fn, DeviceEvent* eve
 DeviceFilter::DeviceFilter(std::optional<DeviceID> id) : m_id(id) {}
 
 BindManager::BindManager() {
+    this->fixEmptyBindsBug();
     this->addCategory(Category::GLOBAL);
     this->addCategory(Category::PLAY);
     this->addCategory(Category::EDITOR);
@@ -385,6 +386,14 @@ void BindManager::saveActionBinds(ActionID const& action) {
         obj["repeat"] = rep;
     }
     Mod::get()->setSavedValue(action, obj);
+}
+
+void BindManager::fixEmptyBindsBug() {
+    for(const auto& value : Mod::get()->getSaveContainer()) {
+        if(value["binds"].size() > 0) return;
+    }
+
+    Mod::get()->getSaveContainer().clear();
 }
 
 bool BindManager::registerBindable(BindableAction const& action, ActionID const& after) {
