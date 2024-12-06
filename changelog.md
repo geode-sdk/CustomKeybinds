@@ -1,4 +1,7 @@
 # Changelog
+## v1.10.1
+ - Fixed an issue where all keybinds could get unset on a fresh installation
+
 ## v1.10.0
  - Updated for GD 2.2074
 
