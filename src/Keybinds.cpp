@@ -326,6 +326,9 @@ Bind* BindManager::loadBind(matjson::Value const& json) const {
 bool BindManager::loadActionBinds(ActionID const& action) {
     auto inner = [&]() -> Result<> {
         auto value = Mod::get()->getSavedValue<matjson::Value>(action);
+        if(!value["binds"].isArray()) {
+            return Err("Bind not set");
+        }
         for (auto bind : value["binds"]) {
             // try directly parsing the bind from a string if the device it's for
             // is already connected
