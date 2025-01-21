@@ -1,9 +1,11 @@
-#include <Geode/Loader.hpp>
-#include <Geode/Utils.hpp>
+#include <Geode/platform/platform.hpp>
 
 #if defined(GEODE_IS_MACOS)
 #import <Cocoa/Cocoa.h>
 #include <objc/runtime.h>
+
+#include <Geode/Loader.hpp>
+#include <Geode/Utils.hpp>
 
 using namespace geode::prelude;
 
