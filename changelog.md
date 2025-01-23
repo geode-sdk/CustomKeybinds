@@ -1,4 +1,8 @@
 # Changelog
+## v1.10.2
+- MacOS support
+  - Thanks jasmine!
+
 ## v1.10.1
  - Fixed an issue where all keybinds could get unset on a fresh installation
 
