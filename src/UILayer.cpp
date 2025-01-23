@@ -399,7 +399,7 @@ $execute {
         "robtop.geometry-dash/full-restart-level",
         "Full restart level",
         "Restarts the level from the beginning (needs Quick Keys enabled)",
-        { Keybind::create(KEY_R, Modifier::Control) },
+        { Keybind::create(KEY_R, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_R, Modifier::Command)) },
         Category::PLAY, false
     });
     BindManager::get()->registerBindable({

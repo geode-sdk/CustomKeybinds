@@ -388,14 +388,17 @@ $execute {
         "robtop.geometry-dash/undo",
         "Undo",
         "Undo Last Action",
-        { Keybind::create(KEY_Z, Modifier::PlatformControl) },
+        { Keybind::create(KEY_Z, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_Z, Modifier::Command)) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/redo",
         "Redo",
         "Redo Last Action",
-        { Keybind::create(KEY_Z, Modifier::PlatformControl | Modifier::Shift) },
+        {
+            Keybind::create(KEY_Z, Modifier::Control | Modifier::Shift),
+            GEODE_MACOS(Keybind::create(KEY_Z, Modifier::Command | Modifier::Shift))
+        },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
@@ -409,21 +412,21 @@ $execute {
         "robtop.geometry-dash/copy",
         "Copy",
         "Copy Selected Objects",
-        { Keybind::create(KEY_C, Modifier::PlatformControl) },
+        { Keybind::create(KEY_C, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_C, Modifier::Command)) },
         Category::EDITOR_MODIFY, false
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/paste",
         "Paste",
         "Paste Selected Objects",
-        { Keybind::create(KEY_V, Modifier::PlatformControl) },
+        { Keybind::create(KEY_V, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_V, Modifier::Command)) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/copy-paste",
         "Copy + Paste",
         "Duplicate Selected Objects",
-        { Keybind::create(KEY_D, Modifier::PlatformControl) },
+        { Keybind::create(KEY_D, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_D, Modifier::Command)) },
         Category::EDITOR_MODIFY, true
     });
     BindManager::get()->registerBindable({
@@ -437,7 +440,7 @@ $execute {
         "robtop.geometry-dash/toggle-transform",
         "Transform",
         "Toggle Transform Control",
-        { Keybind::create(KEY_T, Modifier::PlatformControl) },
+        { Keybind::create(KEY_T, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_T, Modifier::Command)) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
@@ -472,7 +475,7 @@ $execute {
         "robtop.geometry-dash/playback-music",
         "Playback Music",
         "Start / Stop Playing the Level's Music",
-        { Keybind::create(KEY_Enter, Modifier::PlatformControl) },
+        { Keybind::create(KEY_Enter, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_Enter, Modifier::Command)) },
         Category::EDITOR_UI, false
     });
     BindManager::get()->registerBindable({
@@ -642,7 +645,10 @@ $execute {
             "Save Editor Position " + x,
             "Save the current editor camera position in the slot " + x + ". "
             "You can reload this slot back with Load Editor Position " + x,
-            { Keybind::create(static_cast<enumKeyCodes>(KEY_Zero + i), Modifier::PlatformControl) },
+            {
+                Keybind::create(static_cast<enumKeyCodes>(KEY_Zero + i), Modifier::Control),
+                GEODE_MACOS(Keybind::create(static_cast<enumKeyCodes>(KEY_Zero + i), Modifier::Command))
+            },
             Category::EDITOR_UI, false
         });
         BindManager::get()->registerBindable({
