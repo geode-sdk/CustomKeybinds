@@ -1,4 +1,7 @@
 # Changelog
+## v1.10.3
+- Fixed reset button appearing for default keybinds
+
 ## v1.10.2
 - MacOS support
   - Thanks hiimjasmine00!
