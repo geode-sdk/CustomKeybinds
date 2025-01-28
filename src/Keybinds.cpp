@@ -536,6 +536,10 @@ std::vector<Ref<Bind>> BindManager::getBindsFor(ActionID const& action) const {
             binds.push_back(bind.bind);
         }
     }
+    // since they aren't always sorted correctly...
+    std::sort(binds.begin(), binds.end(), [](auto const& a, auto const& b) {
+        return a->getHash() < b->getHash();
+    });
     return binds;
 }
 

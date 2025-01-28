@@ -37,7 +37,7 @@ Modifier Keybind::getModifiers() const {
 }
 
 size_t Keybind::getHash() const {
-    return m_key | (static_cast<int>(m_modifiers) << 29);
+    return static_cast<size_t>(m_key) | (static_cast<size_t>(m_modifiers) << 29);
 }
 
 bool Keybind::isEqual(Bind* other) const {
