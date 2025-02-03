@@ -9,32 +9,6 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
-// TODO: move this to header in 1.2.0
-
-class EvilBypass : public CCKeyboardDispatcher {
-public:
-    bool setControlPressed(bool pressed) {
-        auto old = m_bControlPressed;
-        m_bControlPressed = pressed;
-        return old;
-    }
-    bool setCommandPressed(bool pressed) {
-        auto old = m_bCommandPressed;
-        m_bCommandPressed = pressed;
-        return old;
-    }
-    bool setShiftPressed(bool pressed) {
-        auto old = m_bShiftPressed;
-        m_bShiftPressed = pressed;
-        return old;
-    }
-    bool setAltPressed(bool pressed) {
-        auto old = m_bAltPressed;
-        m_bAltPressed = pressed;
-        return old;
-    }
-};
-
 struct $modify(EditorPauseLayer) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("EditorPauseLayer::keyDown", 1000);
@@ -298,16 +272,20 @@ struct $modify(EditorUI) {
 
     void passThroughKeyDown(enumKeyCodes key, Modifier modifiers = Modifier::None) {
         s_allowPassThrough = true;
-        auto d = static_cast<EvilBypass*>(CCKeyboardDispatcher::get());
-        auto alt = d->setAltPressed(modifiers & Modifier::Alt);
-        auto shift = d->setShiftPressed(modifiers & Modifier::Shift);
-        auto ctrl = d->setControlPressed(modifiers & Modifier::Control);
-        auto cmd = d->setCommandPressed(modifiers & Modifier::Command);
+        auto d = CCKeyboardDispatcher::get();
+        auto alt = d->m_bAltPressed;
+        auto shift = d->m_bShiftPressed;
+        auto ctrl = d->m_bControlPressed;
+        auto cmd = d->m_bCommandPressed;
+        d->m_bAltPressed = modifiers & Modifier::Alt;
+        d->m_bShiftPressed = modifiers & Modifier::Shift;
+        d->m_bControlPressed = modifiers & Modifier::Control;
+        d->m_bCommandPressed = modifiers & Modifier::Command;
         this->keyDown(key);
-        d->setAltPressed(alt);
-        d->setShiftPressed(shift);
-        d->setControlPressed(ctrl);
-        d->setCommandPressed(cmd);
+        d->m_bAltPressed = alt;
+        d->m_bShiftPressed = shift;
+        d->m_bControlPressed = ctrl;
+        d->m_bCommandPressed = cmd;
     }
 
     void keyDown(enumKeyCodes key) {
@@ -325,6 +303,15 @@ struct $modify(EditorUI) {
             EditorUI::keyUp(key);
         }
     }
+    #ifdef GEODE_IS_MACOS // Editor zooming hack
+    void scrollWheel(float y, float x) {
+        auto d = CCKeyboardDispatcher::get();
+        auto ctrl = d->m_bControlPressed;
+        d->m_bControlPressed = ctrl || d->m_bCommandPressed;
+        EditorUI::scrollWheel(y, x);
+        d->m_bControlPressed = ctrl;
+    }
+    #endif
 };
 
 $execute {
