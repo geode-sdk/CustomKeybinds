@@ -172,14 +172,15 @@ class $modify(CCKeyboardDispatcher) {
 		}
 		if (down) {
 			Modifier modifiers = Modifier::None;
-			if (m_bControlPressed || key == KEY_Control) {
-				modifiers |= Modifier::Control;
+			if (m_bControlPressed || m_bCommandPressed || key == KEY_Control) {
+				#ifdef GEODE_IS_MACOS
+				    	modifiers |= Modifier::Command;
+				#else
+					modifiers |= Modifier::Control;
+				#endif
 			}
 			if (m_bAltPressed || key == KEY_Alt) {
 				modifiers |= Modifier::Alt;
-			}
-			if (m_bCommandPressed || key == KEY_Command) {
-				modifiers |= Modifier::Command;
 			}
 			if (m_bShiftPressed || key == KEY_Shift) {
 				modifiers |= Modifier::Shift;
