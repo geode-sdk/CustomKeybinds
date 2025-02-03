@@ -61,11 +61,6 @@ namespace keybinds {
         Shift       = 0b0010,
         Alt         = 0b0100,
         Command     = 0b1000,
-    #ifdef GEODE_IS_MACOS
-        PlatformControl = Command,
-    #else
-        PlatformControl = Control,
-    #endif
     };
     CUSTOM_KEYBINDS_DLL Modifier operator|(Modifier const& a, Modifier const& b);
     CUSTOM_KEYBINDS_DLL Modifier operator|=(Modifier& a, Modifier const& b);
