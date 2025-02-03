@@ -178,7 +178,7 @@ class $modify(CCKeyboardDispatcher) {
 			if (m_bAltPressed || key == KEY_Alt) {
 				modifiers |= Modifier::Alt;
 			}
-			if (m_bCommandPressed /* todo */) {
+			if (m_bCommandPressed || key == KEY_Command) {
 				modifiers |= Modifier::Command;
 			}
 			if (m_bShiftPressed || key == KEY_Shift) {
