@@ -9,32 +9,6 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
-// TODO: move this to header in 1.2.0
-
-class EvilBypass : public CCKeyboardDispatcher {
-public:
-    bool setControlPressed(bool pressed) {
-        auto old = m_bControlPressed;
-        m_bControlPressed = pressed;
-        return old;
-    }
-    bool setCommandPressed(bool pressed) {
-        auto old = m_bCommandPressed;
-        m_bCommandPressed = pressed;
-        return old;
-    }
-    bool setShiftPressed(bool pressed) {
-        auto old = m_bShiftPressed;
-        m_bShiftPressed = pressed;
-        return old;
-    }
-    bool setAltPressed(bool pressed) {
-        auto old = m_bAltPressed;
-        m_bAltPressed = pressed;
-        return old;
-    }
-};
-
 struct $modify(EditorPauseLayer) {
     static void onModify(auto& self) {
         (void)self.setHookPriority("EditorPauseLayer::keyDown", 1000);
@@ -129,28 +103,28 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_Delete);
             });
             this->defineKeybind("robtop.geometry-dash/undo", [this] {
-                this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl);
+                this->passThroughKeyDown(KEY_Z, Modifier::Control);
             });
             this->defineKeybind("robtop.geometry-dash/redo", [this] {
-                this->passThroughKeyDown(KEY_Z, Modifier::PlatformControl | Modifier::Shift);
+                this->passThroughKeyDown(KEY_Z, Modifier::Control | Modifier::Shift);
             });
             this->defineKeybind("robtop.geometry-dash/deselect-all", [this] {
                 this->passThroughKeyDown(KEY_D, Modifier::Alt);
             });
             this->defineKeybind("robtop.geometry-dash/copy", [this] {
-                this->passThroughKeyDown(KEY_C, Modifier::PlatformControl);
+                this->passThroughKeyDown(KEY_C, Modifier::Control);
             });
             this->defineKeybind("robtop.geometry-dash/paste", [this] {
-                this->passThroughKeyDown(KEY_V, Modifier::PlatformControl);
+                this->passThroughKeyDown(KEY_V, Modifier::Control);
             });
             this->defineKeybind("robtop.geometry-dash/copy-paste", [this] {
-                this->passThroughKeyDown(KEY_D, Modifier::PlatformControl);
+                this->passThroughKeyDown(KEY_D, Modifier::Control);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-rotate", [this] {
                 this->passThroughKeyDown(KEY_R);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-transform", [this] {
-                this->passThroughKeyDown(KEY_T, Modifier::PlatformControl);
+                this->passThroughKeyDown(KEY_T, Modifier::Control);
             });
             this->defineKeybind("robtop.geometry-dash/toggle-free-move", [this] {
                 this->passThroughKeyDown(KEY_F);
@@ -166,7 +140,7 @@ struct $modify(EditorUI) {
             });
             this->defineKeybind("robtop.geometry-dash/playback-music", [this] {
                 // RobTop broke this in 2.2, which makes it trigger the playtest keybind
-                // this->passThroughKeyDown(KEY_Enter, Modifier::PlatformControl);
+                // this->passThroughKeyDown(KEY_Enter, Modifier::Control);
                 EditorUI::onPlayback(nullptr);
             });
             this->defineKeybind("robtop.geometry-dash/prev-build-tab", [this] {
@@ -249,7 +223,7 @@ struct $modify(EditorUI) {
                 auto x = std::to_string(i);
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
                 this->defineKeybind("robtop.geometry-dash/save-editor-position-" + x, [this, key] {
-                    this->passThroughKeyDown(key, Modifier::PlatformControl);
+                    this->passThroughKeyDown(key, Modifier::Control);
                 });
                 this->defineKeybind("robtop.geometry-dash/load-editor-position-" + x, [this, key] {
                     this->passThroughKeyDown(key, Modifier::Alt);
@@ -298,16 +272,20 @@ struct $modify(EditorUI) {
 
     void passThroughKeyDown(enumKeyCodes key, Modifier modifiers = Modifier::None) {
         s_allowPassThrough = true;
-        auto d = static_cast<EvilBypass*>(CCKeyboardDispatcher::get());
-        auto alt = d->setAltPressed(modifiers & Modifier::Alt);
-        auto shift = d->setShiftPressed(modifiers & Modifier::Shift);
-        auto ctrl = d->setControlPressed(modifiers & Modifier::Control);
-        auto cmd = d->setCommandPressed(modifiers & Modifier::Command);
+        auto d = CCKeyboardDispatcher::get();
+        auto alt = d->m_bAltPressed;
+        auto shift = d->m_bShiftPressed;
+        auto ctrl = d->m_bControlPressed;
+        auto cmd = d->m_bCommandPressed;
+        d->m_bAltPressed = modifiers & Modifier::Alt;
+        d->m_bShiftPressed = modifiers & Modifier::Shift;
+        d->m_bControlPressed = modifiers & Modifier::Control;
+        d->m_bCommandPressed = modifiers & Modifier::Command;
         this->keyDown(key);
-        d->setAltPressed(alt);
-        d->setShiftPressed(shift);
-        d->setControlPressed(ctrl);
-        d->setCommandPressed(cmd);
+        d->m_bAltPressed = alt;
+        d->m_bShiftPressed = shift;
+        d->m_bControlPressed = ctrl;
+        d->m_bCommandPressed = cmd;
     }
 
     void keyDown(enumKeyCodes key) {
@@ -325,6 +303,15 @@ struct $modify(EditorUI) {
             EditorUI::keyUp(key);
         }
     }
+    #ifdef GEODE_IS_MACOS // Editor zooming hack
+    void scrollWheel(float y, float x) {
+        auto d = CCKeyboardDispatcher::get();
+        auto ctrl = d->m_bControlPressed;
+        d->m_bControlPressed = ctrl || d->m_bCommandPressed;
+        EditorUI::scrollWheel(y, x);
+        d->m_bControlPressed = ctrl;
+    }
+    #endif
 };
 
 $execute {
@@ -496,14 +483,14 @@ $execute {
         "robtop.geometry-dash/next-layer",
         "Next Layer",
         "Go to Next Editor Layer",
-        { Keybind::create(KEY_Right, Modifier::None) },
+        { Keybind::create(KEY_Right, Modifier::None), GEODE_MACOS(Keybind::create(KEY_ArrowRight, Modifier::None)) },
         Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({
         "robtop.geometry-dash/prev-layer",
         "Previous Layer",
         "Go to Previous Editor Layer",
-        { Keybind::create(KEY_Left, Modifier::None) },
+        { Keybind::create(KEY_Left, Modifier::None), GEODE_MACOS(Keybind::create(KEY_ArrowLeft, Modifier::None)) },
         Category::EDITOR_UI, true
     });
     BindManager::get()->registerBindable({

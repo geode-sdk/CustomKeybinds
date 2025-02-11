@@ -1,4 +1,9 @@
 # Changelog
+## v1.10.3
+- Fixed reset button appearing for default keybinds
+- Fixed command/control and arrow key keybinds not working on MacOS
+  - Thanks hiimjasmine00!
+
 ## v1.10.2
 - MacOS support
   - Thanks hiimjasmine00!

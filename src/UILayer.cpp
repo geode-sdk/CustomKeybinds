@@ -309,7 +309,11 @@ $execute {
         "robtop.geometry-dash/jump-p2",
         "Jump P2",
         "Player 2 Jump",
-        { Keybind::create(KEY_Up), ControllerBind::create(CONTROLLER_LB) },
+        {
+            Keybind::create(KEY_Up),
+            GEODE_MACOS(Keybind::create(KEY_ArrowUp, Modifier::None),)
+            ControllerBind::create(CONTROLLER_LB)
+        },
         Category::PLAY,
         false
     });
@@ -343,6 +347,7 @@ $execute {
         "Player 2 move left",
         {
             Keybind::create(KEY_Left),
+            GEODE_MACOS(Keybind::create(KEY_ArrowLeft, Modifier::None),)
             ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT)
         },
         Category::PLAY,
@@ -354,6 +359,7 @@ $execute {
         "Player 2 move right",
         {
             Keybind::create(KEY_Right),
+            GEODE_MACOS(Keybind::create(KEY_ArrowRight, Modifier::None),)
             ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT)
         },
         Category::PLAY,
