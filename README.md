@@ -29,7 +29,7 @@ using namespace keybinds;
 $execute {
     BindManager::get()->registerBindable({
         // ID, should be prefixed with mod ID
-        "backlip"_spr,
+        "backflip"_spr,
         // Name
         "Do a Backflip!",
         // Description, leave empty for none
