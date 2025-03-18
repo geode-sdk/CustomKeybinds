@@ -42,7 +42,10 @@ std::string keybinds::keyToString(enumKeyCodes key) {
         case CONTROLLER_RTHUMBSTICK_DOWN: return "L_THUMBSTICK_DOWN";
         case CONTROLLER_RTHUMBSTICK_UP: return "L_THUMBSTICK_UP";
         case static_cast<enumKeyCodes>(-1): return "Unk";
-        default: return CCKeyboardDispatcher::get()->keyToString(key);
+        default: {
+            auto s = CCKeyboardDispatcher::get()->keyToString(key);
+            return (s != nullptr) ? s : "Unk";
+        }
     }
 }
 
