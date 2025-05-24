@@ -550,15 +550,11 @@ bool KeybindsLayer::setup() {
     auto scrollSize = CCSize { 340.f, 180.f };
 
     m_searchInput = TextInput::create(scrollSize.width / .8f, "Search Bindings...");
-    m_searchInput->getInputNode()->getPlaceholderLabel()->setAnchorPoint({ .0f, .5f });
-    m_searchInput->getInputNode()->updateLabel(""); // trigger position fix from Geode
-    m_searchInput->getInputNode()->setPositionX(
-        m_searchInput->getInputNode()->getPositionX() - scrollSize.width / 2 / .8f + 10.f
-    );
+    m_searchInput->setScale(.8f);
+    m_searchInput->setTextAlign(TextInputAlign::Left);
     m_searchInput->getInputNode()->setLabelPlaceholderScale(.5f);
     m_searchInput->getInputNode()->setMaxLabelScale(.5f);
     m_searchInput->getInputNode()->setDelegate(this);
-    m_searchInput->setScale(.8f);
     m_mainLayer->addChildAtPosition(m_searchInput, Anchor::Center, ccp(0, scrollSize.height / 2));
 
     m_resultsLabel = CCLabelBMFont::create("", "bigFont.fnt");
