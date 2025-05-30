@@ -21,12 +21,12 @@ using namespace keybinds;
 #ifdef GEODE_IS_WINDOWS
 #include <Geode/modify/CCEGLView.hpp>
 
-class $modify(CCEGLView) {
+class $modify(CCEGLView){
 	/**
 	* GD does not pass shift into dispatchKeyboardMSG, causing the modifier to break when holding.
 	* We need to manually pass in shift from onGLFWKeyCallback to resolve this bug.
 	*/
-	void onGLFWKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods) {
+	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		enumKeyCodes keycode = enumKeyCodes::KEY_Unknown;
 
 		switch (key) {
@@ -44,7 +44,7 @@ class $modify(CCEGLView) {
 		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
 	}
 
-	void onGLFWMouseCallBack(GLFWwindow * window, int button, int action, int mods) {
+	void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int mods) {
 		std::optional<MouseButton> mb;
 		switch (button) {
 			case 3: mb = MouseButton::Button4; break;
@@ -76,10 +76,10 @@ class $modify(CCEGLView) {
 #endif
 
 class $modify(CCKeyboardDispatcher) {
-	static inline std::unordered_set<enumKeyCodes> s_held{};
+	static inline std::unordered_set<enumKeyCodes> s_held {};
 
 	static void onModify(auto& self) {
-		(void) self.setHookPriority("cocos2d::CCKeyboardDispatcher::dispatchKeyboardMSG", 1000);
+		(void)self.setHookPriority("cocos2d::CCKeyboardDispatcher::dispatchKeyboardMSG", 1000);
 	}
 
 	void updateModifierKeys(bool shift, bool ctrl, bool alt, bool cmd) {
@@ -169,7 +169,7 @@ class $modify(CCKeyboardDispatcher) {
 	std::unordered_set<Modifier> getModifiersToToggle(enumKeyCodes key, bool down) {
 		std::unordered_set<Modifier> modifiersToToggle = {};
 		if (!keyIsModifier(key)) {
-			return modifiersToToggle;
+			return modifiersToToggle;	
 		}
 		if (down) {
 			Modifier modifiers = Modifier::None;
@@ -186,8 +186,7 @@ class $modify(CCKeyboardDispatcher) {
 				modifiers |= Modifier::Shift;
 			}
 			modifiersToToggle.insert(modifiers);
-		}
-		else {
+		} else {
 			/**
 			 * We need to disable all combinations that use the "disabled" modifier key.
 			 * Left/Right variations don't seem to be used by GD.
@@ -247,12 +246,12 @@ public:
 			m_cached = controllerConnected;
 			if (m_cached) {
 				BindManager::get()->attachDevice("controller"_spr, &ControllerBind::parse);
-#ifndef GEODE_IS_ANDROID
+				#ifndef GEODE_IS_ANDROID
 				Notification::create(
 					"Controller Attached",
 					CCSprite::createWithSpriteFrameName("controllerBtn_A_001.png")
 				)->show();
-#endif
+				#endif
 			}
 			else {
 				BindManager::get()->detachDevice("controller"_spr);
@@ -339,6 +338,6 @@ SettingNode* DummySetting::createNode(float width) {
 	return ButtonSettingNode::create(std::static_pointer_cast<DummySetting>(shared_from_this()), width);
 }
 
-$execute{
+$execute {
 	(void) Mod::get()->registerCustomSettingType("open-menu", &DummySetting::parse);
 }
