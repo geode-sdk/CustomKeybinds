@@ -281,7 +281,7 @@ class $modify(CKMenuLayer, MenuLayer) {
 				schedule_selector(ControllerChecker::checkController),
 				new ControllerChecker(), 1.f, false
 			);
-			});
+		});
 
 		startedChecker = true;
 
