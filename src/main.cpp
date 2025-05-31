@@ -1,11 +1,11 @@
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/modify/MoreOptionsLayer.hpp>
-#include <Geode/modify/MenuLayer.hpp>
 #include <Geode/binding/AppDelegate.hpp>
 #include <Geode/binding/PlatformToolbox.hpp>
 #include <Geode/binding/ButtonSprite.hpp>
 #include <Geode/ui/Notification.hpp>
 #include <Geode/modify/Modify.hpp>
+#include <Geode/loader/GameEvent.hpp>
 #include <Geode/loader/Setting.hpp>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDispatcher.h>
@@ -14,6 +14,16 @@
 
 #include "../include/Keybinds.hpp"
 #include "KeybindsLayer.hpp"
+
+
+#define $on_game(type) \
+template<class> void GEODE_CONCAT(geodeExecFunction, __LINE__)(geode::GameEvent*); \
+namespace { struct GEODE_CONCAT(ExecFuncUnique, __LINE__) {}; } \
+static inline auto GEODE_CONCAT(Exec, __LINE__) = (new geode::EventListener( \
+    &GEODE_CONCAT(geodeExecFunction, __LINE__)<GEODE_CONCAT(ExecFuncUnique, __LINE__)>, \
+    geode::GameEventFilter(geode::GameEventType::type) \
+), 0); \
+template<class> void GEODE_CONCAT(geodeExecFunction, __LINE__)(geode::GameEvent*)
 
 using namespace geode::prelude;
 using namespace keybinds;
@@ -268,32 +278,17 @@ public:
 	}
 };
 
-#include <Geode/loader/GameEvent.hpp>
-
-#define $on_game(type) \
-template<class> void GEODE_CONCAT(geodeExecFunction, __LINE__)(geode::GameEvent*); \
-namespace { struct GEODE_CONCAT(ExecFuncUnique, __LINE__) {}; } \
-static inline auto GEODE_CONCAT(Exec, __LINE__) = (new geode::EventListener( \
-    &GEODE_CONCAT(geodeExecFunction, __LINE__)<GEODE_CONCAT(ExecFuncUnique, __LINE__)>, \
-    geode::GameEventFilter(geode::GameEventType::type) \
-), 0); \
-template<class> void GEODE_CONCAT(geodeExecFunction, __LINE__)(geode::GameEvent*)
-
-bool startedChecker = false;
-
-$on_game(Loaded){
-	if (startedChecker) return;
-
-	// check every second if a controller has been connected
-	Loader::get()->queueInMainThread([] {
+$execute {
+	new EventListener([](auto) {
+		// check every second if a controller has been connected
 		CCScheduler::get()->scheduleSelector(
 			schedule_selector(ControllerChecker::checkController),
 			new ControllerChecker(), 1.f, false
 		);
-	});
 
-	startedChecker = true;
-}
+		return ListenerResult::Propagate;
+	}, GameEventFilter(GameEventType::Loaded));
+};
 
 // Have to make a SettingValue even if it holds no value
 class DummySetting : public SettingBaseValue<int> {
