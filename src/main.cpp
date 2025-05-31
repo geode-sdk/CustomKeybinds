@@ -5,6 +5,7 @@
 #include <Geode/binding/ButtonSprite.hpp>
 #include <Geode/ui/Notification.hpp>
 #include <Geode/modify/Modify.hpp>
+#include <Geode/loader/GameEvent.hpp>
 #include <Geode/loader/Setting.hpp>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDispatcher.h>
@@ -268,14 +269,16 @@ public:
 };
 
 $execute {
-	// check every second if a controller has been connected
-	Loader::get()->queueInMainThread([] {
+	new EventListener([](auto) {
+		// check every second if a controller has been connected
 		CCScheduler::get()->scheduleSelector(
 			schedule_selector(ControllerChecker::checkController),
 			new ControllerChecker(), 1.f, false
 		);
-	});
-}
+
+		return ListenerResult::Propagate;
+	}, GameEventFilter(GameEventType::Loaded));
+};
 
 // Have to make a SettingValue even if it holds no value
 class DummySetting : public SettingBaseValue<int> {
