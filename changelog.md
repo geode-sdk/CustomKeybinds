@@ -1,4 +1,9 @@
 # Changelog
+
+## v1.10.4
+- Fix the keybind search box being offset by half its width
+- Fix the controller notification sometimes showing a fallback texture
+
 ## v1.10.3
 - Fixed reset button appearing for default keybinds
 - Fixed command/control and arrow key keybinds not working on MacOS
