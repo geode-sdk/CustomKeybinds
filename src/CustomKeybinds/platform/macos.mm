@@ -1,7 +1,8 @@
+#ifdef GEODE_IS_MACOS
+
 #include <Geode/Loader.hpp>
 #include <Geode/Utils.hpp>
 
-#ifdef GEODE_IS_MACOS
 #define CommentType CommentTypeDummy
 #import <Cocoa/Cocoa.h>
 #include <objc/runtime.h>

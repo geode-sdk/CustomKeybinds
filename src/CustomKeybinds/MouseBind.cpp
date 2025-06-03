@@ -1,7 +1,12 @@
-#include "../include/Keybinds.hpp"
+#include <Keybinds.hpp>
+
+#include <cstddef>
+#include <string>
+
+#include <matjson.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 MouseBind* MouseBind::create(MouseButton button, Modifier modifiers) {
     auto ret = new MouseBind();

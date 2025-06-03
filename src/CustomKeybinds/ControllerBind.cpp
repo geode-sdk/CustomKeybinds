@@ -1,7 +1,7 @@
-#include "../include/Keybinds.hpp"
+#include <Keybinds.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 ControllerBind* ControllerBind::create(enumKeyCodes button) {
     if (!keyIsController(button)) {

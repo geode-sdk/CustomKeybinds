@@ -1,7 +1,7 @@
-#include "../include/Keybinds.hpp"
+#include <Keybinds.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 Keybind* Keybind::create(enumKeyCodes key, Modifier modifiers) {
     if (key == KEY_None || key == KEY_Unknown || keyIsController(key)) {

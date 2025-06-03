@@ -1,19 +1,22 @@
+#include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
+#include <Geode/Enums.hpp>
+#include <Geode/binding/LevelEditorLayer.hpp>
+#include <Geode/loader/Event.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
-#include <unordered_map>
-#include <unordered_set>
-#include "../include/Keybinds.hpp"
-#include "Geode/Enums.hpp"
-#include "Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h"
+#include <Geode/modify/Modify.hpp>
+
+#include <Keybinds.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 struct $modify(EditorPauseLayer) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("EditorPauseLayer::keyDown", 1000);
+        (void)self.setHookPriority("EditorPauseLayer::keyDown", Priority::Late);
     }
 
+    $override
     void customSetup() {
         EditorPauseLayer::customSetup();
 
@@ -26,6 +29,7 @@ struct $modify(EditorPauseLayer) {
         }, "robtop.geometry-dash/unpause-level");
     }
 
+    $override
     void keyDown(enumKeyCodes key) {
         if (key == enumKeyCodes::KEY_Escape) {
             EditorPauseLayer::keyDown(key);
@@ -35,8 +39,8 @@ struct $modify(EditorPauseLayer) {
 
 struct $modify(EditorUI) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("EditorUI::keyDown", 1000000);
-        (void)self.setHookPriority("EditorUI::keyUp", 1000);
+        (void)self.setHookPriority("EditorUI::keyDown", Priority::Last);
+        (void)self.setHookPriority("EditorUI::keyUp", Priority::Last);
     }
 
     static inline int platformButton() {

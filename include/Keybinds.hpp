@@ -1,12 +1,13 @@
 #pragma once
 
+#include <unordered_map>
+#include <unordered_set>
+
+#include <cocos2d.h>
 #include <Geode/DefaultInclude.hpp>
 #include <Geode/utils/cocos.hpp>
 #include <Geode/loader/Mod.hpp>
 #include <Geode/loader/Event.hpp>
-#include <cocos2d.h>
-#include <unordered_map>
-#include <unordered_set>
 
 #ifdef GEODE_IS_WINDOWS
     #ifdef HJFOD_CUSTOM_KEYBINDS_EXPORTING
@@ -20,7 +21,7 @@
 
 struct BindSaveData;
 
-namespace keybinds {
+namespace geode::keybinds {
     class Bind;
     class BindManager;
 
@@ -142,12 +143,12 @@ namespace keybinds {
 
 namespace std {
     template <>
-    struct hash<keybinds::BindHash> {
-        CUSTOM_KEYBINDS_DLL std::size_t operator()(keybinds::BindHash const&) const;
+    struct hash<geode::keybinds::BindHash> {
+        CUSTOM_KEYBINDS_DLL std::size_t operator()(geode::keybinds::BindHash const&) const;
     };
 }
 
-namespace keybinds {
+namespace geode::keybinds {
     class BindManager;
     class InvokeBindFilter;
 

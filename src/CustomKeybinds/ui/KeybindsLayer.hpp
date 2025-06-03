@@ -1,12 +1,14 @@
 #pragma once
 
+#include <Geode/ui/TextInput.hpp>
 #include <Geode/ui/Popup.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
 #include <Geode/binding/TextInputDelegate.hpp>
-#include "../include/Keybinds.hpp"
+
+#include <Keybinds.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 class KeybindsLayer;
 

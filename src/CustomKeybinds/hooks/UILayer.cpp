@@ -1,19 +1,23 @@
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
+#include <Geode/binding/FLAlertLayer.hpp>
+#include <Geode/binding/GameManager.hpp>
+#include <Geode/binding/GJDropDownLayer.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include <Geode/binding/PauseLayer.hpp>
 #include "Geode/binding/UILayer.hpp"
+#include "Geode/modify/Modify.hpp"
 #include <Geode/cocos/CCDirector.h>
 #include <Geode/cocos/layers_scenes_transitions_nodes/CCScene.h>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/loader/Event.hpp>
 #include <Geode/utils/cocos.hpp>
 
-#include "../include/Keybinds.hpp"
+#include <Keybinds.hpp>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 static void addBindSprites(CCNode* target, const char* action) {
     target->removeAllChildren();
@@ -39,6 +43,7 @@ static void addBindSprites(CCNode* target, const char* action) {
 }
 
 struct $modify(PauseLayer) {
+    $override
     void customSetup() {
         PauseLayer::customSetup();
 
@@ -78,6 +83,7 @@ struct $modify(PauseLayer) {
         }, "robtop.geometry-dash/practice-level");
     }
 
+    $override
     void keyDown(enumKeyCodes key) {
         if (key == enumKeyCodes::KEY_Escape) {
             PauseLayer::keyDown(key);

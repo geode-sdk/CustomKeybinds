@@ -7,16 +7,20 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 project(CustomKeybinds VERSION 1.10.3)
 
 file(GLOB SOURCES
-	src/*.hpp
-	src/*.cpp
+	src/CustomKeybinds/*.cpp
+    src/CustomKeybinds/hooks/*.cpp
+    src/CustomKeybinds/platform/*.cpp
+    src/CustomKeybinds/ui/*.cpp
 )
 
 file(GLOB OBJC_SOURCES
-    src/*.mm
+    src/CustomKeybinds/platform/*.mm
 )
 set_source_files_properties(${OBJC_SOURCES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${OBJC_SOURCES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC src include)
 
 # set(GEODE_LINK_NIGHTLY ON)
 if (PROJECT_IS_TOP_LEVEL)

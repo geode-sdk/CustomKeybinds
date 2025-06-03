@@ -1,4 +1,7 @@
-#include "../include/Keybinds.hpp"
+#include <Keybinds.hpp>
+
+#include <unordered_set>
+#include <utility>
 
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/cocos/sprite_nodes/CCSprite.h>
@@ -7,11 +10,9 @@
 #include <Geode/utils/string.hpp>
 #include <Geode/loader/ModEvent.hpp>
 #include <GUI/CCControlExtension/CCScale9Sprite.h>
-#include <unordered_set>
-#include <utility>
 
 using namespace geode::prelude;
-using namespace keybinds;
+using namespace geode::keybinds;
 
 Modifier keybinds::operator|=(Modifier& a, Modifier const& b) {
     return static_cast<Modifier>(reinterpret_cast<int&>(a) |= static_cast<int>(b));
@@ -107,7 +108,7 @@ bool BindHash::operator==(BindHash const& other) const {
     return bind->isEqual(other.bind);
 }
 
-std::size_t std::hash<keybinds::BindHash>::operator()(keybinds::BindHash const& hash) const {
+std::size_t std::hash<geode::keybinds::BindHash>::operator()(geode::keybinds::BindHash const& hash) const {
     return hash.bind ? (hash.bind->getHash() | std::hash<std::string>()(hash.bind->getDeviceID())) : 0;
 }
 
