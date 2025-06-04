@@ -10,6 +10,10 @@
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDispatcher.h>
 
+#ifdef GEODE_IS_ANDROID
+#include <Geode/cocos/platform/android/jni/JniHelper.h>
+#endif
+
 #include <unordered_set>
 
 #include "../include/Keybinds.hpp"
@@ -240,8 +244,16 @@ protected:
 
 public:
 	void checkController(float) {
-		//TODO: remove the android thingy once/if zmx figures out how to get the controller state through the launcher
-		bool controllerConnected = GEODE_ANDROID(true || ) PlatformToolbox::isControllerConnected();
+#ifdef GEODE_IS_ANDROID
+		bool controllerConnected = true;
+		JniMethodInfo info;
+		if (cocos2d::JniHelper::getStaticMethodInfo(info, "com/geode/launcher/utils/GeodeUtils", "getControllerCount", "()I")) {
+			int controllerCount = info.env->CallStaticIntMethod(info.classID, info.methodID);
+			controllerConnected = controllerCount > 0;
+		}
+#else
+		bool controllerConnected = PlatformToolbox::isControllerConnected();
+#endif
 		if (m_cached != controllerConnected) {
 			m_cached = controllerConnected;
 			if (m_cached) {
@@ -261,10 +273,6 @@ public:
 				)->show();
 			}
 		}
-	}
-
-	ControllerChecker() {
-		this->retain();
 	}
 };
 
