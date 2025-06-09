@@ -250,6 +250,7 @@ public:
 		if (cocos2d::JniHelper::getStaticMethodInfo(info, "com/geode/launcher/utils/GeodeUtils", "getControllerCount", "()I")) {
 			int controllerCount = info.env->CallStaticIntMethod(info.classID, info.methodID);
 			controllerConnected = controllerCount > 0;
+			info.env->DeleteLocalRef(info.classID);
 		}
 #else
 		bool controllerConnected = PlatformToolbox::isControllerConnected();
