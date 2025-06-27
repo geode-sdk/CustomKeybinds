@@ -566,6 +566,7 @@ bool KeybindsLayer::setup() {
     m_scroll = ScrollLayer::create(scrollSize);
 
     m_containers = { m_scroll->m_contentLayer };
+    m_scroll->m_contentLayer->setContentSize(scrollSize);
     for (auto& category : BindManager::get()->getAllCategories()) {
         bool bgColor = false;
         CCNode* target = m_scroll->m_contentLayer;
@@ -589,12 +590,11 @@ bool KeybindsLayer::setup() {
     }
 
     for (auto& target : m_containers) {
-        auto layout = ColumnLayout::create()
-            ->setAxisReverse(true)
-            ->setCrossAxisLineAlignment(AxisAlignment::End)
-            ->setAxisAlignment(AxisAlignment::End)
-            ->setGap(0.f)
-            ->setAutoGrowAxis(0.f);
+        auto layout = SimpleColumnLayout::create()
+            ->setMainAxisScaling(AxisScaling::Grow)
+            ->setMainAxisDirection(AxisDirection::TopToBottom)
+            ->setCrossAxisAlignment(CrossAxisAlignment::End)
+            ->setMainAxisAlignment(MainAxisAlignment::Start);
         layout->ignoreInvisibleChildren(true);
         target->setLayout(layout, false);
     }
