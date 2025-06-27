@@ -58,7 +58,7 @@ $execute {
             // Description, leave empty for none
             "Throw a backflip",
             // Default binds
-            { GEODE_UNWRAP(KeybindV2::create(KEY_Q, Modifier::None)) },
+            { GEODE_UNWRAP(KeybindV2::create(KEY_Q, ModifierV2::None)) },
             // Category; use slashes for specifying subcategories. See the
             // Category class for default categories
             GEODE_UNWRAP(CategoryV2::create("My Mod/Awesome Tricks"))

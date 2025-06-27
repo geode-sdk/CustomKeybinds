@@ -9,24 +9,35 @@
 #define MY_MOD_ID "geode.custom-keybinds"
 
 namespace keybinds {
-    enum class Modifier2 : unsigned int {
-        None        = 0b0000,
-        Control     = 0b0001,
-        Shift       = 0b0010,
-        Alt         = 0b0100,
-        Command     = 0b1000,
+    struct ModifierV2 {
+        enum {
+            None        = 0b0000,
+            Control     = 0b0001,
+            Shift       = 0b0010,
+            Alt         = 0b0100,
+            Command     = 0b1000,
+        } m_value;
+        ModifierV2() = default;
+        ModifierV2(uint32_t value) : m_value(static_cast<decltype(m_value)>(value)) {}
+
+        operator Modifier() const {
+            return static_cast<Modifier>(m_value);
+        }
+        operator uint32_t() const {
+            return static_cast<uint32_t>(m_value);
+        }
     };
 
-    inline Modifier2 operator|(Modifier2 const& a, Modifier2 const& b) {
-        return static_cast<Modifier2>(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
+    inline ModifierV2 operator|(ModifierV2 const& a, ModifierV2 const& b) {
+        return ModifierV2(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
     }
 
-    inline Modifier2& operator|=(Modifier2& a, Modifier2 const& b) {
+    inline ModifierV2& operator|=(ModifierV2& a, ModifierV2 const& b) {
         a = a | b;
         return a;
     }
 
-    inline bool operator&(Modifier2 const& a, Modifier2 const& b) {
+    inline bool operator&(ModifierV2 const& a, ModifierV2 const& b) {
         return (static_cast<unsigned int>(a) & static_cast<unsigned int>(b)) != 0;
     }
 
