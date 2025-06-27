@@ -15,26 +15,34 @@
 using namespace geode::prelude;
 using namespace keybinds;
 
-static void addBindSprites(CCNode* target, const char* action) {
+static void addBindSprites(CCNodeRGBA* target, const char* action) {
+    if (target == nullptr) return;
     target->removeAllChildren();
 
     auto bindContainer = CCNode::create();
-    bindContainer->setScale(.65f);
     bool first = true;
     for (auto& bind : BindManager::get()->getBindsFor(action)) {
         if (!first) {
-            bindContainer->addChild(CCLabelBMFont::create("/", "bigFont.fnt"));
+            auto separator = CCLabelBMFont::create("/", "bigFont.fnt");
+            separator->setScale(.8f);
+            separator->setOpacity(target->getOpacity());
+            bindContainer->addChild(separator);
         }
         first = false;
-        bindContainer->addChild(bind->createLabel());
+        auto label = bind->createLabel();
+        label->setScale(.8f);
+        if (auto rgba = typeinfo_cast<CCRGBAProtocol*>(label)) {
+            rgba->setOpacity(target->getOpacity());
+        }
+        bindContainer->addChild(label);
     }
     bindContainer->setID("binds"_spr);
     bindContainer->setContentSize({
-        target->getContentSize().width / bindContainer->getScale(), 40.f
+        target->getScaledContentWidth(), 40.f
     });
-    bindContainer->setLayout(RowLayout::create());
+    bindContainer->setLayout(SimpleRowLayout::create()->setMainAxisScaling(AxisScaling::ScaleDown));
     bindContainer->setAnchorPoint({ .5f, .5f });
-    bindContainer->setPosition(target->getContentSize().width / 2, -1.f);
+    bindContainer->setPosition(target->getContentWidth() / 2, -1.f);
     target->addChild(bindContainer);
 }
 
@@ -256,15 +264,15 @@ struct $modify(UILayer) {
             });
             // display practice mode button keybinds
             if (auto menu = this->getChildByID("checkpoint-menu")) {
-                if (auto add = menu->getChildByID("add-checkpoint-button")) {
+                if (auto add = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("add-checkpoint-button"))) {
                     addBindSprites(
-                        static_cast<CCMenuItemSpriteExtra*>(add)->getNormalImage(),
+                        typeinfo_cast<CCNodeRGBA*>(add->getNormalImage()),
                         "robtop.geometry-dash/place-checkpoint"
                     );
                 }
-                if (auto rem = menu->getChildByID("remove-checkpoint-button")) {
+                if (auto rem = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("remove-checkpoint-button"))) {
                     addBindSprites(
-                        static_cast<CCMenuItemSpriteExtra*>(rem)->getNormalImage(),
+                        typeinfo_cast<CCNodeRGBA*>(rem->getNormalImage()),
                         "robtop.geometry-dash/delete-checkpoint"
                     );
                 }

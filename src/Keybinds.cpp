@@ -79,7 +79,7 @@ bool Bind::isEqual(Bind* other) const {
 }
 
 CCNode* Bind::createLabel() const {
-    return CCLabelBMFont::create(this->toString().c_str(), "goldFont.fnt");
+    return CCLabelBMFont::create(this->toString().c_str(), "bigFont.fnt");
 }
 
 CCNodeRGBA* Bind::createBindSprite() const {
