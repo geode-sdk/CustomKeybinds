@@ -11,7 +11,14 @@ You can use Custom Keybinds as a dependency by declaring it in your `mod.json`:
     "dependencies": [
         {
             "id": "geode.custom-keybinds",
-            "version": "v1.1.0"
+            "version": "v1.1.0",
+            "importance": "required"
+        }
+        // or the optional api version
+        {
+            "id": "geode.custom-keybinds",
+            "version": "v1.1.0",
+            "importance": "recommended"
         }
     ]
 }
@@ -40,6 +47,24 @@ $execute {
         // Category class for default categories
         "My Mod/Awesome Tricks"
     });
+
+    // optional api version
+    (void)[&]() -> Result<> {
+        GEODE_UNWRAP(BindManagerV2::registerBindable(GEODE_UNWRAP(BindableActionV2::create(
+            // ID, should be prefixed with mod ID
+            "backflip"_spr,
+            // Name
+            "Do a Backflip!",
+            // Description, leave empty for none
+            "Throw a backflip",
+            // Default binds
+            { GEODE_UNWRAP(KeybindV2::create(KEY_Q, Modifier::None)) },
+            // Category; use slashes for specifying subcategories. See the
+            // Category class for default categories
+            GEODE_UNWRAP(CategoryV2::create("My Mod/Awesome Tricks"))
+        ))));
+        return Ok();
+    }();
 }
 ```
 
@@ -54,6 +79,16 @@ bool MyLayer::init() {
     ...
 
     this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+        if (event->isDown()) {
+            // do a backflip!
+        }
+        // Return Propagate if you want other actions with the same bind to
+        // also be fired, or Stop if you want to halt propagation
+        return ListenerResult::Propagate;
+    }, "backflip"_spr);
+
+    // optional api version
+    this->template addEventListener<InvokeBindFilterV2>([=](InvokeBindEventV2* event) {
         if (event->isDown()) {
             // do a backflip!
         }
@@ -82,6 +117,12 @@ $execute {
     	// do stuff
 	return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "event-id"));
+
+    // optional api version
+    new EventListener([=](InvokeBindEventV2* event) {
+    	// do stuff
+	return ListenerResult::Propagate;
+    }, InvokeBindFilterV2(nullptr, "event-id"));
 }
 ```
 
