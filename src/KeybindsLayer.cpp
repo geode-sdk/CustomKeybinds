@@ -421,7 +421,7 @@ void BindableNode::updateMenu(bool updateLayer) {
         m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
             createBindBtn("+", "bigFont.fnt"),
             this, menu_selector(BindableNode::onAddBind)
-        ));
+        ), -1);
         if (auto options = BindManager::get()->getRepeatOptionsFor(m_action.getID())) {
             auto clock = CCSprite::createWithSpriteFrameName("GJ_timeIcon_001.png");
             if (!options.value().enabled) {
@@ -431,13 +431,13 @@ void BindableNode::updateMenu(bool updateLayer) {
             m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
                 createBindBtn(clock),
                 this, menu_selector(BindableNode::onEditRepeat)
-            ));
+            ), -1);
         }
         if (!BindManager::get()->hasDefaultBinds(m_action.getID())) {
             m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
                 createBindBtn(CCSprite::createWithSpriteFrameName("edit_ccwBtn_001.png")),
                 this, menu_selector(BindableNode::onResetToDefault)
-            ));
+            ), -1);
         }
     }
     m_bindMenu->updateLayout();
