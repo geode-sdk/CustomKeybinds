@@ -30,6 +30,9 @@ static void addBindSprites(CCNodeRGBA* target, const char* action) {
         }
         first = false;
         auto label = bind->createLabel();
+        if (auto text = typeinfo_cast<CCLabelBMFont*>(label)) {
+            text->setFntFile("bigFont.fnt");
+        }
         label->setScale(.8f);
         if (auto rgba = typeinfo_cast<CCRGBAProtocol*>(label)) {
             rgba->setOpacity(target->getOpacity());

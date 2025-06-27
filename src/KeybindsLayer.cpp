@@ -17,8 +17,8 @@ static ButtonSprite* createBindBtn(CCSprite* top) {
     return spr;
 }
 
-static ButtonSprite* createBindBtn(const char* text) {
-    auto spr = ButtonSprite::create(text, "goldFont.fnt", "square.png"_spr, .8f);
+static ButtonSprite* createBindBtn(const char* text, const char* font = "goldFont.fnt") {
+    auto spr = ButtonSprite::create(text, font, "square.png"_spr, .8f);
     spr->m_BGSprite->setOpacity(85);
     spr->m_BGSprite->setColor({ 0, 0, 0 });
     spr->setScale(.6f);
@@ -413,13 +413,13 @@ void BindableNode::updateMenu(bool updateLayer) {
     }
     if (i != binds.size()) {
         m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
-            createBindBtn("..."),
+            createBindBtn("...", "bigFont.fnt"),
             this, menu_selector(BindableNode::onExpand)
         ));
     }
     else {
         m_bindMenu->addChild(CCMenuItemSpriteExtra::create(
-            createBindBtn("+"),
+            createBindBtn("+", "bigFont.fnt"),
             this, menu_selector(BindableNode::onAddBind)
         ));
         if (auto options = BindManager::get()->getRepeatOptionsFor(m_action.getID())) {

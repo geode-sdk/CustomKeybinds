@@ -79,7 +79,7 @@ bool Bind::isEqual(Bind* other) const {
 }
 
 CCNode* Bind::createLabel() const {
-    return CCLabelBMFont::create(this->toString().c_str(), "bigFont.fnt");
+    return CCLabelBMFont::create(this->toString().c_str(), "goldFont.fnt");
 }
 
 CCNodeRGBA* Bind::createBindSprite() const {
@@ -91,7 +91,7 @@ CCNodeRGBA* Bind::createBindSprite() const {
     auto top = this->createLabel();
     limitNodeSize(top, { 125.f, 30.f }, 1.f, .1f);
     bg->setContentSize({
-        clamp(top->getScaledContentSize().width + 18.f, 18.f / bg->getScale(), 145.f),
+        std::clamp(top->getScaledContentSize().width + 18.f, 18.f / bg->getScale(), 145.f),
         18.f / bg->getScale()
     });
     bg->addChild(top);
