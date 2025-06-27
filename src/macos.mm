@@ -7,33 +7,47 @@
 #include <objc/runtime.h>
 #undef CommentType
 
+#import <Geode/cocos/platform/mac/EAGLView.h>
+
 using namespace geode::prelude;
 
-static IMP s_originalSendEventIMP;
+void flagsChangedExecHook(EAGLView* self, SEL sel, NSEvent* event) {
+	auto keyboardDispatcher = cocos2d::CCDirector::sharedDirector()->getKeyboardDispatcher();
 
-void sendEvent(NSApplication* self, SEL sel, NSEvent* event) {
-	NSEventType type;
-
-	type = [event type];
-	if (type == NSEventTypeKeyUp) {
-		switch (type) {
-		case NSEventTypeKeyUp:
-			[[[self mainWindow] firstResponder] tryToPerform:@selector(keyUp:) with:event ];
-			return;
-		default:
-			break;
-		}
+	auto shiftPressed = [event modifierFlags] & NSEventModifierFlagShift;
+	if (keyboardDispatcher->m_bShiftPressed != shiftPressed) {
+		keyboardDispatcher->dispatchKeyboardMSG(enumKeyCodes::KEY_Shift, shiftPressed, false);
 	}
 
-	((decltype(&sendEvent))s_originalSendEventIMP)(self, sel, event);
+	auto altPressed = [event modifierFlags] & NSEventModifierFlagOption;
+	if (keyboardDispatcher->m_bAltPressed != altPressed) {
+		keyboardDispatcher->dispatchKeyboardMSG(enumKeyCodes::KEY_Alt, altPressed, false);
+	}
+
+	auto controlPressed = [event modifierFlags] & NSEventModifierFlagControl;
+	if (keyboardDispatcher->m_bControlPressed != controlPressed) {
+		keyboardDispatcher->dispatchKeyboardMSG(enumKeyCodes::KEY_Control, controlPressed, false);
+	}
+
+	auto commandPressed = [event modifierFlags] & NSEventModifierFlagCommand;
+	if (keyboardDispatcher->m_bCommandPressed != commandPressed) {
+		// there's not actually a command keycode so this might be bad
+		keyboardDispatcher->dispatchKeyboardMSG(enumKeyCodes::KEY_Control, commandPressed, false);
+	}
+
+	// gd should call updateModifierKeys for us. not that i think it does but it should
+	[self performSelector:sel withObject:event];
 }
+
+#define HOOK_OBJC_METHOD(klass, methodName) \
+    auto methodName##Addr = class_getInstanceMethod(klass, @selector(methodName:)); \
+    static_cast<void>(Mod::get()->hook(reinterpret_cast<void*>(method_getImplementation(methodName##Addr)), &methodName##Hook, #klass " " #methodName));
 
 $execute {
 	// yep, we're hooking cocoa girls
 
-	auto method = class_getInstanceMethod(objc_getClass("NSApplication"), @selector(sendEvent:));
-	s_originalSendEventIMP = method_getImplementation(method);
-	method_setImplementation(method, (IMP)&sendEvent);
+	auto eaglView = objc_getClass("EAGLView");
+	HOOK_OBJC_METHOD(eaglView, flagsChangedExec);
 }
 
 #endif
