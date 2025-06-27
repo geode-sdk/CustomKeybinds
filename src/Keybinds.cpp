@@ -1,3 +1,5 @@
+#define GEODE_DEFINE_EVENT_EXPORTS
+#include "../include/OptionalAPI.hpp"
 #include "../include/Keybinds.hpp"
 
 #include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
@@ -645,6 +647,12 @@ ListenerResult BindManager::onDispatch(PressBindEvent* event) {
         ) {
             ret = ListenerResult::Stop;
         }
+        if (
+            ret != ListenerResult::Stop &&
+            InvokeBindEventV2(action, event->isDown()).post() == ListenerResult::Stop
+        ) {
+            ret = ListenerResult::Stop;
+        }
     }
     return ret;
 }
@@ -753,4 +761,95 @@ void BindManager::save() {
 
 $on_mod(DataSaved) {
     BindManager::get()->save();
+}
+
+Result<Keybind*> KeybindV2::create(cocos2d::enumKeyCodes key, Modifier modifiers) {
+    return Ok(Keybind::create(key, modifiers));
+}
+
+Result<MouseBind*> MouseBindV2::create(MouseButton button, Modifier modifiers) {
+    return Ok(MouseBind::create(button, modifiers));
+}
+
+Result<ControllerBind*> ControllerBindV2::create(
+    cocos2d::enumKeyCodes button
+) {
+    return Ok(ControllerBind::create(button));
+}
+
+Result<std::shared_ptr<Category>> CategoryV2::create(std::string_view path) {
+    return Ok(std::make_shared<Category>(path.data()));
+}
+
+Result<std::shared_ptr<BindableAction>> BindableActionV2::create(
+    ActionID const& id,
+    std::string const& name,
+    std::string const& description,
+    std::vector<Ref<Bind>> const& defaults,
+    std::shared_ptr<Category> category,
+    bool repeatable,
+    Mod* owner
+) {
+    return Ok(std::make_shared<BindableAction>(id, name, description, defaults, *category, repeatable, owner));
+}
+
+Result<bool> BindManagerV2::registerBindable(std::shared_ptr<BindableAction> action, ActionID const& after) {
+    return Ok(BindManager::get()->registerBindable(*action, after));
+}
+
+geode::Result<> BindManagerV2::removeBindable(ActionID const& action) {
+    BindManager::get()->removeBindable(action);
+    return Ok();
+}
+
+geode::Result<std::shared_ptr<BindableAction>> BindManagerV2::getBindable(ActionID const& action) {
+    auto bindable = BindManager::get()->getBindable(action);
+    if (!bindable) return Ok(nullptr);
+    return Ok(std::make_shared<BindableAction>(*bindable));
+}
+
+geode::Result<std::vector<std::shared_ptr<BindableAction>>> BindManagerV2::getAllBindables() {
+    std::vector<std::shared_ptr<BindableAction>> bindables;
+    for (auto& bindable : BindManager::get()->getAllBindables()) {
+        bindables.push_back(std::make_shared<BindableAction>(bindable));
+    }
+    return Ok(bindables);
+}
+
+geode::Result<std::vector<std::shared_ptr<BindableAction>>> BindManagerV2::getBindablesIn(std::shared_ptr<Category> category, bool sub) {
+    std::vector<std::shared_ptr<BindableAction>> bindables;
+    for (auto& bindable : BindManager::get()->getBindablesIn(*category, sub)) {
+        bindables.push_back(std::make_shared<BindableAction>(bindable));
+    }
+    return Ok(bindables);
+}
+
+geode::Result<std::vector<std::shared_ptr<BindableAction>>> BindManagerV2::getBindablesFor(Bind* bind) {
+    std::vector<std::shared_ptr<BindableAction>> bindables;
+    for (auto& bindable : BindManager::get()->getBindablesFor(bind)) {
+        bindables.push_back(std::make_shared<BindableAction>(bindable));
+    }
+    return Ok(bindables);
+}
+
+geode::Result<std::vector<std::shared_ptr<Category>>> BindManagerV2::getAllCategories() {
+    std::vector<std::shared_ptr<Category>> categories;
+    for (auto& category : BindManager::get()->getAllCategories()) {
+        categories.push_back(std::make_shared<Category>(category));
+    }
+    return Ok(categories);
+}
+
+geode::Result<> BindManagerV2::addCategory(std::shared_ptr<Category> category) {
+    BindManager::get()->addCategory(*category);
+    return Ok();
+}
+
+geode::Result<> BindManagerV2::removeCategory(std::shared_ptr<Category> category) {
+    BindManager::get()->removeCategory(*category);
+    return Ok();
+}
+
+geode::Result<std::vector<geode::Ref<Bind>>> BindManagerV2::getBindsFor(ActionID const& action) {
+    return Ok(BindManager::get()->getBindsFor(action));
 }

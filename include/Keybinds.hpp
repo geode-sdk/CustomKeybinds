@@ -157,6 +157,7 @@ namespace keybinds {
 
     public:
         Category() = default;
+        Category(Category const&) = default;
         Category(const char* path);
         Category(std::string const& path);
         std::vector<std::string> getPath() const;
@@ -195,6 +196,7 @@ namespace keybinds {
         bool isRepeatable() const;
 
         BindableAction() = default;
+        BindableAction(BindableAction const&) = default;
         BindableAction(
             ActionID const& id,
             std::string const& name,
