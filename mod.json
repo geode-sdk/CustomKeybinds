@@ -1,11 +1,11 @@
 {
-	"geode": "4.6.1",
+	"geode": "4.8.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
 		"mac": "2.2074"
 	},
-	"version": "v1.10.4",
+	"version": "v1.11.0",
 	"id": "geode.custom-keybinds",
 	"name": "Custom Keybinds",
 	"developer": "Geode Team",

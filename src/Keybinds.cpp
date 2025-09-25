@@ -763,11 +763,11 @@ $on_mod(DataSaved) {
     BindManager::get()->save();
 }
 
-Result<Keybind*> KeybindV2::create(cocos2d::enumKeyCodes key, Modifier modifiers) {
+Result<Keybind*> KeybindV2::create(cocos2d::enumKeyCodes key, ModifierV2 modifiers) {
     return Ok(Keybind::create(key, modifiers));
 }
 
-Result<MouseBind*> MouseBindV2::create(MouseButton button, Modifier modifiers) {
+Result<MouseBind*> MouseBindV2::create(MouseButton button, ModifierV2 modifiers) {
     return Ok(MouseBind::create(button, modifiers));
 }
 

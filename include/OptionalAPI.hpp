@@ -46,14 +46,14 @@ namespace keybinds {
         class Impl;
         std::unique_ptr<Impl> m_impl;
     public:
-        static geode::Result<Keybind*> create(cocos2d::enumKeyCodes key, Modifier modifiers = Modifier::None) GEODE_EVENT_EXPORT(&KeybindV2::create, (key, modifiers));
+        static geode::Result<Keybind*> create(cocos2d::enumKeyCodes key, ModifierV2 modifiers = ModifierV2::None) GEODE_EVENT_EXPORT(&KeybindV2::create, (key, modifiers));
     };
 
     class MouseBindV2 final {
         class Impl;
         std::unique_ptr<Impl> m_impl;
     public:
-        static geode::Result<MouseBind*> create(MouseButton button, Modifier modifiers = Modifier::None) GEODE_EVENT_EXPORT(&MouseBindV2::create, (button, modifiers));
+        static geode::Result<MouseBind*> create(MouseButton button, ModifierV2 modifiers = ModifierV2::None) GEODE_EVENT_EXPORT(&MouseBindV2::create, (button, modifiers));
     };
 
     class ControllerBindV2 final {

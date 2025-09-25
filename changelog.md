@@ -1,4 +1,5 @@
-# Changelog
+## v1.11.0
+- Add optional API for developers!
 
 ## v1.10.4
 - Fix the keybind search box being offset by half its width

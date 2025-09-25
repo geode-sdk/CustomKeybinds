@@ -6,21 +6,20 @@ Adds support for customizing keybinds in the editor and while playing.
 
 You can use Custom Keybinds as a dependency by declaring it in your `mod.json`:
 
-```json
+```jsonc
 {
-    "dependencies": [
-        {
+    "dependencies": {
+        "geode.custom-keybinds": {
             "id": "geode.custom-keybinds",
             "version": "v1.1.0",
             "importance": "required"
-        }
+        },
         // or the optional api version
-        {
-            "id": "geode.custom-keybinds",
+        "geode.custom-keybinds": {
             "version": "v1.1.0",
             "importance": "recommended"
         }
-    ]
+    }
 }
 ```
 
@@ -30,6 +29,8 @@ Registering can be done easily using `$execute`:
 
 ```cpp
 #include <geode.custom-keybinds/include/Keybinds.hpp>
+// optional api version
+#include <geode.custom-keybinds/include/OptionalAPI.hpp>
 
 using namespace keybinds;
 
@@ -72,13 +73,15 @@ Now your bind shows up in the UI, and the user can assign their own binds to it.
 
 ```cpp
 #include <geode.custom-keybinds/include/Keybinds.hpp>
+// optional api version
+#include <geode.custom-keybinds/include/OptionalAPI.hpp>
 
 using namespace keybinds;
 
 bool MyLayer::init() {
     ...
 
-    this->template addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+    this->addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
         if (event->isDown()) {
             // do a backflip!
         }
@@ -88,7 +91,7 @@ bool MyLayer::init() {
     }, "backflip"_spr);
 
     // optional api version
-    this->template addEventListener<InvokeBindFilterV2>([=](InvokeBindEventV2* event) {
+    this->addEventListener<InvokeBindFilterV2>([=](InvokeBindEventV2* event) {
         if (event->isDown()) {
             // do a backflip!
         }
@@ -109,6 +112,8 @@ You can listen for global keybinds via an `$execute` block:
 
 ```cpp
 #include <geode.custom-keybinds/include/Keybinds.hpp>
+// optional api version
+#include <geode.custom-keybinds/include/OptionalAPI.hpp>
 
 using namespace keybinds;
 
