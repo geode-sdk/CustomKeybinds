@@ -81,7 +81,7 @@ using namespace keybinds;
 bool MyLayer::init() {
     ...
 
-    this->addEventListener<InvokeBindFilter>([=](InvokeBindEvent* event) {
+    this->addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
         if (event->isDown()) {
             // do a backflip!
         }
@@ -91,7 +91,7 @@ bool MyLayer::init() {
     }, "backflip"_spr);
 
     // optional api version
-    this->addEventListener<InvokeBindFilterV2>([=](InvokeBindEventV2* event) {
+    this->addEventListener<InvokeBindFilterV2>([this](InvokeBindEventV2* event) {
         if (event->isDown()) {
             // do a backflip!
         }
@@ -118,15 +118,15 @@ You can listen for global keybinds via an `$execute` block:
 using namespace keybinds;
 
 $execute {
-    new EventListener([=](InvokeBindEvent* event) {
-    	// do stuff
-	return ListenerResult::Propagate;
+    new EventListener([](InvokeBindEvent* event) {
+        // do stuff
+        return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "event-id"));
 
     // optional api version
-    new EventListener([=](InvokeBindEventV2* event) {
-    	// do stuff
-	return ListenerResult::Propagate;
+    new EventListener([](InvokeBindEventV2* event) {
+        // do stuff
+        return ListenerResult::Propagate;
     }, InvokeBindFilterV2(nullptr, "event-id"));
 }
 ```
@@ -229,7 +229,7 @@ Once you have figured out how to get inputs from your awesome toaster, you need 
 ```cpp
 void XInput_onGamingToasterCallback(double temp, int bread) {
     // Make sure all bind events are only ever posted in the GD thread !!!!
-	Loader::get()->queueInMainThread([=] {
+	Loader::get()->queueInMainThread([temp, bread] {
         PressBindEvent(ToasterBind::create(static_cast<float>(temp), bread), true).post();
     });
 }
