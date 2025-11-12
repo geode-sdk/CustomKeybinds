@@ -118,13 +118,13 @@ You can listen for global keybinds via an `$execute` block:
 using namespace keybinds;
 
 $execute {
-    new EventListener([](InvokeBindEvent* event) {
+    new EventListener(+[](InvokeBindEvent* event) {
         // do stuff
         return ListenerResult::Propagate;
     }, InvokeBindFilter(nullptr, "event-id"));
 
     // optional api version
-    new EventListener([](InvokeBindEventV2* event) {
+    new EventListener(+[](InvokeBindEventV2* event) {
         // do stuff
         return ListenerResult::Propagate;
     }, InvokeBindFilterV2(nullptr, "event-id"));
