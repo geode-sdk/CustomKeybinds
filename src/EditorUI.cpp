@@ -29,7 +29,8 @@ struct $modify(EditorPauseLayer) {
         }
     }
 
-    #ifndef GEODE_IS_WINDOWS // This function is merged with MoreOptionsLayer::onKeybindings on Windows, which is already hooked
+    // This function is merged with MoreOptionsLayer::onKeybindings on Windows, which is already hooked
+    #if !defined(GEODE_IS_WINDOWS) && !defined(GEODE_IS_IOS)
     void onKeybindings(CCObject*) {
         openSettingsPopup(Mod::get(), false);
     }

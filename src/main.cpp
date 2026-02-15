@@ -4,11 +4,13 @@
 
 using namespace geode::prelude;
 
+#ifndef GEODE_IS_IOS
 class $modify(MoreOptionsLayer) {
 	void onKeybindings(CCObject*) {
 		openSettingsPopup(Mod::get(), false);
 	}
 };
+#endif
 
 $on_game(Loaded) {
 	auto mod = Mod::get();
