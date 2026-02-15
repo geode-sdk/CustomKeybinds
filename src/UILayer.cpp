@@ -1,4 +1,3 @@
-#include "timestamp.hpp"
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
 #include <Geode/binding/FLAlertLayer.hpp>
 #include <Geode/binding/GameManager.hpp>
@@ -10,84 +9,6 @@
 #include <Geode/utils/cocos.hpp>
 
 using namespace geode::prelude;
-
-static CCNode* createBindLabel(Keybind const& bind) {
-    auto key = bind.key;
-    if (key < 1000 || key > 2000) {
-        return CCLabelBMFont::create(bind.toString().c_str(), "goldFont.fnt");
-    }
-
-    const char* sprite;
-    switch (key) {
-        case CONTROLLER_A: sprite = "controllerBtn_A_001.png"; break;
-        case CONTROLLER_B: sprite = "controllerBtn_B_001.png"; break;
-        case CONTROLLER_X: sprite = "controllerBtn_X_001.png"; break;
-        case CONTROLLER_Y: sprite = "controllerBtn_Y_001.png"; break;
-        case CONTROLLER_Back: sprite = "controllerBtn_Back_001.png"; break;
-        case CONTROLLER_Start: sprite = "controllerBtn_Start_001.png"; break;
-        case CONTROLLER_Down: sprite = "controllerBtn_DPad_Down_001.png"; break;
-        case CONTROLLER_Left: sprite = "controllerBtn_DPad_Left_001.png"; break;
-        case CONTROLLER_Up: sprite = "controllerBtn_DPad_Up_001.png"; break;
-        case CONTROLLER_Right: sprite = "controllerBtn_DPad_Right_001.png"; break;
-        case CONTROLLER_LT: sprite = "controllerBtn_LT_001.png"_spr; break;
-        case CONTROLLER_RT: sprite = "controllerBtn_RT_001.png"_spr; break;
-        case CONTROLLER_LB: sprite = "controllerBtn_LB_001.png"_spr; break;
-        case CONTROLLER_RB: sprite = "controllerBtn_RB_001.png"_spr; break;
-        case CONTROLLER_LTHUMBSTICK_DOWN: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_LTHUMBSTICK_LEFT: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_LTHUMBSTICK_RIGHT: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_LTHUMBSTICK_UP: sprite = "controllerBtn_LThumb_001.png"; break;
-        case CONTROLLER_RTHUMBSTICK_RIGHT: sprite = "controllerBtn_RThumb_001.png"; break;
-        case CONTROLLER_RTHUMBSTICK_DOWN: sprite = "controllerBtn_RThumb_001.png"; break;
-        case CONTROLLER_RTHUMBSTICK_LEFT: sprite = "controllerBtn_RThumb_001.png"; break;
-        case CONTROLLER_RTHUMBSTICK_UP: sprite = "controllerBtn_RThumb_001.png"; break;
-        default: sprite = nullptr;
-    }
-    if (!sprite) {
-        return CCLabelBMFont::create("Unknown", "goldFont.fnt");
-    }
-    auto spr = CCSprite::createWithSpriteFrameName(sprite);
-    switch (key) {
-        case CONTROLLER_LTHUMBSTICK_DOWN:
-        case CONTROLLER_RTHUMBSTICK_DOWN: {
-            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
-            arrow->setPosition(ccp(13.f, -5.5f));
-            arrow->setScale(0.7f);
-            spr->addChild(arrow);
-            break;
-        }
-        case CONTROLLER_LTHUMBSTICK_LEFT:
-        case CONTROLLER_RTHUMBSTICK_LEFT: {
-            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
-            arrow->setPosition(ccp(-5.5f, 13.5f));
-            arrow->setScale(0.7f);
-            arrow->setRotation(90.f);
-            spr->addChild(arrow);
-            break;
-        }
-        case CONTROLLER_LTHUMBSTICK_RIGHT:
-        case CONTROLLER_RTHUMBSTICK_RIGHT: {
-            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
-            arrow->setPosition(ccp(31.5f, 13.f));
-            arrow->setScale(0.7f);
-            arrow->setRotation(270.f);
-            spr->addChild(arrow);
-            break;
-        }
-        case CONTROLLER_LTHUMBSTICK_UP:
-        case CONTROLLER_RTHUMBSTICK_UP: {
-            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
-            arrow->setPosition(ccp(13.f, 31.f));
-            arrow->setScale(0.7f);
-            arrow->setRotation(180.f);
-            spr->addChild(arrow);
-            break;
-        }
-
-        default: {}
-    }
-    return spr;
-}
 
 static void addBindSprites(CCNodeRGBA* target, const char* action) {
     if (target == nullptr) return;
@@ -103,7 +24,7 @@ static void addBindSprites(CCNodeRGBA* target, const char* action) {
             bindContainer->addChild(separator);
         }
         first = false;
-        auto label = createBindLabel(bind);
+        auto label = bind.createNode();
         if (auto text = typeinfo_cast<CCLabelBMFont*>(label)) {
             text->setFntFile("bigFont.fnt");
         }
@@ -225,9 +146,9 @@ struct $modify(UILayer) {
 
         allowKeyDownThrough = true;
         if (down) {
-            this->keyDown(key, getCurrentTimestamp());
+            this->keyDown(key, getInputTimestamp());
         } else {
-            this->keyUp(key, getCurrentTimestamp());
+            this->keyUp(key, getInputTimestamp());
         }
         allowKeyDownThrough = false;
 
@@ -250,7 +171,7 @@ struct $modify(UILayer) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, false, getCurrentTimestamp());
+                PlayLayer::get()->queueButton(1, down, false, getInputTimestamp());
                 if (down) {
                     m_p1Jumping = true;
                 } else {
@@ -262,7 +183,7 @@ struct $modify(UILayer) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, true, getCurrentTimestamp());
+                PlayLayer::get()->queueButton(1, down, true, getInputTimestamp());
                 if (down) {
                     m_p2Jumping = true;
                 } else {

@@ -1,5 +1,5 @@
 {
-	"geode": "5.0.0-beta.1",
+	"geode": "5.0.0-beta.2",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -13,16 +13,6 @@
 	"description": "Custom keybind support for Geode",
 	"links": {
 		"source": "https://github.com/geode-sdk/CustomKeybinds"
-	},
-	"resources": {
-		"spritesheets": {
-			"KB_ControllerSheet": [
-				"resources/controller/*.png"
-			]
-		},
-		"sprites": [
-			"resources/*.png"
-		]
 	},
 	"settings": {
 		"gameplay-title": {

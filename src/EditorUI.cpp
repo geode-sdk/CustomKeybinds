@@ -1,4 +1,3 @@
-#include "timestamp.hpp"
 #include <Geode/binding/LevelEditorLayer.hpp>
 #include <Geode/modify/EditorUI.hpp>
 #include <Geode/modify/EditorPauseLayer.hpp>
@@ -54,42 +53,42 @@ struct $modify(EditorUI) {
         Loader::get()->queueInMainThread([this, lel] {
             this->defineKeybind("jump-p1", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(platformButton(), down, false, getCurrentTimestamp());
+                    lel->queueButton(platformButton(), down, false, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("jump-p2", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(platformButton(), down, true, getCurrentTimestamp());
+                    lel->queueButton(platformButton(), down, true, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("move-left-p1", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false, getCurrentTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("move-right-p1", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false, getCurrentTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("move-left-p2", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true, getCurrentTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
             this->defineKeybind("move-right-p2", [lel](bool down, bool repeat) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true, getCurrentTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true, getInputTimestamp());
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
@@ -248,9 +247,9 @@ struct $modify(EditorUI) {
                 if (!repeat && lel->m_playbackMode != PlaybackMode::Playing) {
                     s_allowPassThrough = true;
                     if (down) {
-                        this->keyDown(KEY_Space, getCurrentTimestamp());
+                        this->keyDown(KEY_Space, getInputTimestamp());
                     } else {
-                        this->keyUp(KEY_Space, getCurrentTimestamp());
+                        this->keyUp(KEY_Space, getInputTimestamp());
                     }
                     return ListenerResult::Stop;
                 }
@@ -308,7 +307,7 @@ struct $modify(EditorUI) {
         d->m_bShiftPressed = modifiers & Keybind::Mods_Shift;
         d->m_bControlPressed = modifiers & Keybind::Mods_Control;
         d->m_bCommandPressed = modifiers & Keybind::Mods_Super;
-        this->keyDown(key, getCurrentTimestamp());
+        this->keyDown(key, getInputTimestamp());
         d->m_bAltPressed = alt;
         d->m_bShiftPressed = shift;
         d->m_bControlPressed = ctrl;
