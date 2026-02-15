@@ -1,19 +1,93 @@
+#include "timestamp.hpp"
+#include <Geode/binding/CCMenuItemSpriteExtra.hpp>
+#include <Geode/binding/FLAlertLayer.hpp>
+#include <Geode/binding/GameManager.hpp>
+#include <Geode/binding/GJDropDownLayer.hpp>
+#include <Geode/binding/PlayLayer.hpp>
 #include <Geode/modify/UILayer.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/binding/CCMenuItemSpriteExtra.hpp>
-#include <Geode/binding/PlayLayer.hpp>
-#include <Geode/binding/PauseLayer.hpp>
-#include "Geode/binding/UILayer.hpp"
-#include <Geode/cocos/CCDirector.h>
-#include <Geode/cocos/layers_scenes_transitions_nodes/CCScene.h>
-#include <Geode/cocos/robtop/keyboard_dispatcher/CCKeyboardDelegate.h>
-#include <Geode/loader/Event.hpp>
+#include <Geode/ui/SimpleAxisLayout.hpp>
 #include <Geode/utils/cocos.hpp>
 
-#include "../include/Keybinds.hpp"
-
 using namespace geode::prelude;
-using namespace keybinds;
+
+static CCNode* createBindLabel(Keybind const& bind) {
+    auto key = bind.key;
+    if (key < 1000 || key > 2000) {
+        return CCLabelBMFont::create(bind.toString().c_str(), "goldFont.fnt");
+    }
+
+    const char* sprite;
+    switch (key) {
+        case CONTROLLER_A: sprite = "controllerBtn_A_001.png"; break;
+        case CONTROLLER_B: sprite = "controllerBtn_B_001.png"; break;
+        case CONTROLLER_X: sprite = "controllerBtn_X_001.png"; break;
+        case CONTROLLER_Y: sprite = "controllerBtn_Y_001.png"; break;
+        case CONTROLLER_Back: sprite = "controllerBtn_Back_001.png"; break;
+        case CONTROLLER_Start: sprite = "controllerBtn_Start_001.png"; break;
+        case CONTROLLER_Down: sprite = "controllerBtn_DPad_Down_001.png"; break;
+        case CONTROLLER_Left: sprite = "controllerBtn_DPad_Left_001.png"; break;
+        case CONTROLLER_Up: sprite = "controllerBtn_DPad_Up_001.png"; break;
+        case CONTROLLER_Right: sprite = "controllerBtn_DPad_Right_001.png"; break;
+        case CONTROLLER_LT: sprite = "controllerBtn_LT_001.png"_spr; break;
+        case CONTROLLER_RT: sprite = "controllerBtn_RT_001.png"_spr; break;
+        case CONTROLLER_LB: sprite = "controllerBtn_LB_001.png"_spr; break;
+        case CONTROLLER_RB: sprite = "controllerBtn_RB_001.png"_spr; break;
+        case CONTROLLER_LTHUMBSTICK_DOWN: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_LEFT: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_RIGHT: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_LTHUMBSTICK_UP: sprite = "controllerBtn_LThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_RIGHT: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_DOWN: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_LEFT: sprite = "controllerBtn_RThumb_001.png"; break;
+        case CONTROLLER_RTHUMBSTICK_UP: sprite = "controllerBtn_RThumb_001.png"; break;
+        default: sprite = nullptr;
+    }
+    if (!sprite) {
+        return CCLabelBMFont::create("Unknown", "goldFont.fnt");
+    }
+    auto spr = CCSprite::createWithSpriteFrameName(sprite);
+    switch (key) {
+        case CONTROLLER_LTHUMBSTICK_DOWN:
+        case CONTROLLER_RTHUMBSTICK_DOWN: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(13.f, -5.5f));
+            arrow->setScale(0.7f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_LEFT:
+        case CONTROLLER_RTHUMBSTICK_LEFT: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(-5.5f, 13.5f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(90.f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_RIGHT:
+        case CONTROLLER_RTHUMBSTICK_RIGHT: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(31.5f, 13.f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(270.f);
+            spr->addChild(arrow);
+            break;
+        }
+        case CONTROLLER_LTHUMBSTICK_UP:
+        case CONTROLLER_RTHUMBSTICK_UP: {
+            auto arrow = CCSprite::createWithSpriteFrameName("PBtn_Arrow_001.png");
+            arrow->setPosition(ccp(13.f, 31.f));
+            arrow->setScale(0.7f);
+            arrow->setRotation(180.f);
+            spr->addChild(arrow);
+            break;
+        }
+
+        default: {}
+    }
+    return spr;
+}
 
 static void addBindSprites(CCNodeRGBA* target, const char* action) {
     if (target == nullptr) return;
@@ -21,7 +95,7 @@ static void addBindSprites(CCNodeRGBA* target, const char* action) {
 
     auto bindContainer = CCNode::create();
     bool first = true;
-    for (auto& bind : BindManager::get()->getBindsFor(action)) {
+    for (auto& bind : Mod::get()->getSettingValue<std::vector<Keybind>>(action)) {
         if (!first) {
             auto separator = CCLabelBMFont::create("/", "bigFont.fnt");
             separator->setScale(.8f);
@@ -29,7 +103,7 @@ static void addBindSprites(CCNodeRGBA* target, const char* action) {
             bindContainer->addChild(separator);
         }
         first = false;
-        auto label = bind->createLabel();
+        auto label = createBindLabel(bind);
         if (auto text = typeinfo_cast<CCLabelBMFont*>(label)) {
             text->setFntFile("bigFont.fnt");
         }
@@ -53,8 +127,8 @@ struct $modify(PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
-        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-            if (!event->isDown()) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+            if (repeat || !down) {
                 return ListenerResult::Propagate;
             }
 
@@ -66,18 +140,18 @@ struct $modify(PauseLayer) {
             this->onResume(nullptr);
 
             return ListenerResult::Stop;
-        }, "robtop.geometry-dash/unpause-level");
+        });
 
-        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-            if (event->isDown()) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "exit-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+            if (!repeat && down) {
                 this->onQuit(nullptr);
                 return ListenerResult::Stop;
             }
             return ListenerResult::Propagate;
-        }, "robtop.geometry-dash/exit-level");
+        });
 
-        this->template addEventListener<InvokeBindFilter>([this](InvokeBindEvent* event) {
-            if (event->isDown()) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "practice-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+            if (!repeat && down) {
                 if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
                     this->onNormalMode(nullptr);
                 } else {
@@ -86,19 +160,19 @@ struct $modify(PauseLayer) {
                 return ListenerResult::Stop;
             }
             return ListenerResult::Propagate;
-        }, "robtop.geometry-dash/practice-level");
+        });
     }
 
-    void keyDown(enumKeyCodes key) {
+    void keyDown(enumKeyCodes key, double timestamp) {
         if (key == enumKeyCodes::KEY_Escape) {
-            PauseLayer::keyDown(key);
+            PauseLayer::keyDown(key, timestamp);
         }
     }
 };
 
 struct $modify(UILayer) {
     static void onModify(auto& self) {
-        (void)self.setHookPriority("UILayer::handleKeypress", 1000);
+        (void)self.setHookPriority("UILayer::handleKeypress", Priority::Late);
     }
 
     static inline int platformButton() {
@@ -151,9 +225,9 @@ struct $modify(UILayer) {
 
         allowKeyDownThrough = true;
         if (down) {
-            this->keyDown(key);
+            this->keyDown(key, getCurrentTimestamp());
         } else {
-            this->keyUp(key);
+            this->keyUp(key, getCurrentTimestamp());
         }
         allowKeyDownThrough = false;
 
@@ -172,11 +246,11 @@ struct $modify(UILayer) {
             // do not do anything in the editor
             if (!PlayLayer::get()) return;
 
-            this->defineKeybind("robtop.geometry-dash/jump-p1", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("jump-p1", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, false);
+                PlayLayer::get()->queueButton(1, down, false, getCurrentTimestamp());
                 if (down) {
                     m_p1Jumping = true;
                 } else {
@@ -184,11 +258,11 @@ struct $modify(UILayer) {
                 }
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/jump-p2", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("jump-p2", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, true);
+                PlayLayer::get()->queueButton(1, down, true, getCurrentTimestamp());
                 if (down) {
                     m_p2Jumping = true;
                 } else {
@@ -196,87 +270,89 @@ struct $modify(UILayer) {
                 }
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/place-checkpoint", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("place-checkpoint", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Z, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/delete-checkpoint", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("delete-checkpoint", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_X, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/pause-level", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+            this->defineKeybind("pause-level", [this](bool down, bool repeat) {
+                if (!repeat && down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     PlayLayer::get()->pauseGame(true);
+                    return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("robtop.geometry-dash/restart-level", [this](bool down) {
-                if (this->isPaused() || !this->isCurrentPlayLayer()) {
+            this->defineKeybind("restart-level", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_R, down, false, false, false, false);
-                return ListenerResult::Propagate;
+                return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/full-restart-level", [this](bool down) {
-                if (this->isPaused() || !this->isCurrentPlayLayer()) {
+            this->defineKeybind("full-restart-level", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
-                return ListenerResult::Propagate;
+                return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p1", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("move-left-p1", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_A, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p1", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("move-right-p1", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_D, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/move-left-p2", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("move-left-p2", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Left, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/move-right-p2", [this](bool down) {
-                if (this->isPaused()) {
+            this->defineKeybind("move-right-p2", [this](bool down, bool repeat) {
+                if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
                 this->pressKeyFallthrough(KEY_Right, down);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("robtop.geometry-dash/toggle-hitboxes", [this](bool down) {
-                if (down && this->isCurrentPlayLayer() && !this->isPaused()) {
+            this->defineKeybind("toggle-hitboxes", [this](bool down, bool repeat) {
+                if (!repeat && down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     // This assumes you have quick keys on
                     this->pressKeyFallthrough(KEY_P, down);
+                    return ListenerResult::Stop;
                 }
-                return ListenerResult::Stop;
+                return ListenerResult::Propagate;
             });
             // display practice mode button keybinds
             if (auto menu = this->getChildByID("checkpoint-menu")) {
                 if (auto add = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("add-checkpoint-button"))) {
                     addBindSprites(
                         typeinfo_cast<CCNodeRGBA*>(add->getNormalImage()),
-                        "robtop.geometry-dash/place-checkpoint"
+                        "place-checkpoint"
                     );
                 }
                 if (auto rem = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("remove-checkpoint-button"))) {
                     addBindSprites(
                         typeinfo_cast<CCNodeRGBA*>(rem->getNormalImage()),
-                        "robtop.geometry-dash/delete-checkpoint"
+                        "delete-checkpoint"
                     );
                 }
             }
@@ -285,159 +361,18 @@ struct $modify(UILayer) {
         return true;
     }
 
-    void defineKeybind(const char* id, std::function<ListenerResult(bool)> callback) {
+    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool)> callback) {
         // adding the events to playlayer instead
-        PlayLayer::get()->template addEventListener<InvokeBindFilter>([this, callback](InvokeBindEvent* event) {
-            return callback(event->isDown());
-        }, id);
+        PlayLayer::get()->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat) {
+            return callback(down, repeat);
+        });
     }
 
     static inline bool allowKeyDownThrough = false;
-    void handleKeypress(cocos2d::enumKeyCodes key, bool down) {
+    void handleKeypress(cocos2d::enumKeyCodes key, bool down, double timestamp) {
         if (key == enumKeyCodes::KEY_Escape || allowKeyDownThrough) {
-            UILayer::handleKeypress(key, down);
+            UILayer::handleKeypress(key, down, timestamp);
             allowKeyDownThrough = false;
         }
     }
 };
-
-$execute {
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/jump-p1",
-        "Jump P1",
-        "Player 1 Jump",
-        { 
-            Keybind::create(KEY_Space), 
-            Keybind::create(KEY_W),
-            ControllerBind::create(CONTROLLER_A),
-            ControllerBind::create(CONTROLLER_Up),
-            ControllerBind::create(CONTROLLER_RB) 
-        },
-        Category::PLAY,
-        false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/jump-p2",
-        "Jump P2",
-        "Player 2 Jump",
-        {
-            Keybind::create(KEY_Up),
-            GEODE_MACOS(Keybind::create(KEY_ArrowUp, Modifier::None),)
-            ControllerBind::create(CONTROLLER_LB)
-        },
-        Category::PLAY,
-        false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/move-left-p1",
-        "Move left P1",
-        "Player 1 move left",
-        {
-            Keybind::create(cocos2d::KEY_A),
-            ControllerBind::create(CONTROLLER_Left),
-            ControllerBind::create(CONTROLLER_LTHUMBSTICK_LEFT)
-        },
-        Category::PLAY,
-        false 
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/move-right-p1",
-        "Move right P1",
-        "Player 1 move right",
-        {
-            Keybind::create(cocos2d::KEY_D),
-            ControllerBind::create(CONTROLLER_Right),
-            ControllerBind::create(CONTROLLER_LTHUMBSTICK_RIGHT)
-        },
-        Category::PLAY,
-        false 
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/move-left-p2",
-        "Move left P2",
-        "Player 2 move left",
-        {
-            Keybind::create(KEY_Left),
-            GEODE_MACOS(Keybind::create(KEY_ArrowLeft, Modifier::None),)
-            ControllerBind::create(CONTROLLER_RTHUMBSTICK_LEFT)
-        },
-        Category::PLAY,
-        false 
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/move-right-p2",
-        "Move right P2",
-        "Player 2 move right",
-        {
-            Keybind::create(KEY_Right),
-            GEODE_MACOS(Keybind::create(KEY_ArrowRight, Modifier::None),)
-            ControllerBind::create(CONTROLLER_RTHUMBSTICK_RIGHT)
-        },
-        Category::PLAY,
-        false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/place-checkpoint",
-        "Place Checkpoint",
-        "Place a Checkpoint in Practice Mode",
-        { Keybind::create(KEY_Z, Modifier::None), ControllerBind::create(CONTROLLER_X) },
-        Category::PLAY, false 
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/delete-checkpoint",
-        "Delete Checkpoint",
-        "Delete a Checkpoint in Practice Mode",
-        { Keybind::create(KEY_X, Modifier::None), ControllerBind::create(CONTROLLER_B) },
-        Category::PLAY, false
-    });
-
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/pause-level",
-        "Pause Level",
-        "Pause the Level",
-        { ControllerBind::create(CONTROLLER_Start) },
-        Category::PLAY, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/toggle-hitboxes",
-        "Toggle hitboxes",
-        "Toggles hitboxes while in practice mode",
-        { Keybind::create(KEY_P) },
-        Category::PLAY, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/restart-level",
-        "Restart level",
-        "Restarts the Level (needs Quick Keys enabled)",
-        { Keybind::create(cocos2d::KEY_R, Modifier::None) },
-        Category::PLAY, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/full-restart-level",
-        "Full restart level",
-        "Restarts the level from the beginning (needs Quick Keys enabled)",
-        { Keybind::create(KEY_R, Modifier::Control), GEODE_MACOS(Keybind::create(KEY_R, Modifier::Command)) },
-        Category::PLAY, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/practice-level",
-        "Toggle Practice",
-        "Toggles Practice Mode",
-        { ControllerBind::create(CONTROLLER_X) },
-        Category::PLAY_PAUSE, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/unpause-level",
-        "Unpause Level",
-        "Unpause the Level",
-        { Keybind::create(KEY_Space, Modifier::None), ControllerBind::create(CONTROLLER_Start) },
-        Category::PLAY_PAUSE, false
-    });
-    BindManager::get()->registerBindable({
-        "robtop.geometry-dash/exit-level",
-        "Exit Level",
-        "Exit the Level",
-        { ControllerBind::create(CONTROLLER_B) },
-        Category::PLAY_PAUSE, false
-    });
-}

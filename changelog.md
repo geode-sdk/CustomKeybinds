@@ -1,3 +1,9 @@
+## v2.0.0
+- Updated for GD 2.2081
+- Removed the API in favor of Geode's new keybind setting system
+- Moved vanilla keybinds directly to the settings menu
+  - Thanks hiimjasmine00!
+
 ## v1.11.0
 - Add optional API for developers!
 
