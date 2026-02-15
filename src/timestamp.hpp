@@ -18,8 +18,8 @@ inline double getCurrentTimestamp() {
 #include <Geode/cocos/platform/android/jni/JniHelper.h>
 
 inline double getCurrentTimestamp() {
-    JniMethodInfo t;
-    if (JniHelper::getStaticMethodInfo(t, "android/os/SystemClock", "uptimeMillis", "()J")) {
+    cocos2d::JniMethodInfo t;
+    if (cocos2d::JniHelper::getStaticMethodInfo(t, "android/os/SystemClock", "uptimeMillis", "()J")) {
         auto ret = t.env->CallStaticLongMethod(t.classID, t.methodID) / 1000.0;
         t.env->DeleteLocalRef(t.classID);
         return ret;
