@@ -27,13 +27,6 @@ struct $modify(EditorPauseLayer) {
             EditorPauseLayer::keyDown(key, timestamp);
         }
     }
-
-    // This function is merged with MoreOptionsLayer::onKeybindings on Windows, which is already hooked
-    #if !defined(GEODE_IS_WINDOWS) && !defined(GEODE_IS_IOS)
-    void onKeybindings(CCObject*) {
-        openSettingsPopup(Mod::get(), false);
-    }
-    #endif
 };
 
 struct $modify(EditorUI) {
