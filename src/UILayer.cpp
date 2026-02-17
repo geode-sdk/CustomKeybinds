@@ -48,40 +48,49 @@ struct $modify(PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            if (repeat || !down) {
-                return ListenerResult::Propagate;
-            }
-
-            // Remove any popups (looking at you, confirm exit)
-            CCScene* active = CCDirector::sharedDirector()->getRunningScene();
-            if (auto alert = active->getChildByType<FLAlertLayer>(0)) {
-                return ListenerResult::Propagate;
-            }
-            this->onResume(nullptr);
-
-            return ListenerResult::Stop;
-        });
-
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "exit-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            if (!repeat && down) {
-                this->onQuit(nullptr);
-                return ListenerResult::Stop;
-            }
-            return ListenerResult::Propagate;
-        });
-
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "practice-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            if (!repeat && down) {
-                if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
-                    this->onNormalMode(nullptr);
-                } else {
-                    this->onPracticeMode(nullptr);
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "unpause-level"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (repeat || !down) {
+                    return ListenerResult::Propagate;
                 }
+
+                // Remove any popups (looking at you, confirm exit)
+                CCScene* active = CCDirector::sharedDirector()->getRunningScene();
+                if (auto alert = active->getChildByType<FLAlertLayer>(0)) {
+                    return ListenerResult::Propagate;
+                }
+                this->onResume(nullptr);
+
                 return ListenerResult::Stop;
             }
-            return ListenerResult::Propagate;
-        });
+        );
+
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "exit-level"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!repeat && down) {
+                    this->onQuit(nullptr);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
+            }
+        );
+
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "practice-level"),
+            [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!repeat && down) {
+                    if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
+                        this->onNormalMode(nullptr);
+                    } else {
+                        this->onPracticeMode(nullptr);
+                    }
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
+            }
+        );
     }
 
     void keyDown(enumKeyCodes key, double timestamp) {
@@ -284,9 +293,12 @@ struct $modify(UILayer) {
 
     void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
         // adding the events to playlayer instead
-        PlayLayer::get()->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            return callback(down, repeat, timestamp);
-        });
+        PlayLayer::get()->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                return callback(down, repeat, timestamp);
+            }
+        );
     }
 
     static inline bool allowKeyDownThrough = false;

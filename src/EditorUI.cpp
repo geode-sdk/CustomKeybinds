@@ -13,13 +13,16 @@ struct $modify(EditorPauseLayer) {
     void customSetup() {
         EditorPauseLayer::customSetup();
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& id, bool down, bool repeat, double timestamp) {
-            if (!repeat && down) {
-                this->onResume(nullptr);
-                return ListenerResult::Stop;
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), "unpause-level"),
+            [this](Keybind const& id, bool down, bool repeat, double timestamp) {
+                if (!repeat && down) {
+                    this->onResume(nullptr);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
             }
-            return ListenerResult::Propagate;
-        });
+        );
     }
 
     void keyDown(enumKeyCodes key, double timestamp) {
@@ -262,29 +265,38 @@ struct $modify(EditorUI) {
     }
 
     void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            return callback(down, repeat, timestamp);
-        });
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                return callback(down, repeat, timestamp);
+            }
+        );
     }
 
     void defineKeybind(std::string id, CopyableFunction<void(bool, double)> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            if (down) {
-                callback(repeat, timestamp);
-                return ListenerResult::Stop;
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down) {
+                    callback(repeat, timestamp);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
             }
-            return ListenerResult::Propagate;
-        });
+        );
     }
 
     void defineKeybind(std::string id, CopyableFunction<void(double)> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-            if (!repeat && down) {
-                callback(timestamp);
-                return ListenerResult::Stop;
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!repeat && down) {
+                    callback(timestamp);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
             }
-            return ListenerResult::Propagate;
-        });
+        );
     }
 
     static inline bool s_allowPassThrough = false;
