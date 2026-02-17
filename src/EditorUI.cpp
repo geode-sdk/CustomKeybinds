@@ -13,7 +13,7 @@ struct $modify(EditorPauseLayer) {
     void customSetup() {
         EditorPauseLayer::customSetup();
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& id, bool down, bool repeat) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& id, bool down, bool repeat, double timestamp) {
             if (!repeat && down) {
                 this->onResume(nullptr);
                 return ListenerResult::Stop;
@@ -51,114 +51,114 @@ struct $modify(EditorUI) {
             return false;
 
         Loader::get()->queueInMainThread([this, lel] {
-            this->defineKeybind("jump-p1", [lel](bool down, bool repeat) {
+            this->defineKeybind("jump-p1", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(platformButton(), down, false, getInputTimestamp());
+                    lel->queueButton(platformButton(), down, false, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("jump-p2", [lel](bool down, bool repeat) {
+            this->defineKeybind("jump-p2", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(platformButton(), down, true, getInputTimestamp());
+                    lel->queueButton(platformButton(), down, true, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("move-left-p1", [lel](bool down, bool repeat) {
+            this->defineKeybind("move-left-p1", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false, getInputTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, false, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("move-right-p1", [lel](bool down, bool repeat) {
+            this->defineKeybind("move-right-p1", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false, getInputTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, false, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("move-left-p2", [lel](bool down, bool repeat) {
+            this->defineKeybind("move-left-p2", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true, getInputTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Left), down, true, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("move-right-p2", [lel](bool down, bool repeat) {
+            this->defineKeybind("move-right-p2", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
-                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true, getInputTimestamp());
+                    lel->queueButton(static_cast<int>(PlayerButton::Right), down, true, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("build-mode", [this] {
-                this->passThroughKeyDown(KEY_One);
+            this->defineKeybind("build-mode", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_One, timestamp);
             });
-            this->defineKeybind("edit-mode", [this] {
-                this->passThroughKeyDown(KEY_Two);
+            this->defineKeybind("edit-mode", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_Two, timestamp);
             });
-            this->defineKeybind("delete-mode", [this] {
-                this->passThroughKeyDown(KEY_Three);
+            this->defineKeybind("delete-mode", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_Three, timestamp);
             });
-            this->defineKeybind("rotate-ccw", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Q);
+            this->defineKeybind("rotate-ccw", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Q, timestamp);
             });
-            this->defineKeybind("rotate-cw", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_E);
+            this->defineKeybind("rotate-cw", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_E, timestamp);
             });
-            this->defineKeybind("flip-x", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Q, Keybind::Mods_Alt);
+            this->defineKeybind("flip-x", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Q, timestamp, Keybind::Mods_Alt);
             });
-            this->defineKeybind("flip-y", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_E, Keybind::Mods_Alt);
+            this->defineKeybind("flip-y", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_E, timestamp, Keybind::Mods_Alt);
             });
-            this->defineKeybind("delete", [this] {
-                this->passThroughKeyDown(KEY_Delete);
+            this->defineKeybind("delete", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_Delete, timestamp);
             });
-            this->defineKeybind("undo", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Z, Keybind::Mods_Control);
+            this->defineKeybind("undo", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Z, timestamp, Keybind::Mods_Control);
             });
-            this->defineKeybind("redo", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Z, Keybind::Mods_Control | Keybind::Mods_Shift);
+            this->defineKeybind("redo", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Z, timestamp, Keybind::Mods_Control | Keybind::Mods_Shift);
             });
-            this->defineKeybind("deselect-all", [this] {
-                this->passThroughKeyDown(KEY_D, Keybind::Mods_Alt);
+            this->defineKeybind("deselect-all", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Alt);
             });
-            this->defineKeybind("copy", [this] {
-                this->passThroughKeyDown(KEY_C, Keybind::Mods_Control);
+            this->defineKeybind("copy", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_C, timestamp, Keybind::Mods_Control);
             });
-            this->defineKeybind("paste", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_V, Keybind::Mods_Control);
+            this->defineKeybind("paste", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_V, timestamp, Keybind::Mods_Control);
             });
-            this->defineKeybind("copy-paste", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_D, Keybind::Mods_Control);
+            this->defineKeybind("copy-paste", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Control);
             });
-            this->defineKeybind("toggle-rotate", [this] {
-                this->passThroughKeyDown(KEY_R);
+            this->defineKeybind("toggle-rotate", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_R, timestamp);
             });
-            this->defineKeybind("toggle-transform", [this] {
-                this->passThroughKeyDown(KEY_T, Keybind::Mods_Control);
+            this->defineKeybind("toggle-transform", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_T, timestamp, Keybind::Mods_Control);
             });
-            this->defineKeybind("toggle-free-move", [this] {
-                this->passThroughKeyDown(KEY_F);
+            this->defineKeybind("toggle-free-move", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F, timestamp);
             });
-            this->defineKeybind("toggle-swipe", [this] {
-                this->passThroughKeyDown(KEY_T);
+            this->defineKeybind("toggle-swipe", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_T, timestamp);
             });
-            this->defineKeybind("toggle-snap", [this] {
-                this->passThroughKeyDown(KEY_G);
+            this->defineKeybind("toggle-snap", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_G, timestamp);
             });
-            this->defineKeybind("playtest", [this] {
-                this->passThroughKeyDown(KEY_Enter);
+            this->defineKeybind("playtest", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_Enter, timestamp);
             });
-            this->defineKeybind("playback-music", [this] {
+            this->defineKeybind("playback-music", [this](double timestamp) {
                 // RobTop broke this in 2.2, which makes it trigger the playtest keybind
                 // this->passThroughKeyDown(KEY_Enter, Keybind::Mods_Control);
                 EditorUI::onPlayback(nullptr);
             });
-            this->defineKeybind("prev-build-tab", [this](bool repeat) {
+            this->defineKeybind("prev-build-tab", [this](bool repeat, double timestamp) {
                 // not passthrough because this is different from vanilla
                 auto t = m_selectedTab - 1;
                 if (t < 0) {
@@ -166,7 +166,7 @@ struct $modify(EditorUI) {
                 }
                 this->selectBuildTab(t);
             });
-            this->defineKeybind("next-build-tab", [this](bool repeat) {
+            this->defineKeybind("next-build-tab", [this](bool repeat, double timestamp) {
                 // not passthrough because this is different from vanilla
                 auto t = m_selectedTab + 1;
                 if (t > static_cast<int>(m_tabsArray->count() - 1)) {
@@ -174,82 +174,82 @@ struct $modify(EditorUI) {
                 }
                 this->selectBuildTab(t);
             });
-            this->defineKeybind("next-layer", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Right);
+            this->defineKeybind("next-layer", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Right, timestamp);
             });
-            this->defineKeybind("prev-layer", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_Left);
+            this->defineKeybind("prev-layer", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_Left, timestamp);
             });
-            this->defineKeybind("scroll-up", [this](bool repeat) {
+            this->defineKeybind("scroll-up", [this](bool repeat, double timestamp) {
                 this->moveGamelayer({ .0f, 10.f });
             });
-            this->defineKeybind("scroll-down", [this](bool repeat) {
+            this->defineKeybind("scroll-down", [this](bool repeat, double timestamp) {
                 this->moveGamelayer({ .0f, -10.f });
             });
-            this->defineKeybind("zoom-in", [this](bool repeat) {
+            this->defineKeybind("zoom-in", [this](bool repeat, double timestamp) {
                 this->zoomIn(nullptr);
             });
-            this->defineKeybind("zoom-out", [this](bool repeat) {
+            this->defineKeybind("zoom-out", [this](bool repeat, double timestamp) {
                 this->zoomOut(nullptr);
             });
-            this->defineKeybind("move-obj-left", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_A);
+            this->defineKeybind("move-obj-left", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_A, timestamp);
             });
-            this->defineKeybind("move-obj-right", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_D);
+            this->defineKeybind("move-obj-right", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_D, timestamp);
             });
-            this->defineKeybind("move-obj-up", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_W);
+            this->defineKeybind("move-obj-up", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_W, timestamp);
             });
-            this->defineKeybind("move-obj-down", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_S);
+            this->defineKeybind("move-obj-down", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_S, timestamp);
             });
-            this->defineKeybind("move-obj-left-small", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_A, Keybind::Mods_Shift);
+            this->defineKeybind("move-obj-left-small", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_A, timestamp, Keybind::Mods_Shift);
             });
-            this->defineKeybind("move-obj-right-small", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_D, Keybind::Mods_Shift);
+            this->defineKeybind("move-obj-right-small", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Shift);
             });
-            this->defineKeybind("move-obj-up-small", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_W, Keybind::Mods_Shift);
+            this->defineKeybind("move-obj-up-small", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_W, timestamp, Keybind::Mods_Shift);
             });
-            this->defineKeybind("move-obj-down-small", [this](bool repeat) {
-                this->passThroughKeyDown(KEY_S, Keybind::Mods_Shift);
+            this->defineKeybind("move-obj-down-small", [this](bool repeat, double timestamp) {
+                this->passThroughKeyDown(KEY_S, timestamp, Keybind::Mods_Shift);
             });
-            this->defineKeybind("lock-preview", [this] {
-                this->passThroughKeyDown(KEY_F1);
+            this->defineKeybind("lock-preview", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F1, timestamp);
             });
-            this->defineKeybind("unlock-preview", [this] {
-                this->passThroughKeyDown(KEY_F2);
+            this->defineKeybind("unlock-preview", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F2, timestamp);
             });
-            this->defineKeybind("toggle-preview-mode", [this] {
-                this->passThroughKeyDown(KEY_F3);
+            this->defineKeybind("toggle-preview-mode", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F3, timestamp);
             });
-            this->defineKeybind("toggle-particle-icons", [this] {
-                this->passThroughKeyDown(KEY_F4);
+            this->defineKeybind("toggle-particle-icons", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F4, timestamp);
             });
-            this->defineKeybind("toggle-editor-hitboxes", [this] {
-                this->passThroughKeyDown(KEY_F5);
+            this->defineKeybind("toggle-editor-hitboxes", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F5, timestamp);
             });
-            this->defineKeybind("toggle-hide-invisible", [this] {
-                this->passThroughKeyDown(KEY_F6);
+            this->defineKeybind("toggle-hide-invisible", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F6, timestamp);
             });
             for (size_t i = 0; i < 10; i += 1) {
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
-                this->defineKeybind(fmt::format("save-editor-position-{}", i), [this, key] {
-                    this->passThroughKeyDown(key, Keybind::Mods_Control);
+                this->defineKeybind(fmt::format("save-editor-position-{}", i), [this, key](double timestamp) {
+                    this->passThroughKeyDown(key, timestamp, Keybind::Mods_Control);
                 });
-                this->defineKeybind(fmt::format("load-editor-position-{}", i), [this, key] {
-                    this->passThroughKeyDown(key, Keybind::Mods_Alt);
+                this->defineKeybind(fmt::format("load-editor-position-{}", i), [this, key](double timestamp) {
+                    this->passThroughKeyDown(key, timestamp, Keybind::Mods_Alt);
                 });
             }
-            this->defineKeybind("pan-editor", [this, lel](bool down, bool repeat) {
+            this->defineKeybind("pan-editor", [this, lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode != PlaybackMode::Playing) {
                     s_allowPassThrough = true;
                     if (down) {
-                        this->keyDown(KEY_Space, getInputTimestamp());
+                        this->keyDown(KEY_Space, timestamp);
                     } else {
-                        this->keyUp(KEY_Space, getInputTimestamp());
+                        this->keyUp(KEY_Space, timestamp);
                     }
                     return ListenerResult::Stop;
                 }
@@ -268,26 +268,26 @@ struct $modify(EditorUI) {
         return EditorUI::moveObjectCall(p0);
     }
 
-    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool)> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat) {
-            return callback(down, repeat);
+    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+            return callback(down, repeat, timestamp);
         });
     }
 
-    void defineKeybind(std::string id, CopyableFunction<void(bool)> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat) {
+    void defineKeybind(std::string id, CopyableFunction<void(bool, double)> callback) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (down) {
-                callback(repeat);
+                callback(repeat, timestamp);
                 return ListenerResult::Stop;
             }
             return ListenerResult::Propagate;
         });
     }
 
-    void defineKeybind(std::string id, CopyableFunction<void()> callback) {
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat) {
+    void defineKeybind(std::string id, CopyableFunction<void(double)> callback) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (!repeat && down) {
-                callback();
+                callback(timestamp);
                 return ListenerResult::Stop;
             }
             return ListenerResult::Propagate;
@@ -296,7 +296,7 @@ struct $modify(EditorUI) {
 
     static inline bool s_allowPassThrough = false;
 
-    void passThroughKeyDown(enumKeyCodes key, Keybind::Modifiers modifiers = Keybind::Mods_None) {
+    void passThroughKeyDown(enumKeyCodes key, double timestamp, Keybind::Modifiers modifiers = Keybind::Mods_None) {
         s_allowPassThrough = true;
         auto d = CCKeyboardDispatcher::get();
         auto alt = d->m_bAltPressed;
@@ -307,7 +307,7 @@ struct $modify(EditorUI) {
         d->m_bShiftPressed = modifiers & Keybind::Mods_Shift;
         d->m_bControlPressed = modifiers & Keybind::Mods_Control;
         d->m_bCommandPressed = modifiers & Keybind::Mods_Super;
-        this->keyDown(key, getInputTimestamp());
+        this->keyDown(key, timestamp);
         d->m_bAltPressed = alt;
         d->m_bShiftPressed = shift;
         d->m_bControlPressed = ctrl;

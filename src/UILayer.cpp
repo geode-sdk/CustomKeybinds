@@ -48,7 +48,7 @@ struct $modify(PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "unpause-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (repeat || !down) {
                 return ListenerResult::Propagate;
             }
@@ -63,7 +63,7 @@ struct $modify(PauseLayer) {
             return ListenerResult::Stop;
         });
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "exit-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "exit-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (!repeat && down) {
                 this->onQuit(nullptr);
                 return ListenerResult::Stop;
@@ -71,7 +71,7 @@ struct $modify(PauseLayer) {
             return ListenerResult::Propagate;
         });
 
-        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "practice-level"), [this](Keybind const& keybind, bool down, bool repeat) {
+        this->addEventListener(KeybindSettingPressedEventV3(Mod::get(), "practice-level"), [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
             if (!repeat && down) {
                 if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
                     this->onNormalMode(nullptr);
@@ -111,7 +111,7 @@ struct $modify(UILayer) {
         return playLayer != nullptr && playLayer == PlayLayer::get() && playLayer->getChildByType<UILayer>(0) == this;
     }
 
-    void pressKeyFallthrough(enumKeyCodes key, bool down) {
+    void pressKeyFallthrough(enumKeyCodes key, bool down, double timestamp) {
         auto dispatcher = CCDirector::get()->getKeyboardDispatcher();
 
         auto shift = dispatcher->getShiftKeyPressed();
@@ -119,10 +119,10 @@ struct $modify(UILayer) {
         auto alt = dispatcher->getAltKeyPressed();
         auto cmd = dispatcher->getCommandKeyPressed();
 
-        pressKeyFallthrough(key, down, shift, ctrl, alt, cmd);
+        pressKeyFallthrough(key, down, shift, ctrl, alt, cmd, timestamp);
     }
 
-    void pressKeyFallthrough(enumKeyCodes key, bool down, bool shift, bool ctrl, bool alt, bool cmd) {
+    void pressKeyFallthrough(enumKeyCodes key, bool down, bool shift, bool ctrl, bool alt, bool cmd, double timestamp) {
         // amazing hack
         if (this->isPaused())
             return;
@@ -146,9 +146,9 @@ struct $modify(UILayer) {
 
         allowKeyDownThrough = true;
         if (down) {
-            this->keyDown(key, getInputTimestamp());
+            this->keyDown(key, timestamp);
         } else {
-            this->keyUp(key, getInputTimestamp());
+            this->keyUp(key, timestamp);
         }
         allowKeyDownThrough = false;
 
@@ -167,11 +167,11 @@ struct $modify(UILayer) {
             // do not do anything in the editor
             if (!PlayLayer::get()) return;
 
-            this->defineKeybind("jump-p1", [this](bool down, bool repeat) {
+            this->defineKeybind("jump-p1", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, false, getInputTimestamp());
+                PlayLayer::get()->queueButton(1, down, false, timestamp);
                 if (down) {
                     m_p1Jumping = true;
                 } else {
@@ -179,11 +179,11 @@ struct $modify(UILayer) {
                 }
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("jump-p2", [this](bool down, bool repeat) {
+            this->defineKeybind("jump-p2", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, true, getInputTimestamp());
+                PlayLayer::get()->queueButton(1, down, true, timestamp);
                 if (down) {
                     m_p2Jumping = true;
                 } else {
@@ -191,73 +191,73 @@ struct $modify(UILayer) {
                 }
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("place-checkpoint", [this](bool down, bool repeat) {
+            this->defineKeybind("place-checkpoint", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_Z, down);
+                this->pressKeyFallthrough(KEY_Z, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("delete-checkpoint", [this](bool down, bool repeat) {
+            this->defineKeybind("delete-checkpoint", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_X, down);
+                this->pressKeyFallthrough(KEY_X, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("pause-level", [this](bool down, bool repeat) {
+            this->defineKeybind("pause-level", [this](bool down, bool repeat, double timestamp) {
                 if (!repeat && down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     PlayLayer::get()->pauseGame(true);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
             });
-            this->defineKeybind("restart-level", [this](bool down, bool repeat) {
+            this->defineKeybind("restart-level", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_R, down, false, false, false, false);
+                this->pressKeyFallthrough(KEY_R, down, false, false, false, false, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("full-restart-level", [this](bool down, bool repeat) {
+            this->defineKeybind("full-restart-level", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused() || !this->isCurrentPlayLayer()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_R, down, false, true, false, false);
+                this->pressKeyFallthrough(KEY_R, down, false, true, false, false, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("move-left-p1", [this](bool down, bool repeat) {
+            this->defineKeybind("move-left-p1", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_A, down);
+                this->pressKeyFallthrough(KEY_A, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("move-right-p1", [this](bool down, bool repeat) {
+            this->defineKeybind("move-right-p1", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_D, down);
+                this->pressKeyFallthrough(KEY_D, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("move-left-p2", [this](bool down, bool repeat) {
+            this->defineKeybind("move-left-p2", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_Left, down);
+                this->pressKeyFallthrough(KEY_Left, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("move-right-p2", [this](bool down, bool repeat) {
+            this->defineKeybind("move-right-p2", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
                 }
-                this->pressKeyFallthrough(KEY_Right, down);
+                this->pressKeyFallthrough(KEY_Right, down, timestamp);
                 return ListenerResult::Stop;
             });
-            this->defineKeybind("toggle-hitboxes", [this](bool down, bool repeat) {
+            this->defineKeybind("toggle-hitboxes", [this](bool down, bool repeat, double timestamp) {
                 if (!repeat && down && this->isCurrentPlayLayer() && !this->isPaused()) {
                     // This assumes you have quick keys on
-                    this->pressKeyFallthrough(KEY_P, down);
+                    this->pressKeyFallthrough(KEY_P, down, timestamp);
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
@@ -282,10 +282,10 @@ struct $modify(UILayer) {
         return true;
     }
 
-    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool)> callback) {
+    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
         // adding the events to playlayer instead
-        PlayLayer::get()->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat) {
-            return callback(down, repeat);
+        PlayLayer::get()->addEventListener(KeybindSettingPressedEventV3(Mod::get(), std::move(id)), [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+            return callback(down, repeat, timestamp);
         });
     }
 
