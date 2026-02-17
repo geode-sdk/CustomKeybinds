@@ -1,3 +1,6 @@
+## v2.0.0
+ - Keybinds are now handled inside Geode itself, so this mod's purpose has been changed to simply be about adding customization for vanilla GD keybindings. As such, the API for this mod has been removed :)
+
 ## v1.11.0
 - Add optional API for developers!
 
