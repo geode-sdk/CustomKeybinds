@@ -527,7 +527,7 @@
 		},
 		"save-editor-position-0": {
 			"name": "Save Editor Position 0",
-			"description": "Save the current editor camera position in the slot 0. You can reload this slot back with Load Editor Position 0",
+			"description": "Save the current editor camera position in the slot <cj>0</c>. You can reload this slot back with <cy>Load Editor Position 0</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-0",
@@ -540,7 +540,7 @@
 		},
 		"load-editor-position-0": {
 			"name": "Load Editor Position 0",
-			"description": "Load the current editor camera position in the slot 0",
+			"description": "Load the current editor camera position in the slot <cj>0</c>. You can save this slot via <cy>Save Editor Position 0</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-0",
@@ -548,7 +548,7 @@
 		},
 		"save-editor-position-1": {
 			"name": "Save Editor Position 1",
-			"description": "Save the current editor camera position in the slot 1. You can reload this slot back with Load Editor Position 1",
+			"description": "Save the current editor camera position in the slot <cj>1</c>. You can reload this slot back with <cy>Load Editor Position 1</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-1",
@@ -561,7 +561,7 @@
 		},
 		"load-editor-position-1": {
 			"name": "Load Editor Position 1",
-			"description": "Load the current editor camera position in the slot 1",
+			"description": "Load the current editor camera position in the slot <cj>1</c>. You can save this slot via <cy>Save Editor Position 1</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-1",
@@ -569,7 +569,7 @@
 		},
 		"save-editor-position-2": {
 			"name": "Save Editor Position 2",
-			"description": "Save the current editor camera position in the slot 2. You can reload this slot back with Load Editor Position 2",
+			"description": "Save the current editor camera position in the slot <cj>2</c>. You can reload this slot back with <cy>Load Editor Position 2</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-2",
@@ -582,7 +582,7 @@
 		},
 		"load-editor-position-2": {
 			"name": "Load Editor Position 2",
-			"description": "Load the current editor camera position in the slot 2",
+			"description": "Load the current editor camera position in the slot <cj>2</c>. You can save this slot via <cy>Save Editor Position 2</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-2",
@@ -590,7 +590,7 @@
 		},
 		"save-editor-position-3": {
 			"name": "Save Editor Position 3",
-			"description": "Save the current editor camera position in the slot 3. You can reload this slot back with Load Editor Position 3",
+			"description": "Save the current editor camera position in the slot <cj>3</c>. You can reload this slot back with <cy>Load Editor Position 3</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-3",
@@ -603,7 +603,7 @@
 		},
 		"load-editor-position-3": {
 			"name": "Load Editor Position 3",
-			"description": "Load the current editor camera position in the slot 3",
+			"description": "Load the current editor camera position in the slot <cj>3</c>. You can save this slot via <cy>Save Editor Position 3</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-3",
@@ -611,7 +611,7 @@
 		},
 		"save-editor-position-4": {
 			"name": "Save Editor Position 4",
-			"description": "Save the current editor camera position in the slot 4. You can reload this slot back with Load Editor Position 4",
+			"description": "Save the current editor camera position in the slot <cj>4</c>. You can reload this slot back with <cy>Load Editor Position 4</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-4",
@@ -624,7 +624,7 @@
 		},
 		"load-editor-position-4": {
 			"name": "Load Editor Position 4",
-			"description": "Load the current editor camera position in the slot 4",
+			"description": "Load the current editor camera position in the slot <cj>4</c>. You can save this slot via <cy>Save Editor Position 4</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-4",
@@ -632,7 +632,7 @@
 		},
 		"save-editor-position-5": {
 			"name": "Save Editor Position 5",
-			"description": "Save the current editor camera position in the slot 5. You can reload this slot back with Load Editor Position 5",
+			"description": "Save the current editor camera position in the slot <cj>5</c>. You can reload this slot back with <cy>Load Editor Position 5</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-5",
@@ -645,7 +645,7 @@
 		},
 		"load-editor-position-5": {
 			"name": "Load Editor Position 5",
-			"description": "Load the current editor camera position in the slot 5",
+			"description": "Load the current editor camera position in the slot <cj>5</c>. You can save this slot via <cy>Save Editor Position 5</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-5",
@@ -653,7 +653,7 @@
 		},
 		"save-editor-position-6": {
 			"name": "Save Editor Position 6",
-			"description": "Save the current editor camera position in the slot 6. You can reload this slot back with Load Editor Position 6",
+			"description": "Save the current editor camera position in the slot <cj>6</c>. You can reload this slot back with <cy>Load Editor Position 6</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-6",
@@ -666,7 +666,7 @@
 		},
 		"load-editor-position-6": {
 			"name": "Load Editor Position 6",
-			"description": "Load the current editor camera position in the slot 6",
+			"description": "Load the current editor camera position in the slot <cj>6</c>. You can save this slot via <cy>Save Editor Position 6</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-6",
@@ -674,7 +674,7 @@
 		},
 		"save-editor-position-7": {
 			"name": "Save Editor Position 7",
-			"description": "Save the current editor camera position in the slot 7. You can reload this slot back with Load Editor Position 7",
+			"description": "Save the current editor camera position in the slot <cj>7</c>. You can reload this slot back with <cy>Load Editor Position 7</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-7",
@@ -687,7 +687,7 @@
 		},
 		"load-editor-position-7": {
 			"name": "Load Editor Position 7",
-			"description": "Load the current editor camera position in the slot 7",
+			"description": "Load the current editor camera position in the slot <cj>7</c>. You can save this slot via <cy>Save Editor Position 7</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-7",
@@ -695,7 +695,7 @@
 		},
 		"save-editor-position-8": {
 			"name": "Save Editor Position 8",
-			"description": "Save the current editor camera position in the slot 8. You can reload this slot back with Load Editor Position 8",
+			"description": "Save the current editor camera position in the slot <cj>8</c>. You can reload this slot back with <cy>Load Editor Position 8</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-8",
@@ -708,7 +708,7 @@
 		},
 		"load-editor-position-8": {
 			"name": "Load Editor Position 8",
-			"description": "Load the current editor camera position in the slot 8",
+			"description": "Load the current editor camera position in the slot <cj>8</c>. You can save this slot via <cy>Save Editor Position 8</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-8",
@@ -716,7 +716,7 @@
 		},
 		"save-editor-position-9": {
 			"name": "Save Editor Position 9",
-			"description": "Save the current editor camera position in the slot 9. You can reload this slot back with Load Editor Position 9",
+			"description": "Save the current editor camera position in the slot <cj>9</c>. You can reload this slot back with <cy>Load Editor Position 9</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/save-editor-position-9",
@@ -729,7 +729,7 @@
 		},
 		"load-editor-position-9": {
 			"name": "Load Editor Position 9",
-			"description": "Load the current editor camera position in the slot 9",
+			"description": "Load the current editor camera position in the slot <cj>9</c>. You can save this slot via <cy>Save Editor Position 9</c>",
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/load-editor-position-9",
