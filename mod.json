@@ -461,6 +461,27 @@
 			"migrate-from": "robtop.geometry-dash/toggle-hide-invisible",
 			"default": "F6"
 		},
+		"toggle-link-controls": {
+			"name": "Toggle Link Controls",
+			"description": "Soft toggles editor link controls. (Requires \"Enable Link Controls\" enabled)",
+			"type": "keybind",
+			"category": "editor",
+			"default": "F7"
+		},
+		"toggle-trace-in": {
+			"name": "Toggle Trace In",
+			"description": "Toggles \"Trace In\" on the selected object.",
+			"type": "keybind",
+			"category": "editor",
+			"default": "F8"
+		},
+		"toggle-trace-out": {
+			"name": "Toggle Trace Out",
+			"description": "Toggles \"Trace Out\" on the selected object.",
+			"type": "keybind",
+			"category": "editor",
+			"default": "F9"
+		},
 		"move-obj-left": {
 			"name": "Move Object Left",
 			"description": "Move Selected Object(s) Left 1 Block (30 Units)",

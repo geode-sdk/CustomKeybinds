@@ -230,6 +230,15 @@ struct $modify(EditorUI) {
             this->defineKeybind("toggle-hide-invisible", [this](double timestamp) {
                 this->passThroughKeyDown(KEY_F6, timestamp);
             });
+            this->defineKeybind("toggle-link-controls", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F7, timestamp);
+            });
+            this->defineKeybind("toggle-trace-in", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F8, timestamp);
+            });
+            this->defineKeybind("toggle-trace-out", [this](double timestamp) {
+                this->passThroughKeyDown(KEY_F9, timestamp);
+            });
             for (size_t i = 0; i < 10; i += 1) {
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
                 this->defineKeybind(fmt::format("save-editor-position-{}", i), [this, key](double timestamp) {
