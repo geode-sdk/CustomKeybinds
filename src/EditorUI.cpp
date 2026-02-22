@@ -105,37 +105,37 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_E, timestamp);
             });
             this->defineKeybind("flip-x", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_Q, timestamp, Keybind::Mods_Alt);
+                this->passThroughKeyDown(KEY_Q, timestamp, KeyboardModifier::Alt);
             });
             this->defineKeybind("flip-y", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_E, timestamp, Keybind::Mods_Alt);
+                this->passThroughKeyDown(KEY_E, timestamp, KeyboardModifier::Alt);
             });
             this->defineKeybind("delete", [this](double timestamp) {
                 this->passThroughKeyDown(KEY_Delete, timestamp);
             });
             this->defineKeybind("undo", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_Z, timestamp, Keybind::Mods_Control);
+                this->passThroughKeyDown(KEY_Z, timestamp, KeyboardModifier::Control);
             });
             this->defineKeybind("redo", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_Z, timestamp, Keybind::Mods_Control | Keybind::Mods_Shift);
+                this->passThroughKeyDown(KEY_Z, timestamp, KeyboardModifier::Control | KeyboardModifier::Shift);
             });
             this->defineKeybind("deselect-all", [this](double timestamp) {
-                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Alt);
+                this->passThroughKeyDown(KEY_D, timestamp, KeyboardModifier::Alt);
             });
             this->defineKeybind("copy", [this](double timestamp) {
-                this->passThroughKeyDown(KEY_C, timestamp, Keybind::Mods_Control);
+                this->passThroughKeyDown(KEY_C, timestamp, KeyboardModifier::Control);
             });
             this->defineKeybind("paste", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_V, timestamp, Keybind::Mods_Control);
+                this->passThroughKeyDown(KEY_V, timestamp, KeyboardModifier::Control);
             });
             this->defineKeybind("copy-paste", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Control);
+                this->passThroughKeyDown(KEY_D, timestamp, KeyboardModifier::Control);
             });
             this->defineKeybind("toggle-rotate", [this](double timestamp) {
                 this->passThroughKeyDown(KEY_R, timestamp);
             });
             this->defineKeybind("toggle-transform", [this](double timestamp) {
-                this->passThroughKeyDown(KEY_T, timestamp, Keybind::Mods_Control);
+                this->passThroughKeyDown(KEY_T, timestamp, KeyboardModifier::Control);
             });
             this->defineKeybind("toggle-free-move", [this](double timestamp) {
                 this->passThroughKeyDown(KEY_F, timestamp);
@@ -151,7 +151,7 @@ struct $modify(EditorUI) {
             });
             this->defineKeybind("playback-music", [this](double timestamp) {
                 // RobTop broke this in 2.2, which makes it trigger the playtest keybind
-                // this->passThroughKeyDown(KEY_Enter, Keybind::Mods_Control);
+                // this->passThroughKeyDown(KEY_Enter, KeyboardModifier::Control);
                 EditorUI::onPlayback(nullptr);
             });
             this->defineKeybind("prev-build-tab", [this](bool repeat, double timestamp) {
@@ -201,16 +201,16 @@ struct $modify(EditorUI) {
                 this->passThroughKeyDown(KEY_S, timestamp);
             });
             this->defineKeybind("move-obj-left-small", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_A, timestamp, Keybind::Mods_Shift);
+                this->passThroughKeyDown(KEY_A, timestamp, KeyboardModifier::Shift);
             });
             this->defineKeybind("move-obj-right-small", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_D, timestamp, Keybind::Mods_Shift);
+                this->passThroughKeyDown(KEY_D, timestamp, KeyboardModifier::Shift);
             });
             this->defineKeybind("move-obj-up-small", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_W, timestamp, Keybind::Mods_Shift);
+                this->passThroughKeyDown(KEY_W, timestamp, KeyboardModifier::Shift);
             });
             this->defineKeybind("move-obj-down-small", [this](bool repeat, double timestamp) {
-                this->passThroughKeyDown(KEY_S, timestamp, Keybind::Mods_Shift);
+                this->passThroughKeyDown(KEY_S, timestamp, KeyboardModifier::Shift);
             });
             this->defineKeybind("lock-preview", [this](double timestamp) {
                 this->passThroughKeyDown(KEY_F1, timestamp);
@@ -242,10 +242,10 @@ struct $modify(EditorUI) {
             for (size_t i = 0; i < 10; i += 1) {
                 auto key = static_cast<enumKeyCodes>(KEY_Zero + i);
                 this->defineKeybind(fmt::format("save-editor-position-{}", i), [this, key](double timestamp) {
-                    this->passThroughKeyDown(key, timestamp, Keybind::Mods_Control);
+                    this->passThroughKeyDown(key, timestamp, KeyboardModifier::Control);
                 });
                 this->defineKeybind(fmt::format("load-editor-position-{}", i), [this, key](double timestamp) {
-                    this->passThroughKeyDown(key, timestamp, Keybind::Mods_Alt);
+                    this->passThroughKeyDown(key, timestamp, KeyboardModifier::Alt);
                 });
             }
             this->defineKeybind("pan-editor", [this, lel](bool down, bool repeat, double timestamp) {
@@ -310,17 +310,17 @@ struct $modify(EditorUI) {
 
     static inline bool s_allowPassThrough = false;
 
-    void passThroughKeyDown(enumKeyCodes key, double timestamp, Keybind::Modifiers modifiers = Keybind::Mods_None) {
+    void passThroughKeyDown(enumKeyCodes key, double timestamp, KeyboardModifier modifiers = KeyboardModifier::None) {
         s_allowPassThrough = true;
         auto d = CCKeyboardDispatcher::get();
         auto alt = d->m_bAltPressed;
         auto shift = d->m_bShiftPressed;
         auto ctrl = d->m_bControlPressed;
         auto cmd = d->m_bCommandPressed;
-        d->m_bAltPressed = modifiers & Keybind::Mods_Alt;
-        d->m_bShiftPressed = modifiers & Keybind::Mods_Shift;
-        d->m_bControlPressed = modifiers & Keybind::Mods_Control;
-        d->m_bCommandPressed = modifiers & Keybind::Mods_Super;
+        d->m_bAltPressed = modifiers & KeyboardModifier::Alt;
+        d->m_bShiftPressed = modifiers & KeyboardModifier::Shift;
+        d->m_bControlPressed = modifiers & KeyboardModifier::Control;
+        d->m_bCommandPressed = modifiers & KeyboardModifier::Super;
         this->keyDown(key, timestamp);
         d->m_bAltPressed = alt;
         d->m_bShiftPressed = shift;
