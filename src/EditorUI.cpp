@@ -273,43 +273,6 @@ struct $modify(EditorUI) {
         return EditorUI::moveObjectCall(p0);
     }
 
-    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
-        this->addEventListener(
-            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                return callback(down, repeat, timestamp);
-            }
-        );
-    }
-
-    void defineKeybind(std::string id, CopyableFunction<void(bool, double)> callback) {
-        this->addEventListener(
-            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (down) {
-                    callback(repeat, timestamp);
-                    return ListenerResult::Stop;
-                }
-                return ListenerResult::Propagate;
-            }
-        );
-    }
-
-    void defineKeybind(std::string id, CopyableFunction<void(double)> callback) {
-        this->addEventListener(
-            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
-                if (!repeat && down) {
-                    callback(timestamp);
-                    return ListenerResult::Stop;
-                }
-                return ListenerResult::Propagate;
-            }
-        );
-    }
-
-    static inline bool s_allowPassThrough = false;
-
     // popups are frequently in use, and we don't want keybinds to interfere with them
     bool isTopLevel() {
         if (CCIMEDispatcher::sharedDispatcher()->hasDelegate()) return false;
@@ -322,9 +285,49 @@ struct $modify(EditorUI) {
         return true;
     }
 
-    void passThroughKeyDown(enumKeyCodes key, double timestamp, KeyboardModifier modifiers = KeyboardModifier::None) {
-        if (!isTopLevel()) return;
+    void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!isTopLevel()) return false;
+                return callback(down, repeat, timestamp);
+            }
+        );
+    }
 
+    void defineKeybind(std::string id, CopyableFunction<void(bool, double)> callback) {
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (down) {
+                    if (!isTopLevel()) return ListenerResult::Propagate;
+
+                    callback(repeat, timestamp);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
+            }
+        );
+    }
+
+    void defineKeybind(std::string id, CopyableFunction<void(double)> callback) {
+        this->addEventListener(
+            KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!repeat && down) {
+                    if (!isTopLevel()) return ListenerResult::Propagate;
+
+                    callback(timestamp);
+                    return ListenerResult::Stop;
+                }
+                return ListenerResult::Propagate;
+            }
+        );
+    }
+
+    static inline bool s_allowPassThrough = false;
+
+    void passThroughKeyDown(enumKeyCodes key, double timestamp, KeyboardModifier modifiers = KeyboardModifier::None) {
         s_allowPassThrough = true;
         auto d = CCKeyboardDispatcher::get();
         auto alt = d->m_bAltPressed;
