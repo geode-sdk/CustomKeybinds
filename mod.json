@@ -212,7 +212,7 @@
 			"type": "keybind",
 			"category": "editor",
 			"migrate-from": "robtop.geometry-dash/delete",
-			"default": "Delete"
+			"default": ["Delete", "Backspace"]
 		},
 		"undo": {
 			"name": "Undo",
