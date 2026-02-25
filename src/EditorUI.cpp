@@ -310,7 +310,21 @@ struct $modify(EditorUI) {
 
     static inline bool s_allowPassThrough = false;
 
+    // popups are frequently in use, and we don't want keybinds to interfere with them
+    bool isTopLevel() {
+        if (CCIMEDispatcher::sharedDispatcher()->hasDelegate()) return false;
+
+        if (auto handler = static_cast<CCKeyboardHandler*>(CCKeyboardDispatcher::get()->m_pDelegates->lastObject())) {
+            // fix the pointer for comparison
+            return static_cast<CCKeyboardDelegate*>(this) == handler->m_pDelegate;
+        }
+
+        return true;
+    }
+
     void passThroughKeyDown(enumKeyCodes key, double timestamp, KeyboardModifier modifiers = KeyboardModifier::None) {
+        if (!isTopLevel()) return;
+
         s_allowPassThrough = true;
         auto d = CCKeyboardDispatcher::get();
         auto alt = d->m_bAltPressed;
