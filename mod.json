@@ -26,7 +26,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/jump-p1",
-			"default": ["Space", "W", "Controller_A", "Controller_Up", "Controller_RB"]
+			"default": ["Space", "W", "Controller_A", "Controller_Up", "Controller_RB"],
+			"priority": -1
 		},
 		"jump-p2": {
 			"name": "Jump P2",
@@ -34,7 +35,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/jump-p2",
-			"default": ["Up", "Controller_LB"]
+			"default": ["Up", "Controller_LB"],
+			"priority": -1
 		},
 		"move-left-p1": {
 			"name": "Move left P1",
