@@ -273,10 +273,23 @@ struct $modify(EditorUI) {
         return EditorUI::moveObjectCall(p0);
     }
 
+    // popups are frequently in use, and we don't want keybinds to interfere with them
+    bool isTopLevel() {
+        if (CCIMEDispatcher::sharedDispatcher()->hasDelegate()) return false;
+
+        if (auto handler = static_cast<CCKeyboardHandler*>(CCKeyboardDispatcher::get()->m_pDelegates->lastObject())) {
+            // fix the pointer for comparison
+            return static_cast<CCKeyboardDelegate*>(this) == handler->m_pDelegate;
+        }
+
+        return true;
+    }
+
     void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                if (!isTopLevel()) return false;
                 return callback(down, repeat, timestamp);
             }
         );
@@ -285,8 +298,10 @@ struct $modify(EditorUI) {
     void defineKeybind(std::string id, CopyableFunction<void(bool, double)> callback) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
                 if (down) {
+                    if (!isTopLevel()) return ListenerResult::Propagate;
+
                     callback(repeat, timestamp);
                     return ListenerResult::Stop;
                 }
@@ -298,8 +313,10 @@ struct $modify(EditorUI) {
     void defineKeybind(std::string id, CopyableFunction<void(double)> callback) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
-            [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+            [callback = std::move(callback), this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
                 if (!repeat && down) {
+                    if (!isTopLevel()) return ListenerResult::Propagate;
+
                     callback(timestamp);
                     return ListenerResult::Stop;
                 }
