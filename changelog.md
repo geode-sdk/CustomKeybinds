@@ -1,3 +1,9 @@
+## v2.1.0
+- Add Popup/IME check to Editor
+  - This fixes keybinds falling through popups
+- Fix missing Backspace default keybind for Delete Selected
+- Increase Jump keybind priority so it works even when it overlaps with other keybinds
+
 ## v2.0.0
  - Keybinds are now handled inside Geode itself, so this mod's purpose has been changed to simply be about adding customization for vanilla GD keybindings. As such, the API for this mod has been removed :)
 
