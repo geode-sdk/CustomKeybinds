@@ -1,5 +1,5 @@
 {
-	"geode": "5.1.0",
+	"geode": "5.8.0",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -35,7 +35,7 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/jump-p2",
-			"default": ["Up", "Controller_LB"],
+			"default": ["Up", "Controller_LB", "Controller2_A"],
 			"priority": -1
 		},
 		"move-left-p1": {
@@ -60,7 +60,7 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-left-p2",
-			"default": ["Left", "Controller_RTHUMBSTICK_LEFT"]
+			"default": ["Left", "Controller_RTHUMBSTICK_LEFT", "Controller2_LTHUMBSTICK_LEFT"]
 		},
 		"move-right-p2": {
 			"name": "Move right P2",
@@ -68,7 +68,7 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-right-p2",
-			"default": ["Right", "Controller_RTHUMBSTICK_RIGHT"]
+			"default": ["Right", "Controller_RTHUMBSTICK_RIGHT", "Controller2_LTHUMBSTICK_RIGHT"]
 		},
 		"place-checkpoint": {
 			"name": "Place Checkpoint",
@@ -92,7 +92,7 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/pause-level",
-			"default": "Controller_Start"
+			"default": ["Controller_Start", "Controller2_Start"]
 		},
 		"toggle-hitboxes": {
 			"name": "Toggle hitboxes",
