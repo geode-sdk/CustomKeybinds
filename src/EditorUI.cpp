@@ -16,6 +16,8 @@ struct $modify(EditorPauseLayer) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), "unpause-level"),
             [this](Keybind const& id, bool down, bool repeat, double timestamp) {
+                // fix for spacebar crash on mac (robtop use after free)
+                auto ref = Ref(this);
                 if (!repeat && down) {
                     this->onResume(nullptr);
                     return ListenerResult::Stop;
