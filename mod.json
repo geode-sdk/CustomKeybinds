@@ -44,7 +44,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-left-p1",
-			"default": ["A", "Controller_Left", "Controller_LTHUMBSTICK_LEFT"]
+			"default": ["A", "Controller_Left", "Controller_LTHUMBSTICK_LEFT"],
+			"priority": -1
 		},
 		"move-right-p1": {
 			"name": "Move right P1",
@@ -52,7 +53,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-right-p1",
-			"default": ["D", "Controller_Right", "Controller_LTHUMBSTICK_RIGHT"]
+			"default": ["D", "Controller_Right", "Controller_LTHUMBSTICK_RIGHT"],
+			"priority": -1
 		},
 		"move-left-p2": {
 			"name": "Move left P2",
@@ -60,7 +62,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-left-p2",
-			"default": ["Left", "Controller_RTHUMBSTICK_LEFT", "Controller2_LTHUMBSTICK_LEFT"]
+			"default": ["Left", "Controller_RTHUMBSTICK_LEFT", "Controller2_LTHUMBSTICK_LEFT"],
+			"priority": -1
 		},
 		"move-right-p2": {
 			"name": "Move right P2",
@@ -68,7 +71,8 @@
 			"type": "keybind",
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/move-right-p2",
-			"default": ["Right", "Controller_RTHUMBSTICK_RIGHT", "Controller2_LTHUMBSTICK_RIGHT"]
+			"default": ["Right", "Controller_RTHUMBSTICK_RIGHT", "Controller2_LTHUMBSTICK_RIGHT"],
+			"priority": -1
 		},
 		"place-checkpoint": {
 			"name": "Place Checkpoint",

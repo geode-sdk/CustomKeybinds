@@ -49,7 +49,8 @@ struct $modify(EditorUI) {
             return false;
 
         Loader::get()->queueInMainThread([this, lel] {
-            this->defineKeybind("jump-p1", [lel](bool down, bool repeat, double timestamp) {
+            // handled in uilayer now
+            /*this->defineKeybind("jump-p1", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
                     lel->queueButton(platformButton(), down, false, timestamp);
                     return ListenerResult::Stop;
@@ -62,7 +63,7 @@ struct $modify(EditorUI) {
                     return ListenerResult::Stop;
                 }
                 return ListenerResult::Propagate;
-            });
+            });*/
             this->defineKeybind("move-left-p1", [lel](bool down, bool repeat, double timestamp) {
                 if (!repeat && lel->m_playbackMode == PlaybackMode::Playing) {
                     lel->queueButton(static_cast<int>(PlayerButton::Left), down, false, timestamp);

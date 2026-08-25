@@ -121,6 +121,12 @@ struct $modify(UILayer) {
             || PlayLayer::get()->getChildByType<GJDropDownLayer>(0) != nullptr;
     }
 
+    bool isEditorPlaytest() {
+        auto lel = LevelEditorLayer::get();
+        if (!lel) return false;
+        return lel->m_playbackMode == PlaybackMode::Playing;
+    }
+
     bool isCurrentPlayLayer() {
         auto playLayer = CCScene::get()->getChildByType<PlayLayer>(0);
         return playLayer != nullptr && playLayer == PlayLayer::get() && playLayer->getChildByType<UILayer>(0) == this;
@@ -178,15 +184,18 @@ struct $modify(UILayer) {
             return false;
 
         // delay by a single frame
-        geode::Loader::get()->queueInMainThread([this] {
-            // do not do anything in the editor
-            if (!PlayLayer::get()) return;
+        geode::Loader::get()->queueInMainThread([this, self = Ref(this)] {
 
             this->defineKeybind("jump-p1", [this](bool down, bool repeat, double timestamp) {
-                if (repeat || this->isPaused()) {
+                if (repeat || (this->isPaused() && !this->isEditorPlaytest())) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, false, timestamp);
+
+                if ((down && m_p1Jumping) || (!down && !m_p1Jumping)) {
+                    return ListenerResult::Stop;
+                }
+
+                GJBaseGameLayer::get()->queueButton(1, down, false, timestamp);
                 if (down) {
                     m_p1Jumping = true;
                 } else {
@@ -195,10 +204,15 @@ struct $modify(UILayer) {
                 return ListenerResult::Stop;
             });
             this->defineKeybind("jump-p2", [this](bool down, bool repeat, double timestamp) {
-                if (repeat || this->isPaused()) {
+                if (repeat || (this->isPaused() && !this->isEditorPlaytest())) {
                     return ListenerResult::Propagate;
                 }
-                PlayLayer::get()->queueButton(1, down, true, timestamp);
+
+                if ((down && m_p2Jumping) || (!down && !m_p2Jumping)) {
+                    return ListenerResult::Stop;
+                }
+
+                GJBaseGameLayer::get()->queueButton(1, down, true, timestamp);
                 if (down) {
                     m_p2Jumping = true;
                 } else {
@@ -206,6 +220,10 @@ struct $modify(UILayer) {
                 }
                 return ListenerResult::Stop;
             });
+
+            // do not do anything in the editor
+            if (!PlayLayer::get()) return;
+            
             this->defineKeybind("place-checkpoint", [this](bool down, bool repeat, double timestamp) {
                 if (repeat || this->isPaused()) {
                     return ListenerResult::Propagate;
@@ -299,7 +317,7 @@ struct $modify(UILayer) {
 
     void defineKeybind(std::string id, CopyableFunction<bool(bool, bool, double)> callback) {
         // adding the events to playlayer instead
-        PlayLayer::get()->addEventListener(
+        GJBaseGameLayer::get()->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), std::move(id)),
             [callback = std::move(callback)](Keybind const& keybind, bool down, bool repeat, double timestamp) {
                 return callback(down, repeat, timestamp);
