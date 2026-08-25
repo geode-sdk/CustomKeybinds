@@ -1,3 +1,9 @@
+## v2.2.0
+- Add secondary controller defaults for P2 binds to match vanilla
+- Fix editor unpause crash on macOS
+- Fix touch triggers incorrectly getting registered multiple times for the same player
+- Fix player keybinds not working properly in the editor
+
 ## v2.1.0
 - Add Popup/IME check to Editor
   - This fixes keybinds falling through popups

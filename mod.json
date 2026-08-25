@@ -6,11 +6,11 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v2.1.0",
+	"version": "v2.2.0",
 	"id": "geode.custom-keybinds",
 	"name": "Custom Keybinds",
 	"developer": "Geode Team",
-	"description": "Custom keybind support for Geode",
+	"description": "Custom vanilla keybind support for Geode",
 	"links": {
 		"source": "https://github.com/geode-sdk/CustomKeybinds"
 	},
