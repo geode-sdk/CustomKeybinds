@@ -51,6 +51,8 @@ struct $modify(PauseLayer) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), "unpause-level"),
             [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                auto ref = Ref(this);
+
                 if (repeat || !down) {
                     return ListenerResult::Propagate;
                 }
@@ -69,6 +71,8 @@ struct $modify(PauseLayer) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), "exit-level"),
             [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                auto ref = Ref(this);
+
                 if (!repeat && down) {
                     this->onQuit(nullptr);
                     return ListenerResult::Stop;
@@ -80,6 +84,8 @@ struct $modify(PauseLayer) {
         this->addEventListener(
             KeybindSettingPressedEventV3(Mod::get(), "practice-level"),
             [this](Keybind const& keybind, bool down, bool repeat, double timestamp) {
+                auto ref = Ref(this);
+
                 if (!repeat && down) {
                     if(PlayLayer::get() && PlayLayer::get()->m_isPracticeMode) {
                         this->onNormalMode(nullptr);
