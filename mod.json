@@ -6,7 +6,7 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v2.2.0",
+	"version": "v2.2.1",
 	"id": "geode.custom-keybinds",
 	"name": "Custom Keybinds",
 	"developer": "Geode Team",
@@ -27,7 +27,7 @@
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/jump-p1",
 			"default": ["Space", "W", "Controller_A", "Controller_Up", "Controller_RB"],
-			"priority": -1
+			"priority": -2
 		},
 		"jump-p2": {
 			"name": "Jump P2",
@@ -36,7 +36,7 @@
 			"category": "gameplay",
 			"migrate-from": "robtop.geometry-dash/jump-p2",
 			"default": ["Up", "Controller_LB", "Controller2_A"],
-			"priority": -1
+			"priority": -2
 		},
 		"move-left-p1": {
 			"name": "Move left P1",

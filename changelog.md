@@ -1,3 +1,6 @@
+## v2.2.1
+- Increase jump priority above platformer move again
+
 ## v2.2.0
 - Add secondary controller defaults for P2 binds to match vanilla
 - Fix editor unpause crash on macOS
