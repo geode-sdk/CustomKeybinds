@@ -1,3 +1,7 @@
+## v2.2.2
+- Revert touch trigger fix due to users prefering the old behavior
+  - Do note that this is technically a deviation from vanilla behavior, which does not allow secondary keys to be registered while a key is already held for the same player (you can try this yourself with W and Space with the mod disabled).
+
 ## v2.2.1
 - Increase jump priority above platformer move again
 

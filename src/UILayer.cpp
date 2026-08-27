@@ -191,9 +191,10 @@ struct $modify(UILayer) {
                     return ListenerResult::Propagate;
                 }
 
-                if ((down && m_p1Jumping) || (!down && !m_p1Jumping)) {
+                // commenting this out might technically be a cheat but ppl are haters
+                /*if ((down && m_p1Jumping) || (!down && !m_p1Jumping)) {
                     return ListenerResult::Stop;
-                }
+                }*/
 
                 GJBaseGameLayer::get()->queueButton(1, down, false, timestamp);
                 if (down) {
@@ -208,9 +209,10 @@ struct $modify(UILayer) {
                     return ListenerResult::Propagate;
                 }
 
-                if ((down && m_p2Jumping) || (!down && !m_p2Jumping)) {
+                // commenting this out might technically be a cheat but ppl are haters
+                /*if ((down && m_p2Jumping) || (!down && !m_p2Jumping)) {
                     return ListenerResult::Stop;
-                }
+                }*/
 
                 GJBaseGameLayer::get()->queueButton(1, down, true, timestamp);
                 if (down) {
